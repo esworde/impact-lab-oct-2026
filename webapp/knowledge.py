@@ -6,6 +6,8 @@ import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
 
+from webapp.tracing import observe
+
 
 class Knowledge:
     def __init__(self, path):
@@ -89,6 +91,7 @@ class Knowledge:
                                (chunk_id, page['title'], heading, chunk))
         return {'id': page_id, 'changed': changed}
 
+    @observe(name='search-guides', as_type='retriever')
     def retrieve(self, query, limit=6, page_id=None):
         # Quote all terms: user input cannot become FTS operators or SQL.
         stop = {'the','a','an','in','to','for','of','and','how','i','my','do','get','milano','milan'}
@@ -105,6 +108,7 @@ class Knowledge:
                               (match, page_id, page_id, min(limit, 10))).fetchall()
         return [dict(r) for r in rows]
 
+    @observe(name='read-guide', as_type='tool')
     def read(self, page_id):
         with self.connect() as db:
             row = db.execute('SELECT id AS page_id,title,url,markdown,provider,fetched_at,stated_updated_date FROM pages WHERE id=?',
