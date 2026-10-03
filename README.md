@@ -79,9 +79,9 @@ node --check webapp/static/app.js
 
 ## Railway deployment
 
-The root [`Dockerfile`](Dockerfile) and [`railway.toml`](railway.toml) deploy a single FastAPI service. Mount a persistent Railway volume at `/data` and set `DATABASE_PATH=/data/knowledge.sqlite`. Use one replica: SQLite and a single attached volume are not a multi-replica design.
+The root [`Dockerfile`](Dockerfile) deploys a single FastAPI service. Configure `/health` as its healthcheck in Railway. Mount a persistent Railway volume at `/data` and set `DATABASE_PATH=/data/knowledge.sqlite`. Use one replica: SQLite and a single attached volume are not a multi-replica design.
 
-Set `ANTHROPIC_API_KEY`, `FIRECRAWL_API_KEY` and `CLAUDE_MODEL` on the service. Keys stay server-side. The container binds to Railway's `PORT`; `/health` is the healthcheck.
+Set `ANTHROPIC_API_KEY`, `FIRECRAWL_API_KEY` and `CLAUDE_MODEL` on the service. Keys stay server-side. The container binds to Railway's `PORT`; this deployment sets `PORT=8000` and routes the public domain to port 8000. Railway's former `railway.toml` configuration has been deprecated; service settings are applied directly through Railway.
 
 To refresh the deployed persistent database, run `python -m webapp.ingest` inside the service via `railway ssh`. Rebuilding the image alone does not overwrite existing pages on the persistent volume; startup only inserts missing seed pages. No refresh schedule has been configured yet.
 

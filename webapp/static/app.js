@@ -367,6 +367,7 @@ function translate() {
   document
     .querySelectorAll("[data-chat-form] input")
     .forEach((el) => el.setAttribute("aria-label", t("yourQuestion")));
+  $(".header-chat").setAttribute("aria-label", t("openChat"));
   updateProfileControls();
 }
 
@@ -492,7 +493,7 @@ function updateProgress() {
   $("#step-nav").innerHTML = j.steps
     .map(
       (s, i) =>
-        `<li><button data-step="${i}" class="${state.stepIndex === i ? "active" : ""} ${done(j, s) ? "done" : ""}" ${state.stepIndex === i ? 'aria-current="step"' : ""}><span class="step-number">${done(j, s) ? "✓" : i + 1}</span><span class="step-name">${esc(s.title)}</span></button></li>`,
+        `<li><button data-step="${i}" aria-label="${i+1}. ${esc(s.title)}" class="${state.stepIndex === i ? "active" : ""} ${done(j, s) ? "done" : ""}" ${state.stepIndex === i ? 'aria-current="step"' : ""}><span class="step-number">${done(j, s) ? "✓" : i + 1}</span><span class="step-name">${esc(s.title)}</span></button></li>`,
     )
     .join("");
 }
