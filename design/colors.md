@@ -361,6 +361,19 @@ The `$ca-colors` map generates utility classes: `.bg-{group}-{name}` sets the ba
 | `gradient` | `black` | `rgba(25,25,25,0.7)` | |
 | `gradient` | `light-black` | `rgba(0,0,0,0.1)` | |
 
+### Comune di Milano
+
+[comune.milano.it](https://www.comune.milano.it/) runs Bootstrap Italia with the Modello Comuni chrome and its own primary. These values were read from the live site on 3 October 2026. StudiaMI (`webapp/static/styles.css`) uses them.
+
+| Role | Value | Contrast |
+|---|---|---|
+| Primary (`--bs-primary`): buttons, links, center header, navbar | `#a60d27` | 7.75:1 on white |
+| Slim header | `#630817` | White text 13.31:1 |
+| Footer (also the site's `--bs-secondary`) | `#202a2e` | Same as the Modello Comuni footer |
+| Body text and font | `#1a1a1a`, Titillium Web | Same as the tokens |
+
+The site's own scale, `--bs-cdm-primary-*`, runs `50` `#f4e2e5`, `100` `#e4b6be`, `200` `#d28693`, `300` `#c05667`, `400` `#b33147`, `500` `#a50d26`, `600` `#9d0b22`, `700` `#93091c`, `1200` `#6f030c` and `1400` `#630817`. Its greys are the token `slate` and `gray` ramps. StudiaMI takes hover `#6f030c`, active `#630817` and the light tint `#f4e2e5` from this scale; primary text on the tint is 6.22:1.
+
 ## In the Figma UI Kit
 
 - The "Colors" page documents each color with its design token, accessibility notes and identifying codes.

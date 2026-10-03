@@ -117,7 +117,7 @@ Bootstrap Italia 2.9.2:
 
 ## Modello Comuni at a glance
 
-- **Primary color:** HSB 160/100/48, which is `#007a52` (the same as `color.seagreen.24`). Each Comune can set its own through `$primary-h`, `$primary-s` and `$primary-b`. See [colors.md](colors.md#modello-comuni).
+- **Primary color:** HSB 160/100/48, which is `#007a52` (the same as `color.seagreen.24`). Each Comune can set its own through `$primary-h`, `$primary-s` and `$primary-b`; Milan's is `#a60d27`. See [colors.md](colors.md#modello-comuni) and [Comune di Milano](colors.md#comune-di-milano).
 - **Chrome:** the slim header is `#00402b`, the center header and navbar use the primary color, the footer is `#202a2e`, body text is `#191919` and grey cards are `#ebeef0`.
 - **Main menu (fixed by the model):** Amministrazione · Novità · Servizi · Vivere il Comune.
 - **Every page ends the same way:** a page rating ("Quanto sono chiare le informazioni su questa pagina?"), then the "Contatta il comune" box, then the footer.
