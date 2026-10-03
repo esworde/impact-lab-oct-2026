@@ -200,7 +200,8 @@ async def author_plan(client, model, base, profile, knowledge, reserve, story=''
     if metadata is None:
         raise ValueError('No steps to generate')
     steps = [generated[s['id']] for b in order for s in base['steps'] if s['block_id'] == b]
-    revision = previous.plan_revision if previous else 'ai-' + hashlib.sha256(json.dumps(steps, sort_keys=True).encode()).hexdigest()[:12]
+    revision = previous.plan_revision if previous and frozen else 'ai-' + hashlib.sha256(json.dumps(
+        {'base':base['plan_revision'], 'language':profile['language'], 'steps':steps}, sort_keys=True).encode()).hexdigest()[:12]
     authored = AuthoredPlan(base_revision=base['plan_revision'], plan_revision=revision,
         language=profile['language'], residence_choice=base['residence_choice'], model=model,
         title=metadata['title'], subtitle=metadata['subtitle'], rationale=metadata['rationale'], steps=steps)

@@ -101,6 +101,14 @@ class AIPlanningTests(unittest.TestCase):
             self.assertTrue(any(s['id'].startswith('temporary--') for s in updated['steps']))
             sent = json.loads(calls[-1]['messages'][0]['content'])['required_steps_this_batch']
             self.assertFalse(any(s['id']=='arrival--giulia-status' for s in sent))
+            translated=self.client.post('/api/plan/generate',json={**body,
+                'profile':{**self.profile,'language':'en'},'previous':original})
+            self.assertEqual(translated.status_code,200,translated.text)
+            self.assertNotEqual(translated.json()['plan_revision'],original['plan_revision'])
+            edited=self.client.post('/api/plan/generate',json={**body,
+                'profile':{**self.profile,'stay_duration':'under-year'}})
+            self.assertEqual(edited.status_code,200,edited.text)
+            self.assertNotEqual(edited.json()['plan_revision'],original['plan_revision'])
 
     def test_missing_answers_or_provider_key_do_not_produce_fake_ai_plans(self):
         with patch.dict(os.environ,{'ANTHROPIC_API_KEY':''}):

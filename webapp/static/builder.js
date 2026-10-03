@@ -18,7 +18,7 @@ const BUILDER_COPY = {
     placeholder:
       "Sono una studentessa italiana, ho una borsa di studio e sto arrivando a Milano. Cerco casa e non so se cambiare residenza…",
     storyNote:
-      "Descrivi obiettivi e dubbi, senza nomi, indirizzi o documenti. Il testo viene inviato a Claude per proporre le card; non viene salvato nel piano.",
+      "Descrivi obiettivi e dubbi, senza nomi, indirizzi o documenti. Il testo viene inviato a Claude per costruire il piano; non viene salvato nel percorso.",
     propose: "Componi il mio percorso",
     thinking: "Metto insieme le card…",
     error:
@@ -76,7 +76,7 @@ const BUILDER_COPY = {
     placeholder:
       "I’m an Italian student with a study grant, moving to Milan. I need housing and I’m unsure whether to transfer my residence…",
     storyNote:
-      "Describe goals and questions, without names, addresses or documents. Your text is sent to Claude to suggest cards; it is not saved in the plan.",
+      "Describe goals and questions, without names, addresses or documents. Your text is sent to Claude to build the plan; it is not saved in your journey.",
     propose: "Build my journey",
     thinking: "Bringing your cards together…",
     error:
@@ -378,6 +378,7 @@ async function openBuilder(mode) {
   builder.generationError = false;
   builder.generating = false;
   builder.residence_choice = null;
+  if (["giulia", "questions", "edit"].includes(mode)) builder.story = "";
   builder.preview = false;
   builder.example = false;
   builder.profile = {
