@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Milano Fascicolo Demo</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header><span class="eyebrow">PROOF OF CONCEPT · LOCALE</span><span id="mode" class="badge">Demo</span></header>
+    <h1>Milano Fascicolo Demo</h1>
+    <p class="intro">I tuoi pagamenti, in una vista semplice.</p>
+    <section class="panel" aria-labelledby="connection-title">
+      <h2 id="connection-title">Collega il tuo Fascicolo</h2>
+      <p>L’accesso con SPID o CIE avviene nella finestra del sito ufficiale. Le credenziali restano fuori da questa demo.</p>
+      <div class="actions">
+        <button id="connect" disabled>Collega Fascicolo del Cittadino</button>
+        <button id="resume" class="secondary" hidden>Riprendi</button>
+        <button id="disconnect" class="secondary" disabled>Scollega e cancella dati</button>
+      </div>
+      <div class="status" role="status" aria-live="polite"><span id="dot"></span><strong id="status">Non collegato</strong></div>
+      <p id="message" class="message">Verifica del server locale...</p>
+    </section>
+    <section class="panel" aria-labelledby="payments-title">
+      <div class="section-title"><h2 id="payments-title">Pagamenti</h2><span id="count">—</span></div>
+      <p id="empty" class="empty">Collega il Fascicolo per visualizzare i pagamenti.</p>
+      <div id="results" class="table-wrap" hidden>
+        <table><caption class="sr-only">Pagamenti recuperati dalla vista corrente</caption>
+          <thead><tr><th scope="col">Data</th><th scope="col">Descrizione</th><th scope="col">Importo</th><th scope="col">Stato</th></tr></thead>
+          <tbody id="payments"></tbody>
+        </table>
+        <p class="hint">Il simbolo — indica un campo non identificato. Nessun valore viene stimato.</p>
+      </div>
+    </section>
+    <footer>Sessione temporanea · Dati solo in memoria<br>Demo indipendente, non affiliata al Comune di Milano.</footer>
+  </main>
+</body>
+</html>
