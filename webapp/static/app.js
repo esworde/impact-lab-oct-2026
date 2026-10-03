@@ -12,7 +12,7 @@ const COPY = {
     hero1: "La tua nuova vita,",
     hero2: "comincia a Milano.",
     heroDescription:
-      "Raccontaci la tua situazione o rispondi a poche domande. Mettiamo insieme le guide in un percorso tutto tuo.",
+      "Raccontaci la tua situazione o rispondi a poche domande. Adattiamo servizi, passaggi e checklist al tuo caso.",
     askPlaceholder: "Sto per trasferirmi a Milano. Da dove inizio?",
     suggestHousing: "Cerco una stanza",
     suggestDocuments: "Mi servono i documenti",
@@ -36,7 +36,7 @@ const COPY = {
     oneStep: "Una cosa alla volta.\nUn posto solo.",
     how1Title: "Crea il tuo percorso",
     how1Body:
-      "Racconta la tua situazione o rispondi a tre domande. Rivedi le card proposte e scegli l’ordine.",
+      "Racconta la tua situazione o rispondi a poche domande. Rivedi le card proposte e scegli l’ordine.",
     how2Title: "Segui i passaggi",
     how2Body:
       "Checklist, indicazioni e link ai servizi. Sai sempre cosa viene dopo.",
@@ -97,7 +97,7 @@ const COPY = {
     privacyBody:
       "Non chiediamo un account. Profilo generico, blocchi del percorso, scelte, checklist e conferme rimangono nel tuo browser. Il racconto per comporre un percorso viene inviato a Claude e non viene salvato nel piano. La conversazione resta in memoria nella pagina e scompare ricaricandola; non viene salvata nel nostro database. Per rispondere, domanda e contesto vengono inviati a Claude (Anthropic), secondo le sue condizioni di trattamento. Non scrivere nomi, indirizzi, documenti o informazioni mediche.",
     sourceIntro:
-      "Le risposte si basano sulle guide pubbliche di YesMilano e del Comune di Milano. La data di recupero non indica necessariamente l’ultimo aggiornamento del contenuto.",
+      "Le risposte si basano sulle guide pubbliche di YesMilano, del Comune di Milano e del Ministero degli Affari Esteri. La data di recupero non indica necessariamente l’ultimo aggiornamento del contenuto.",
     loadError: "Non riesco a caricare i percorsi. Riprova tra poco.",
     chatUnavailable:
       "La chat è in attivazione. Intanto puoi seguire i percorsi e aprire tutte le fonti ufficiali.",
@@ -168,7 +168,7 @@ const COPY = {
     hero1: "Your new chapter,",
     hero2: "starts in Milan.",
     heroDescription:
-      "Tell us your situation or answer a few questions. We’ll bring the guides together in a journey of your own.",
+      "Tell us your situation or answer a few questions. We’ll adapt services, steps and checklists to your situation.",
     askPlaceholder: "I’m moving to Milan. Where do I start?",
     suggestHousing: "I need a room",
     suggestDocuments: "Help with paperwork",
@@ -191,7 +191,7 @@ const COPY = {
     oneStep: "One step at a time.\nAll in one place.",
     how1Title: "Create your journey",
     how1Body:
-      "Tell your story or answer three questions. Review the suggested cards and choose their order.",
+      "Tell your story or answer a few questions. Review the suggested cards and choose their order.",
     how2Title: "Follow the steps",
     how2Body:
       "Checklists, guidance and service links. Always know what comes next.",
@@ -253,7 +253,7 @@ const COPY = {
     privacyBody:
       "No account needed. Your generic profile, journey blocks, choices, checklists and confirmations stay in your browser. Your story is sent to Claude to suggest blocks and is not saved in the plan. The conversation stays in page memory and disappears when you reload; it is not saved in our database. To answer, your question and context are sent to Claude (Anthropic), subject to its data-processing terms. Do not enter names, addresses, documents or medical information.",
     sourceIntro:
-      "Answers use public YesMilano and City of Milan guides. Retrieval dates do not necessarily reflect the last content update.",
+      "Answers use public YesMilano, City of Milan and Ministry of Foreign Affairs guides. Retrieval dates do not necessarily reflect the last content update.",
     loadError: "The journeys could not be loaded. Please try again shortly.",
     chatUnavailable:
       "Chat is being activated. You can still follow all the journeys and open official sources.",
@@ -349,8 +349,28 @@ const readStored = (key, fallback) => {
   }
 };
 const saved = readStored("studia-mi-profile", {});
+const ANSWER_FIELDS = [
+  "stay_duration",
+  "country",
+  "housing",
+  "taxcode",
+  "digital_id",
+  "residence_status",
+  "residence_intent",
+  "grant",
+  "visa",
+  "permit",
+  "health_coverage",
+];
 const state = {
   profile: {
+    citizenship_confirmed: saved.citizenship_confirmed === true,
+    ...Object.fromEntries(
+      ANSWER_FIELDS.map((key) => [
+        key,
+        typeof saved[key] === "string" ? saved[key] : null,
+      ]),
+    ),
     language: ["it", "en"].includes(saved.language) ? saved.language : "it",
     citizenship: ["italian", "international", "eu", "non-eu"].includes(
       saved.citizenship,
@@ -383,7 +403,10 @@ const currentJourney = () =>
   state.journeys.find((j) => j.id === state.journeyId);
 const progressKey = (journey) =>
   `${journey.plan_revision}:${state.profile.citizenship || "international"}:${journey.id}`;
-const planFor = (journey) => (state.plans[progressKey(journey)] ??= {});
+const planFor = (journey) =>
+  (state.plans[progressKey(journey)] ??= {
+    choices: { ...journey.initial_choices },
+  });
 const checksFor = (journey) => {
   const key = progressKey(journey);
   if (!state.progress[key] && journey.plan_revision === "guided-1") {
@@ -520,6 +543,8 @@ async function loadJourneys() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         blocks: state.custom.blocks,
+        suppressed_blocks: state.custom.suppressed_blocks || [],
+        residence_choice: state.custom.residence_choice || null,
         profile: {
           ...state.profile,
           citizenship: state.profile.citizenship || "international",
@@ -590,6 +615,10 @@ function renderRoute() {
   const match = location.hash.match(/^#journey\/([a-z]+)\/(\d+|summary)$/);
   const j = match && state.journeys.find((item) => item.id === match[1]);
   state.journeyId = j?.id || null;
+  if (j?.adaptive && !j.ready) {
+    openBuilder("edit");
+    return;
+  }
   $("#home-view").hidden = !!j;
   $("#journey-view").hidden = !j;
   $("#floating-ask").hidden = !j && state.heroVisible !== false;
@@ -620,7 +649,7 @@ function renderRoute() {
           : t("international");
   const summary = state.stepIndex === "summary";
   $("#journey-view").innerHTML =
-    `<button class="back-link" data-home><span aria-hidden="true">←</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ↗</button></div>${j.id === "custom" ? `<div class="custom-outline"><button class="button secondary" data-builder="edit">${bt("editBlocks")} ↗</button><p>${esc(j.priority)}</p></div>` : ""}${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
+    `<button class="back-link" data-home><span aria-hidden="true">←</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ↗</button></div>${j.id === "custom" ? `<div class="adaptive-facts">${renderPlanFacts(j)}</div><div class="custom-outline"><button class="button secondary" data-builder="edit">${bt("editBlocks")} ↗</button><p>${esc(j.priority)}</p></div>` : ""}${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
   updateProgress();
   updateChatContext();
 }
@@ -629,7 +658,7 @@ function renderStep(j, s) {
   if (s.routes) {
     s = { ...s, ...s.routes[planFor(j).choices?.[s.follows_choice]] };
   }
-  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(s.icon || j.icon)}</div></div>${s.block_title ? `<p class="eyebrow">${esc(s.block_title)}</p>` : ""}<h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p>${s.owner ? `<p class="step-owner"><small>${t("owner")}</small> ${esc(s.owner)}</p>` : ""}${renderChoices(j, s)}<a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">↗</span></a>${(s.extra_sources || []).map((source) => `<a class="secondary-source" href="${esc(safeURL(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>`).join("")}<h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div>${s.follows_choice && planFor(j).choices?.[s.follows_choice] === "temporary" ? `<button class="draft-button" data-draft>${t("draft")} ↗</button>` : ""}<div class="validation-panel"><h3>${t("validationTitle")}</h3><p>${esc(s.validation || t("validationReady"))}</p><small id="validation-status" role="status"></small><p class="validation-note">${t("validationNote")}</p></div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">✳</span>${t("helpStep")} ↗</button></div>`;
+  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(s.icon || j.icon)}</div></div>${s.block_title ? `<p class="eyebrow">${esc(s.block_title)}</p>` : ""}<h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p>${s.owner ? `<p class="step-owner"><small>${t("owner")}</small> ${esc(s.owner)}</p>` : ""}${renderChoices(j, s)}<a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">↗</span></a>${(s.extra_sources || []).map((source) => `<a class="secondary-source" href="${esc(safeURL(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>`).join("")}<h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div>${s.draft || (s.follows_choice && planFor(j).choices?.[s.follows_choice] === "temporary") ? `<button class="draft-button" data-draft>${t("draft")} ↗</button>` : ""}<div class="validation-panel"><h3>${t("validationTitle")}</h3><p>${esc(s.validation || t("validationReady"))}</p><small id="validation-status" role="status"></small><p class="validation-note">${t("validationNote")}</p></div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">✳</span>${t("helpStep")} ↗</button></div>`;
 }
 
 function renderSummary(j) {
@@ -858,6 +887,8 @@ async function sendQuestion(question, retry = false) {
           ...state.profile,
           citizenship: state.profile.citizenship || "international",
         },
+        suppressed_blocks:
+          j?.id === "custom" ? state.custom.suppressed_blocks || [] : [],
         journey_id: j?.id || null,
         step_id: s?.id || null,
         plan_choice: j
@@ -1030,11 +1061,15 @@ document.addEventListener("click", async (e) => {
     setTimeout(() => $("#journeys").scrollIntoView({ behavior: "smooth" }), 30);
   }
 });
-document.addEventListener("change", (e) => {
+document.addEventListener("change", async (e) => {
   if (!e.target.matches("[data-check], [data-plan-choice]")) return;
   const j = currentJourney(),
     s = j.steps[state.stepIndex],
     key = progressKey(j);
+  if (j.adaptive && e.target.matches("[data-plan-choice]")) {
+    await updateCustomChoice(j, s, e.target.dataset.planChoice);
+    return;
+  }
   const requiresReview = done(j, s) || e.target.matches("[data-plan-choice]");
   if (e.target.matches("[data-plan-choice]")) {
     planFor(j).choices ??= {};

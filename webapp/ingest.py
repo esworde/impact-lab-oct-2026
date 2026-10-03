@@ -15,12 +15,13 @@ from webapp.knowledge import Knowledge
 from webapp.personas import PERSONA_GUIDES
 from webapp.howto import CATALOG
 
-APPROVED_HOSTS = {'studyandwork.yesmilano.it', 'www.yesmilano.it', 'www.comune.milano.it', 'servizicrm.comune.milano.it'}
+APPROVED_HOSTS = {'studyandwork.yesmilano.it', 'www.yesmilano.it', 'www.comune.milano.it', 'servizicrm.comune.milano.it', 'italiana.esteri.it'}
 
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT.parent / '.env')
 BASE = 'https://studyandwork.yesmilano.it'
 GUIDES = [
+    'https://italiana.esteri.it/italiana/opportunity/studying-in-italy/visas-and-permits/',
     BASE + '/en/study/how-to/first-steps',
     BASE + '/en/study/how-to/rents',
     BASE + '/en/study/how-to/take-residence-milano-students',
@@ -90,7 +91,7 @@ def scrape(url, api_key):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--limit', type=int, default=38)
+    parser.add_argument('--limit', type=int, default=39)
     parser.add_argument('--url', action='append')
     parser.add_argument('--snapshot', action='store_true', help='Update deployable public-content seed JSON')
     args = parser.parse_args()

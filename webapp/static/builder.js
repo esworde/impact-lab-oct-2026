@@ -11,7 +11,7 @@ const BUILDER_COPY = {
       "Guide ufficiali, un piano che scegli tu. Nessun account richiesto.",
     title: "La tua storia. Il tuo percorso.",
     intro:
-      "Parti dalla tua situazione. Scegliamo le card utili e le mettiamo in fila: puoi cambiare ogni blocco prima di iniziare.",
+      "Le tue risposte cambiano servizi, passaggi e checklist. Chiediamo ciò che manca e puoi rivedere le scelte prima e durante il percorso.",
     story: "Racconta liberamente",
     questions: "Rispondi alle domande",
     storyLabel: "Cosa vuoi organizzare a Milano?",
@@ -69,7 +69,7 @@ const BUILDER_COPY = {
     sourcePromise: "Official guides. A plan you choose. No account needed.",
     title: "Your story. Your journey.",
     intro:
-      "Start with your situation. We’ll bring useful cards together: you can change every block before starting.",
+      "Your answers shape services, steps and checklists. We ask what is missing, and you can review choices before and during the journey.",
     story: "Tell your story",
     questions: "Answer a few questions",
     storyLabel: "What do you want to organise in Milan?",
@@ -118,6 +118,169 @@ const BUILDER_COPY = {
     manual: "You can also choose just one card.",
   },
 };
+Object.assign(BUILDER_COPY.it, {
+  completeProfile: "UNA DOMANDA PER ADATTARE IL PIANO",
+  unknownAnswer:
+    "Puoi scegliere “da verificare”: il piano ti guiderà a chiarire quel punto con l’ufficio, senza presumere una risposta.",
+  facts: "Le risposte che cambiano il tuo piano",
+  excluded: "Servizi esclusi dal piano",
+  adaptError: "Non riesco ad aggiornare il piano. Riprova la scelta tra poco.",
+  orderNote:
+    "Decisioni e controlli sui documenti precedono i servizi che ne dipendono. Gli altri blocchi si possono riordinare.",
+});
+Object.assign(BUILDER_COPY.en, {
+  completeProfile: "A QUESTION TO ADAPT YOUR PLAN",
+  unknownAnswer:
+    "You can choose “to check”: the plan will help clarify it with the office, without assuming an answer.",
+  facts: "Answers shaping your plan",
+  excluded: "Services excluded from this plan",
+  adaptError: "I cannot update the plan right now. Retry your choice shortly.",
+  orderNote:
+    "Decisions and document checks precede dependent services. You can reorder the other blocks.",
+});
+const FACT_LABELS = {
+  it: {
+    stay_duration: "Durata a Milano",
+    country: "Paese di cittadinanza",
+    housing: "Sistemazione",
+    taxcode: "Codice fiscale",
+    digital_id: "SPID / CIE online",
+    residence_status: "Residenza attuale",
+    residence_intent: "Scelta da valutare",
+    grant: "Borsa / ISEE",
+    visa: "Visto già disponibile",
+    permit: "Stato del permesso",
+    health_coverage: "Copertura sanitaria verificata",
+  },
+  en: {
+    stay_duration: "Stay in Milan",
+    country: "Citizenship country",
+    housing: "Accommodation",
+    taxcode: "Tax code",
+    digital_id: "SPID / online ID",
+    residence_status: "Current residence",
+    residence_intent: "Option to consider",
+    grant: "Grant / ISEE",
+    visa: "Visa available",
+    permit: "Permit status",
+    health_coverage: "Healthcare coverage checked",
+  },
+};
+const FACT_OPTIONS = {
+  stay_duration: [
+    ["short", "Fino a 90 giorni", "Up to 90 days"],
+    [
+      "under-year",
+      "Oltre 90 giorni, meno di un anno",
+      "Over 90 days, under one year",
+    ],
+    ["year-plus", "Un anno o più", "One year or longer"],
+    ["unknown", "Da verificare", "To check"],
+  ],
+  housing: [
+    ["searching", "Sto cercando", "Still searching"],
+    ["found", "Casa trovata", "Accommodation found"],
+    ["unknown", "Da verificare", "To check"],
+  ],
+  residence_status: [
+    ["elsewhere", "Altro Comune / estero", "Elsewhere / abroad"],
+    ["milan", "Residente a Milano", "Registered in Milan"],
+    ["unknown", "Da verificare", "To check"],
+  ],
+  residence_intent: [
+    ["undecided", "Confrontare le opzioni", "Compare options"],
+    ["keep", "Mantengo la residenza", "Keep residence"],
+    [
+      "temporary",
+      "Domicilio / registrazione temporanea",
+      "Temporary domicile / registration",
+    ],
+    ["transfer", "Trasferisco la residenza", "Transfer residence"],
+  ],
+  permit: [
+    ["none", "Non presentata", "Not submitted"],
+    ["pending", "Presentata, ho la ricevuta", "Submitted, I have the receipt"],
+    ["valid", "Permesso italiano valido", "Valid Italian permit"],
+    ["unknown", "Da verificare", "To check"],
+  ],
+};
+const YES_OPTIONS = [
+  ["yes", "Sì", "Yes"],
+  ["no", "No", "No"],
+  ["unknown", "Da verificare", "To check"],
+];
+function renderPlanFacts(plan, editable = false) {
+  if (!plan) return "";
+  const lang = state.profile.language,
+    index = lang === "it" ? 1 : 2;
+  const fields = Object.entries(plan.answers || {}).filter(([key]) =>
+    ANSWER_FIELDS.includes(key),
+  );
+  const rows = fields
+    .map(([key, value]) => {
+      let opts = FACT_OPTIONS[key] || YES_OPTIONS;
+      if (
+        key === "residence_intent" &&
+        ((!['italian', 'eu'].includes(builder.profile?.citizenship)) ||
+          (builder.profile?.citizenship === "eu" &&
+            builder.profile?.stay_duration === "year-plus"))
+      )
+        opts = opts.filter((o) => o[0] !== "temporary");
+      const display = opts.find((o) => o[0] === value)?.[index] || value;
+      return `<div><dt>${esc(FACT_LABELS[lang][key])}</dt><dd>${editable ? (key === "country" ? `<input data-builder-profile="country" maxlength="50" minlength="2" value="${esc(value)}" aria-label="${esc(FACT_LABELS[lang][key])}">` : `<select data-builder-profile="${key}" aria-label="${esc(FACT_LABELS[lang][key])}">${opts.map((o) => `<option value="${o[0]}" ${o[0] === value ? "selected" : ""}>${esc(o[index])}</option>`).join("")}</select>`) : esc(display)}</dd></div>`;
+    })
+    .join("");
+  const exclusions = (plan.excluded || [])
+    .map((j) => `<li><strong>${esc(j.title)}</strong> ${esc(j.reason)}</li>`)
+    .join("");
+  return `<details class="plan-facts"><summary>${bt("facts")} · ${fields.length}</summary><dl>${rows}</dl></details>${exclusions ? `<div class="plan-excluded"><small>${bt("excluded")}</small><ul>${exclusions}</ul></div>` : ""}${!editable ? `<div class="plan-services">${(plan.block_summaries || []).map((j) => `<span title="${esc(j.personalization_reason)}">${esc(j.title)}</span>`).join("")}</div>` : ""}`;
+}
+async function updateCustomChoice(j, s, value) {
+  if (state.adapting) return;
+  state.adapting = true;
+  const key = progressKey(j),
+    previous = planFor(j).choices?.[s.id],
+    previousRoute = state.custom.residence_choice;
+  planFor(j).choices ??= {};
+  planFor(j).choices[s.id] = value;
+  StudyPlan.reopen(j, state.stepIndex, planFor(j));
+  for (const step of j.steps.slice(state.stepIndex))
+    step.checklist.forEach(
+      (_, i) => delete state.progress[key]?.[`${step.id}:${i}`],
+    );
+  savePlans();
+  store("studia-mi-checklists", state.progress);
+  document
+    .querySelectorAll("#journey-view button,#journey-view input")
+    .forEach((el) => (el.disabled = true));
+  try {
+    const response = await fetch("/api/plan/compose", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        blocks: state.custom.blocks,
+        profile: state.profile,
+        residence_choice: value,
+        suppressed_blocks: state.custom.suppressed_blocks || [],
+      }),
+    });
+    if (!response.ok) throw new Error();
+    const plan = await response.json();
+    state.custom.residence_choice = value;
+    store("studia-mi-custom", state.custom);
+    const index = state.journeys.findIndex((item) => item.id === "custom");
+    state.journeys[index] = plan;
+  } catch {
+    planFor(j).choices[s.id] = previous;
+    state.custom.residence_choice = previousRoute;
+    savePlans();
+    toast(bt("adaptError"));
+  } finally {
+    state.adapting = false;
+    renderRoute();
+    renderSavedPath();
+  }
+}
 for (const lang of ["it", "en"]) Object.assign(COPY[lang], BUILDER_COPY[lang]);
 const bt = (key) => BUILDER_COPY[state.profile.language][key] || key;
 const validBlocks = new Set([
@@ -149,6 +312,8 @@ state.custom =
 const builder = {
   mode: "story",
   question: 0,
+  plan: null,
+  suppressed: [],
   profile: null,
   blocks: [],
   available: [],
@@ -189,14 +354,32 @@ async function openBuilder(mode) {
     citizenship: state.profile.citizenship || "international",
   };
   builder.blocks = [];
+  builder.plan = null;
+  builder.suppressed = [];
   builder.available = state.journeys.filter((j) => j.id !== "custom");
   if (mode === "edit" && state.custom) {
     builder.blocks = [...state.custom.blocks];
+    builder.suppressed = [...(state.custom.suppressed_blocks || [])];
+    builder.profile.residence_intent =
+      currentJourney()?.residence_choice ||
+      state.custom.residence_choice ||
+      builder.profile.residence_intent;
     builder.preview = true;
   }
   if (mode === "giulia") {
     builder.profile.citizenship = "italian";
-    builder.profile.stage = "here";
+    Object.assign(builder.profile, {
+      stage: "here",
+      citizenship_confirmed: true,
+      stay_duration: "year-plus",
+      housing: "found",
+      taxcode: "yes",
+      digital_id: "yes",
+      residence_status: "elsewhere",
+      residence_intent: "undecided",
+      grant: "yes",
+      health_coverage: "unknown",
+    });
     builder.blocks = ["arrival", "housing", "transport", "health"];
     builder.preview = true;
     builder.example = true;
@@ -223,6 +406,21 @@ async function refreshBuilderCards() {
     const cards = await r.json();
     if (version !== builderVersion) return;
     builder.available = cards;
+    if (builder.blocks.length) {
+      const response = await fetch("/api/plan/compose", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          blocks: builder.blocks,
+          profile: builderProfile(),
+          suppressed_blocks: builder.suppressed,
+        }),
+      });
+      if (!response.ok) throw new Error();
+      const plan = await response.json();
+      if (version !== builderVersion) return;
+      builder.plan = plan;
+    } else builder.plan = null;
   } catch {
     if (version === builderVersion) builder.error = true;
   } finally {
@@ -240,9 +438,10 @@ function renderBuilder() {
   const tabs = `<div class="builder-tabs" aria-label="${bt("createPath")}"><button data-builder-mode="story" aria-pressed="${builder.mode === "story"}">${bt("story")}</button><button data-builder-mode="questions" aria-pressed="${builder.mode === "questions"}">${bt("questions")}</button></div>`;
   let content = "";
   if (builder.preview) {
-    const selected = builder.blocks
-      .map((id) => builder.available.find((j) => j.id === id))
-      .filter(Boolean);
+    const selected = (builder.plan?.block_summaries || []).map((j) => ({
+      ...j,
+      steps: (j.step_titles || []).map((title) => ({ title })),
+    }));
     content = `<p class="eyebrow">${bt("preview")}</p>${builder.example ? `<p class="builder-example">${bt("giulia")}</p>` : ""}<p>${bt("previewNote")}</p><div class="builder-profile"><label>${bt("profile")}<select data-builder-profile="citizenship">${options()
       .map(
         ([v, label]) =>
@@ -260,12 +459,12 @@ function renderBuilder() {
       )
       .join(
         "",
-      )}</select></label></div><p class="builder-count">${selected.length} ${bt("blocks")} · ${selected.reduce((sum, j) => sum + j.steps.length, 0)} ${bt("steps")}</p><ol class="builder-blocks">${selected.map((j, i) => `<li class="builder-block ${esc(j.tone)}"><div class="builder-block-art">${art(j.icon)}</div><div class="builder-block-body"><small>0${i + 1} · ${j.steps.length} ${t(j.steps.length === 1 ? "stepSingular" : "steps")}</small><h3>${esc(j.title)}</h3><p>${esc(j.subtitle)}</p>${j.scope ? `<small>${esc(j.scope)}</small>` : ""}<details><summary>${t("steps")}</summary><ol>${j.steps.map((s) => `<li>${esc(s.title)}</li>`).join("")}</ol></details></div><div class="block-tools"><button data-block-up="${j.id}" aria-label="${bt("up")}: ${esc(j.title)}" ${i === 0 ? "disabled" : ""}>↑</button><button data-block-down="${j.id}" aria-label="${bt("down")}: ${esc(j.title)}" ${i === selected.length - 1 ? "disabled" : ""}>↓</button><button data-block-remove="${j.id}" aria-label="${bt("remove")}: ${esc(j.title)}">×</button></div></li>`).join("")}</ol>${!selected.length ? `<p>${bt("empty")}</p>` : ""}<details class="builder-add"><summary>${bt("add")} +</summary><div class="builder-goals">${builder.available
-      .filter((j) => !builder.blocks.includes(j.id))
+      )}</select></label></div>${renderPlanFacts(builder.plan, true)}<p class="builder-count">${selected.length} ${bt("blocks")} · ${selected.reduce((sum, j) => sum + j.steps.length, 0)} ${bt("steps")}</p><ol class="builder-blocks">${selected.map((j, i) => `<li class="builder-block ${esc(j.tone)}"><div class="builder-block-art">${art(j.icon)}</div><div class="builder-block-body"><small>0${i + 1} · ${j.steps.length} ${t(j.steps.length === 1 ? "stepSingular" : "steps")}</small><h3>${esc(j.title)}</h3><p>${esc(j.subtitle)}</p>${j.personalization_reason ? `<p class="block-reason">${esc(j.personalization_reason)}</p>` : ""}<details><summary>${t("steps")}</summary><ol>${j.steps.map((s) => `<li>${esc(s.title)}</li>`).join("")}</ol></details></div><div class="block-tools"><button data-block-up="${j.id}" aria-label="${bt("up")}: ${esc(j.title)}" ${i === 0 || j.order_locked || selected[i - 1]?.order_locked ? "disabled" : ""}>↑</button><button data-block-down="${j.id}" aria-label="${bt("down")}: ${esc(j.title)}" ${i === selected.length - 1 || j.order_locked || selected[i + 1]?.order_locked ? "disabled" : ""}>↓</button><button data-block-remove="${j.id}" aria-label="${bt("remove")}: ${esc(j.title)}">×</button></div></li>`).join("")}</ol>${!selected.length ? `<p>${bt("empty")}</p>` : ""}<details class="builder-add"><summary>${bt("add")} +</summary><div class="builder-goals">${builder.available
+      .filter((j) => !selected.some((s) => s.id === j.id))
       .map((j) => `<button data-block-add="${j.id}">${esc(j.title)} +</button>`)
       .join(
         "",
-      )}</div></details><p class="builder-note">${bt("sequence")}</p><small>${bt("reviewChange")}</small><div class="builder-footer"><button class="button secondary" data-builder-restart>${bt("restart")}</button><button class="button primary" data-builder-start ${!selected.length || builder.pending || builder.error ? "disabled" : ""}>${bt("start")}</button></div>`;
+      )}</div></details><p class="builder-note">${bt("sequence")} ${bt("orderNote")}</p><small>${bt("reviewChange")}</small><div class="builder-footer"><button class="button secondary" data-builder-restart>${bt("restart")}</button><button class="button primary" data-builder-start ${!selected.length || builder.pending || builder.error || !builder.plan?.ready ? "disabled" : ""}>${bt("start")}</button></div>`;
   } else if (builder.mode === "story") {
     content = `<form id="builder-story-form"><label class="builder-label" for="builder-story">${bt("storyLabel")}</label><textarea id="builder-story" minlength="10" maxlength="2000" required placeholder="${esc(bt("placeholder"))}">${esc(builder.story)}</textarea><small>${bt("storyNote")}</small><div class="builder-footer"><button class="button primary" type="submit" ${builder.pending ? "disabled" : ""}>${builder.pending ? bt("thinking") : bt("propose")} ↗</button></div></form>`;
   } else {
@@ -292,6 +491,14 @@ function renderBuilder() {
       content += `<p>${bt("qGoalsNote")}</p><div class="builder-goals">${builder.available.map((j) => `<button data-builder-goal="${j.id}" aria-pressed="${builder.blocks.includes(j.id)}">${esc(j.title)} ${builder.blocks.includes(j.id) ? "✓" : "+"}</button>`).join("")}</div>`;
     content += `<div class="builder-footer"><button class="button secondary" data-builder-prev ${q === 0 ? "disabled" : ""}>${bt("previous")}</button><button class="button primary" data-builder-next ${builder.pending || (q === 2 && !builder.blocks.length) ? "disabled" : ""}>${q === 2 ? bt("propose") : bt("next")}</button></div>`;
   }
+  if (builder.preview && builder.plan?.questions?.length && !builder.pending) {
+    const q = builder.plan.questions[0];
+    content = `<p class="eyebrow">${bt("completeProfile")}</p><h2>${esc(q.title)}</h2><p>${esc(q.why)}</p>${q.kind === "country" ? `<form id="builder-answer-form"><label for="builder-country">${esc(q.title)}</label><input id="builder-country" name="country" minlength="2" maxlength="50" required autocomplete="off"><button class="button primary" type="submit">${bt("next")}</button></form>` : `<div class="builder-goals">${q.options.map((o) => `<button data-answer-key="${q.key}" data-answer-value="${o.id}">${esc(o.title)}</button>`).join("")}</div>`}<p class="builder-note">${bt("unknownAnswer")}</p><button class="back-link" data-builder-restart>${bt("restart")}</button>`;
+  }
+  const nextQuestion = builder.plan?.questions?.[0]?.key;
+  if (builder.preview && nextQuestion && nextQuestion !== builder.lastQuestion)
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  builder.lastQuestion = nextQuestion;
   $("#builder-view").innerHTML =
     `<button class="back-link" data-home>← ${t("back")}</button><div class="builder-heading"><p class="eyebrow">STUDIAMI · ${t("yourJourney")}</p><h1>${bt("title")}</h1><p>${bt("intro")}</p></div><div class="builder-panel">${!builder.preview ? tabs : ""}${content}${builder.error ? `<p class="error-message" role="alert">${bt("error")}</p>` : ""}</div>`;
 }
@@ -322,10 +529,19 @@ async function suggestBlocks() {
   }
 }
 async function startCustom() {
-  if (builder.pending || builder.error || !builder.blocks.length) return;
+  if (
+    builder.pending ||
+    builder.error ||
+    !builder.blocks.length ||
+    !builder.plan?.ready
+  )
+    return;
   const previousCustom = state.custom,
     previousProfile = { ...state.profile };
-  state.custom = { blocks: [...builder.blocks] };
+  state.custom = {
+    blocks: [...builder.blocks],
+    suppressed_blocks: [...builder.suppressed],
+  };
   builder.pending = true;
   renderBuilder();
   const loaded = await changeProfile(builderProfile());
@@ -353,6 +569,13 @@ async function startCustom() {
 document.addEventListener("click", async (e) => {
   const el = e.target.closest("button");
   if (!el) return;
+  if (el.dataset.answerKey) {
+    builder.profile[el.dataset.answerKey] = el.dataset.answerValue;
+    if (el.dataset.answerKey === "citizenship")
+      builder.profile.citizenship_confirmed = true;
+    await refreshBuilderCards();
+    return;
+  }
   if (el.dataset.builder) {
     await openBuilder(el.dataset.builder);
     return;
@@ -378,6 +601,7 @@ document.addEventListener("click", async (e) => {
   }
   if (el.dataset.builderPickProfile) {
     builder.profile.citizenship = el.dataset.builderPickProfile;
+    builder.profile.citizenship_confirmed = true;
     renderBuilder();
     return;
   }
@@ -415,16 +639,23 @@ document.addEventListener("click", async (e) => {
   }
   if (el.dataset.blockRemove) {
     builder.blocks = builder.blocks.filter((b) => b !== el.dataset.blockRemove);
-    renderBuilder();
+    if (!builder.suppressed.includes(el.dataset.blockRemove))
+      builder.suppressed.push(el.dataset.blockRemove);
+    await refreshBuilderCards();
     return;
   }
   if (el.dataset.blockAdd) {
-    builder.blocks.push(el.dataset.blockAdd);
-    renderBuilder();
+    if (!builder.blocks.includes(el.dataset.blockAdd))
+      builder.blocks.push(el.dataset.blockAdd);
+    builder.suppressed = builder.suppressed.filter(
+      (id) => id !== el.dataset.blockAdd,
+    );
+    await refreshBuilderCards();
     return;
   }
   const id = el.dataset.blockUp || el.dataset.blockDown;
   if (id) {
+    builder.blocks = builder.plan.block_summaries.map((j) => j.id);
     const i = builder.blocks.indexOf(id),
       next = i + (el.dataset.blockUp ? -1 : 1);
     if (next >= 0 && next < builder.blocks.length)
@@ -432,12 +663,20 @@ document.addEventListener("click", async (e) => {
         builder.blocks[next],
         builder.blocks[i],
       ];
-    renderBuilder();
+    await refreshBuilderCards();
   }
 });
 document.addEventListener("change", async (e) => {
   if (e.target.matches("[data-builder-profile]")) {
-    builder.profile[e.target.dataset.builderProfile] = e.target.value;
+    const key = e.target.dataset.builderProfile;
+    builder.profile[key] =
+      key === "country" ? e.target.value.trim() || "unknown" : e.target.value;
+    if (key === "citizenship") {
+      builder.profile.citizenship_confirmed = true;
+      builder.profile.country = null;
+      builder.profile.visa = null;
+      builder.profile.permit = null;
+    }
     await refreshBuilderCards();
   }
 });
@@ -445,6 +684,12 @@ document.addEventListener("input", (e) => {
   if (e.target.id === "builder-story") builder.story = e.target.value;
 });
 document.addEventListener("submit", async (e) => {
+  if (e.target.id === "builder-answer-form") {
+    e.preventDefault();
+    builder.profile.country = $("#builder-country").value.trim();
+    await refreshBuilderCards();
+    return;
+  }
   if (e.target.id === "builder-story-form") {
     e.preventDefault();
     if (!builder.pending) await suggestBlocks();
