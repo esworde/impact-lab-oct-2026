@@ -3,6 +3,7 @@
 > Claude Impact Lab Milano · 3 October 2026 · Track 01
 
 **Live app:** https://studia-mi-production.up.railway.app
+
 **Pitch:** https://www.dropbox.com/scl/fi/yjhcz5zfh4bj62we3kkm7/StudiaMI_Pitch_Final.pptx?rlkey=6r8yqv3m1ntvmwe44u5pvec1v&st=jzcn1ytf&dl=0
 
 **Your student life in Milan, one step at a time.** A bilingual web app for Italian and international students, with guided journeys and a Claude assistant grounded in public YesMilano and City of Milan sources.
