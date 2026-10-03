@@ -66,29 +66,6 @@ body {
     radial-gradient(ellipse at 45% 28%, #faf9f652, transparent 65%),
     linear-gradient(180deg, #faf9f6c7 0%, #faf9f68c 45%, #faf9f6d9 100%);
 }
-.ambience-toggle {
-  display: grid;
-  place-items: center;
-  flex: 0 0 32px;
-  width: 32px;
-  height: 32px;
-  padding: 7px;
-  border: 1px solid #a60d2726;
-  border-radius: 50%;
-  background: #ffffff80;
-  color: var(--red);
-}
-.ambience-toggle:hover {
-  background: #fff;
-}
-.ambience-toggle svg {
-  width: 16px;
-  height: 16px;
-}
-.ambience-toggle[data-playing="true"] .ambience-play,
-.ambience-toggle[data-playing="false"] .ambience-pause {
-  display: none;
-}
 button,
 input,
 textarea {
