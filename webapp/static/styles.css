@@ -132,22 +132,19 @@ textarea:focus-visible {
 .brand-dot {
   color: var(--red);
 }
-.brand-symbol {
-  width: 38px;
-  height: 38px;
+.brand-municipal {
+  width: 112px;
   background: var(--red);
-  color: #fff;
-  border-radius: 12px;
+  border-radius: 4px;
+  padding: 10px 12px;
+  flex-shrink: 0;
   display: grid;
   place-items: center;
 }
-.brand-symbol svg {
-  width: 30px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.7;
-  stroke-linejoin: round;
-  stroke-linecap: round;
+.brand-municipal img {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 .site-header nav {
   display: flex;
@@ -1570,16 +1567,14 @@ dialog::backdrop {
     gap: 14px;
   }
   .brand {
-    font-size: 25px;
-    gap: 8px;
+    font-size: 20px;
+    gap: 3px;
+    flex-direction: column;
+    align-items: flex-start;
   }
-  .brand-symbol {
-    height: 32px;
-    width: 32px;
-    border-radius: 10px;
-  }
-  .brand-symbol svg {
-    width: 25px;
+  .brand-municipal {
+    width: 84px;
+    padding: 6px 8px;
   }
   .site-header nav {
     display: none;
