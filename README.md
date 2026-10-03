@@ -21,6 +21,10 @@ One day, teams of 4–5, three tracks. You build with Claude, **and Claude runs 
 | 🧰 **Starter kit** | [starter/](starter/): prompts for designing with Claude, a minimal "runs on Claude" example, a `CLAUDE.md` for your project |
 | 📝 **Your README** | [templates/PROJECT_README.md](templates/PROJECT_README.md): copy it into your team repo |
 
+## Project documentation
+
+- [Track 01: personas e casi d’uso](docs/TRACK_01.md): analisi dei dati, proposta di percorso e traccia in fase di scelta per il nostro progetto hackathon.
+
 ## Schedule
 
 | Time | What happens |
