@@ -2737,3 +2737,31 @@ dialog::backdrop {
   align-items: center;
   gap: 7px;
 }
+
+.ai-plan-note {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--paper);
+  margin: 0 0 24px;
+}
+.ai-plan-note h3 {
+  font: 400 27px/1.2 var(--serif);
+  margin: 10px 0;
+}
+.ai-plan-note p {
+  font-size: 13px;
+  line-height: 1.7;
+}
+.ai-plan-note small {
+  font-size: 10px;
+  color: var(--muted);
+}
+.step-why {
+  font-size: 12px;
+  line-height: 1.6;
+  border-left: 2px solid var(--red);
+  padding-left: 12px;
+  color: var(--muted);
+  margin-bottom: 22px;
+}

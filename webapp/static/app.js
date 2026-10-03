@@ -97,7 +97,7 @@ const COPY = {
     privacyBody:
       "Non chiediamo un account. Profilo generico, blocchi del percorso, scelte, checklist e conferme rimangono nel tuo browser. Il racconto per comporre un percorso viene inviato a Claude e non viene salvato nel piano. La conversazione resta in memoria nella pagina e scompare ricaricandola; non viene salvata nel nostro database. Per rispondere, domanda e contesto vengono inviati a Claude (Anthropic), secondo le sue condizioni di trattamento. Non scrivere nomi, indirizzi, documenti o informazioni mediche.",
     sourceIntro:
-      "Le risposte si basano sulle guide pubbliche di YesMilano, del Comune di Milano e del Ministero degli Affari Esteri. La data di recupero non indica necessariamente l’ultimo aggiornamento del contenuto.",
+      "YesMilano è la fonte principale. Le guide del Comune di Milano e del Ministero degli Affari Esteri completano le istruzioni dei servizi competenti. La data di recupero non indica necessariamente l’ultimo aggiornamento del contenuto.",
     loadError: "Non riesco a caricare i percorsi. Riprova tra poco.",
     chatUnavailable:
       "La chat è in attivazione. Intanto puoi seguire i percorsi e aprire tutte le fonti ufficiali.",
@@ -253,7 +253,7 @@ const COPY = {
     privacyBody:
       "No account needed. Your generic profile, journey blocks, choices, checklists and confirmations stay in your browser. Your story is sent to Claude to suggest blocks and is not saved in the plan. The conversation stays in page memory and disappears when you reload; it is not saved in our database. To answer, your question and context are sent to Claude (Anthropic), subject to its data-processing terms. Do not enter names, addresses, documents or medical information.",
     sourceIntro:
-      "Answers use public YesMilano, City of Milan and Ministry of Foreign Affairs guides. Retrieval dates do not necessarily reflect the last content update.",
+      "YesMilano is the primary source. City of Milan and Ministry of Foreign Affairs guides complement instructions from the relevant services. Retrieval dates do not necessarily reflect the last content update.",
     loadError: "The journeys could not be loaded. Please try again shortly.",
     chatUnavailable:
       "Chat is being activated. You can still follow all the journeys and open official sources.",
@@ -554,7 +554,20 @@ async function loadJourneys() {
     if (!response.ok) throw new Error("custom plan");
     const custom = await response.json();
     if (version !== journeysLoadVersion) return;
-    journeys.push(custom);
+    const generated = state.custom.generated_plan;
+    if (
+      generated?.base_revision === custom.plan_revision &&
+      generated.language === state.profile.language &&
+      generated.residence_choice === custom.residence_choice
+    )
+      journeys.push(generated);
+    else if (
+      generated?.base_revision === custom.plan_revision &&
+      generated.language === state.profile.language &&
+      !state.custom.residence_choice
+    )
+      journeys.push(generated);
+    else journeys.push({ ...custom, needs_ai: true });
   }
   state.journeys = journeys;
   state.ready = true;
@@ -615,7 +628,7 @@ function renderRoute() {
   const match = location.hash.match(/^#journey\/([a-z]+)\/(\d+|summary)$/);
   const j = match && state.journeys.find((item) => item.id === match[1]);
   state.journeyId = j?.id || null;
-  if (j?.adaptive && !j.ready) {
+  if (j?.adaptive && (!j.ready || j.needs_ai)) {
     openBuilder("edit");
     return;
   }
@@ -649,7 +662,7 @@ function renderRoute() {
           : t("international");
   const summary = state.stepIndex === "summary";
   $("#journey-view").innerHTML =
-    `<button class="back-link" data-home><span aria-hidden="true">${icon("arrow-left")}</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ${icon("arrow-up-right")}</button></div>${j.id === "custom" ? `<div class="adaptive-facts">${renderPlanFacts(j)}</div><div class="custom-outline"><button class="button secondary" data-builder="edit">${bt("editBlocks")} ${icon("arrow-up-right")}</button><p>${esc(j.priority)}</p></div>` : ""}${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
+    `<button class="back-link" data-home><span aria-hidden="true">${icon("arrow-left")}</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ${icon("arrow-up-right")}</button></div>${j.id === "custom" ? `<div class="adaptive-facts">${renderAIPlan(j)}${renderPlanFacts(j)}</div><div class="custom-outline"><button class="button secondary" data-builder="edit">${bt("editBlocks")} ${icon("arrow-up-right")}</button><p>${esc(j.priority)}</p></div>` : ""}${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
   updateProgress();
   updateChatContext();
 }
@@ -658,7 +671,7 @@ function renderStep(j, s) {
   if (s.routes) {
     s = { ...s, ...s.routes[planFor(j).choices?.[s.follows_choice]] };
   }
-  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(s.icon || j.icon)}</div></div>${s.block_title ? `<p class="eyebrow">${esc(s.block_title)}</p>` : ""}<h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p>${s.owner ? `<p class="step-owner"><small>${t("owner")}</small> ${esc(s.owner)}</p>` : ""}${renderChoices(j, s)}<a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">${icon("arrow-up-right")}</span></a>${(s.extra_sources || []).map((source) => `<a class="secondary-source" href="${esc(safeURL(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ${icon("arrow-up-right")}</a>`).join("")}<h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div>${s.draft || (s.follows_choice && planFor(j).choices?.[s.follows_choice] === "temporary") ? `<button class="draft-button" data-draft>${t("draft")} ${icon("arrow-up-right")}</button>` : ""}<div class="validation-panel"><h3>${t("validationTitle")}</h3><p>${esc(s.validation || t("validationReady"))}</p><small id="validation-status" role="status"></small><p class="validation-note">${t("validationNote")}</p></div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">${icon("message-circle")}</span>${t("helpStep")} ${icon("arrow-up-right")}</button></div>`;
+  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(s.icon || j.icon)}</div></div>${s.block_title ? `<p class="eyebrow">${esc(s.block_title)}</p>` : ""}<h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p>${s.why ? `<p class="step-why">${esc(s.why)}</p>` : ""}${s.owner ? `<p class="step-owner"><small>${t("owner")}</small> ${esc(s.owner)}</p>` : ""}${renderChoices(j, s)}<a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">${icon("arrow-up-right")}</span></a>${(s.extra_sources || []).map((source) => `<a class="secondary-source" href="${esc(safeURL(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ${icon("arrow-up-right")}</a>`).join("")}<h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div>${s.draft || (s.follows_choice && planFor(j).choices?.[s.follows_choice] === "temporary") ? `<button class="draft-button" data-draft>${t("draft")} ${icon("arrow-up-right")}</button>` : ""}<div class="validation-panel"><h3>${t("validationTitle")}</h3><p>${esc(s.validation || t("validationReady"))}</p><small id="validation-status" role="status"></small><p class="validation-note">${t("validationNote")}</p></div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">${icon("message-circle")}</span>${t("helpStep")} ${icon("arrow-up-right")}</button></div>`;
 }
 
 function renderSummary(j) {
@@ -897,6 +910,7 @@ async function sendQuestion(question, retry = false) {
             ] || null
           : null,
         custom_blocks: j?.id === "custom" ? j.blocks : [],
+        generated_plan: j?.ai_generated ? j : null,
         validated_step_ids: j
           ? j.steps.slice(0, frontier(j)).map((step) => step.id)
           : [],

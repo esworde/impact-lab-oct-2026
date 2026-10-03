@@ -12,8 +12,9 @@ A student arriving in Milan must piece together housing, documents, transport an
 
 ## What we built
 
-- A hero with **Create my journey**: a free-text story (one Haiku call) or guided questions (no model calls), with Giulia’s story as the main example. Targeted follow-ups collect missing facts before starting; explicit “to check” answers lead to verification with the relevant office.
-- A genuinely adaptive plan: citizenship, study duration, accommodation, existing tax code/digital identity, residence, grant questions, healthcare coverage and visa/permit status change the services, steps and checklists. Submitted permit applications lead to follow-up rather than another kit; an existing tax code removes acquisition steps; accommodation already found removes search and viewing.
+- A hero with **Create my journey**: a free-text story (one Haiku call) or guided questions (no model calls), with Giulia’s story as the main example. Targeted follow-ups collect missing facts before Claude generates the plan; explicit “to check” answers lead to verification with the relevant office.
+- A Claude-authored plan: after the answers are collected, Haiku writes tailored step titles, actions, contextual checklist items and reasons, and chooses the order of optional services from indexed YesMilano and official-service evidence. The student reviews the proposal before starting. Changing residence choice regenerates subsequent actions with Claude, preserving the earlier prefix.
+- An adaptive service graph: citizenship, study duration, accommodation, existing tax code/digital identity, residence, grant questions, healthcare coverage and visa/permit status change the services, steps and checklists. Submitted permit applications lead to follow-up rather than another kit; an existing tax code removes acquisition steps; accommodation already found removes search and viewing.
 - Keeping residence, temporary registration and transferring residence assemble different municipal blocks. Changing this choice during the journey preserves confirmations before the decision and requires confirmation again from the decision onwards. The editable preview explains inclusions/exclusions and allows adding, removing and reordering optional blocks; prerequisite blocks stay first.
 - **15 illustrated cases matching the YesMilano How To catalogue**, grouped into before arrival (3), first steps (8) and getting settled (4). Cases cover first steps, visa, rents, permit, tax code, transport, healthcare, residence, temporary registration, bank account, phone number, CAF/patronato, ID card, work and Italian courses.
 - Italian/international profiles, with EU/non-EU options where document routes differ. Language is a separate choice.
@@ -29,9 +30,13 @@ Design references: [America.gov](https://america.gov/how-it-works), the supplied
 
 **Model:** `claude-haiku-4-5-20251001`, chosen for speed and cost. Configurable through `CLAUDE_MODEL`.
 
-For free-text journey creation, Claude selects existing card IDs and extracts explicitly stated generic facts through a constrained tool, in one call capped at 650 output tokens. It does not determine eligibility or generate workflow instructions. `/api/plan/compose` applies reviewed rules in [`webapp/personalization.py`](webapp/personalization.py), asks only relevant missing questions and assembles source-backed steps. Follow-ups, preview edits and residence-branch changes require no model calls. The user reviews the profile, reasons, services and order before starting.
+For free-text journey creation, Claude first selects card IDs and extracts explicit generic facts in one bounded call. Follow-ups collect missing answers. The new `/api/plan/generate` then calls Haiku to **write the action plan**, explain its priorities, generate contextual checklist items and order optional service blocks. The questionnaire also leads to AI generation. The student reviews the AI proposal before starting.
 
-Stories are not stored in the plan or SQLite; generic answers and selected blocks are saved locally. Composition progress is separate from individual-card progress and keyed by ordered blocks, excluded blocks, template/policy revisions and profile facts. Changing setup answers requires new confirmations; runtime residence choices preserve only the verified prefix. Older saved custom plans collect newly required missing answers before continuing.
+Generation reads indexed source excerpts and reviewed service constraints, with YesMilano as the primary source. The planner cannot omit required steps, reorder prerequisites, change decision options or replace canonical official links. Required confirmations stay attached alongside AI-authored contextual checks. Citations must refer to indexed sources. It does not invent services or determine eligibility. Generation failures show an explicit retry error; no fixed plan is presented as AI output.
+
+Each planning call covers at most 15 steps and is capped at 4,000 output tokens. Typical focused plans use one call; larger plans use bounded batches. Each batch reads at most 20 relevant pages of 1,800 characters each, prioritising the sources for its required steps. Changing the residence branch asks Claude to rewrite subsequent steps while keeping the existing prefix. Saved plans resume without another model call. Plan generation shares the public daily model-request budget with story selection and chat. Implementation: [`webapp/planning.py`](webapp/planning.py).
+
+Stories are not stored in the plan or SQLite; generic answers, selected blocks and the generated plan are saved locally. Composition progress is separate from individual-card progress and keyed by ordered blocks, excluded blocks, template/policy revisions and profile facts. Changing setup answers requires new confirmations; runtime residence choices preserve only the verified prefix. Older saved custom plans collect newly required missing answers before continuing.
 
 At runtime Claude understands the question and the generic student profile, rewrites search queries into the corpus language, searches source sections, reads full guides when needed, explains the next actions in the selected language and can suggest a journey. Contextual help includes the step currently open, the student’s chosen route and self-reported confirmed steps. Claude explains the plan and can prepare an unofficial placeholder draft for temporary domicile; it cannot confirm or unlock a step.
 
@@ -41,12 +46,12 @@ At runtime Claude understands the question and the generic student profile, rewr
 - Every conversation turn first invokes `search_guides`. Results retain URLs, acquisition dates and declared content-update dates.
 - Sources are displayed separately from generated prose. A notice is displayed when a consulted guide declares an update older than 180 days.
 - Claude proposes guidance; students verify the original source and complete actions themselves on official services. Checkboxes never submit applications or approve eligibility.
-- Responses are capped at 1,000 output tokens, tool loops at four model calls, concurrency at four conversations and the public demo at 200 model requests/day (chat and story selection combined) by default. Token usage and model-call counts are returned in the API response.
+- Responses are capped at 1,000 output tokens, tool loops at four model calls, concurrency at four conversations and the public demo at 200 model requests/day (chat, story selection and plan generation combined) by default. Token usage and model-call counts are returned in the API response.
 - Missing configuration and provider failures produce explicit errors; there are no fabricated AI responses.
 
 ## City data and sources
 
-**39 public pages acquired with Firecrawl on 3 October 2026, indexed as 255 source sections.** The initial three-page Jina pilot has been replaced by Firecrawl content in the deployment snapshot.
+**46 public pages acquired with Firecrawl on 3 October 2026, indexed as 311 source sections.** YesMilano is the primary source; competent public services provide supporting instructions. The initial three-page Jina pilot has been replaced by Firecrawl content in the deployment snapshot.
 
 | Source | Use |
 | --- | --- |
@@ -57,6 +62,8 @@ At runtime Claude understands the question and the generic student profile, rewr
 | [Comune: dichiarazione TARI](https://www.comune.milano.it/servizi/tributi/tari-dichiarazione-di-occupazione-di-appartamenti-e-immobili) | Occupancy declaration guidance |
 | [Comune support FAQs](docs/PERSONA_PLANS.md) | Temporary student domicile, Italian residence transfer, valid-permit and housing documents, non-resident TARI occupants |
 | [Comune: certificati anagrafici](https://www.comune.milano.it/servizi/anagrafe/certificati-anagrafici) | Certificates and official channels |
+| [Additional YesMilano pages](https://studyandwork.yesmilano.it/en/study/universities-in-milano) | Universities, temporary-residence declaration, community services, emergency contacts and getting around |
+| [Comune: library registration](https://servizicrm.comune.milano.it/centro-supporto/KA-02415/Iscrizione-ad-una-biblioteca-pubblica-lettura) and [Study in Milan](https://www.comune.milano.it/en/servizi/giovani/study-in-milan) | Supporting student and library services |
 | [MAECI: Visas and permits](https://italiana.esteri.it/italiana/opportunity/studying-in-italy/visas-and-permits/) | Study stays up to 90 days, declaration-of-presence verification and official visa portal |
 
 The catalogue mapping, original card titles, groups, guide URLs and Firecrawl consultation date are in [`webapp/data/how-to-catalog.json`](webapp/data/how-to-catalog.json). The list matches [YesMilano How To](https://www.yesmilano.it/en/study/how-to), including Bank account, Phone number and Work while studying. EU-only/non-EU routes show scope orientation for other or unspecified profiles; procedural steps are available when the appropriate generic profile is selected. This is navigation, not an eligibility determination.
@@ -80,7 +87,7 @@ uv pip install --python .venv/bin/python -r webapp/requirements.lock
 Open `http://127.0.0.1:8000`. The public snapshot seeds the database on first startup. Without an Anthropic key, journeys and sources work; chat reports that it is unavailable.
 
 ```bash
-# Refresh the 39 curated public pages with Firecrawl.
+# Refresh the 46 curated public pages with Firecrawl.
 .venv/bin/python -m webapp.ingest --snapshot
 
 # Refresh a smaller subset or a specific approved public source.
@@ -103,9 +110,9 @@ To refresh the deployed persistent database, run `python -m webapp.ingest` insid
 
 ## Verification
 
-Twenty Python tests and the JavaScript plan-state checks cover retrieval/version history, API errors and limits, persona routes, catalogue coverage and the Claude tool loop. Adaptive tests compare actual services, sources and checklists for keep/temporary/transfer choices; short, pending and valid non-EU stays; EU duration; existing residence; relevant missing questions; and bank documents. All 15 cases across four citizenship profiles and four duration variants retain unique steps and indexed primary sources.
+Twenty-six Python tests and the JavaScript plan-state checks cover retrieval/version history, API errors and limits, persona routes, catalogue coverage and the Claude tool loop. Adaptive tests compare actual services, sources and checklists for keep/temporary/transfer choices; short, pending and valid non-EU stays; EU duration; existing residence; relevant missing questions; and bank documents. All 15 cases across four citizenship profiles and four duration variants retain unique steps and indexed primary sources.
 
-Browser checks cover explicit confirmation and locked direct URLs, adaptive follow-ups, Giulia’s three residence branches, preservation of earlier confirmations, revalidation of later steps, draft/chat context, saved progress after reload and mobile overflow. A non-EU student with a submitted permit follows the existing application, and a known tax code removes acquisition steps. Previous catalogue checks opened all 15 cases. Real Haiku calls have exercised source retrieval, placeholder drafts and explicit fact extraction for the story selector.
+Browser checks cover explicit confirmation and locked direct URLs, adaptive follow-ups, Giulia’s three residence branches, preservation of earlier confirmations, revalidation of later steps, draft/chat context, saved progress after reload and mobile overflow. A non-EU student with a submitted permit follows the existing application, and a known tax code removes acquisition steps. Previous catalogue checks opened all 15 cases. AI-planning tests cover authored actions, mandatory confirmations, indexed citations, prerequisite order, failures, bounded batches and preservation of the prefix during replanning. Real Haiku calls exercise source retrieval, placeholder drafts, story extraction and personalized plan generation.
 
 ## Privacy and limits
 

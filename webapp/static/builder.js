@@ -119,6 +119,14 @@ const BUILDER_COPY = {
   },
 };
 Object.assign(BUILDER_COPY.it, {
+  generateAI: "Genera il mio piano con Claude",
+  aiThinking: "Claude sta costruendo il tuo piano…",
+  aiReplanning: "Claude sta aggiornando i prossimi passi…",
+  aiTitle: "UN PIANO CREATO CON CLAUDE",
+  aiNote:
+    "Claude consulta le guide YesMilano e le fonti dei servizi, scrive le azioni per il tuo caso e spiega le priorità. Rivedi il piano prima di iniziare.",
+  aiError:
+    "Claude non è riuscito a completare il piano. Riprova: il percorso inizia solo dopo una proposta AI completa.",
   completeProfile: "UNA DOMANDA PER ADATTARE IL PIANO",
   unknownAnswer:
     "Puoi scegliere “da verificare”: il piano ti guiderà a chiarire quel punto con l’ufficio, senza presumere una risposta.",
@@ -129,6 +137,14 @@ Object.assign(BUILDER_COPY.it, {
     "Decisioni e controlli sui documenti precedono i servizi che ne dipendono. Gli altri blocchi si possono riordinare.",
 });
 Object.assign(BUILDER_COPY.en, {
+  generateAI: "Generate my plan with Claude",
+  aiThinking: "Claude is building your plan…",
+  aiReplanning: "Claude is updating your next steps…",
+  aiTitle: "A PLAN CREATED WITH CLAUDE",
+  aiNote:
+    "Claude consults YesMilano guides and service sources, writes actions for your situation and explains priorities. Review the plan before starting.",
+  aiError:
+    "Claude could not finish your plan. Retry: the journey starts only after a complete AI proposal.",
   completeProfile: "A QUESTION TO ADAPT YOUR PLAN",
   unknownAnswer:
     "You can choose “to check”: the plan will help clarify it with the office, without assuming an answer.",
@@ -209,6 +225,11 @@ const YES_OPTIONS = [
   ["no", "No", "No"],
   ["unknown", "Da verificare", "To check"],
 ];
+function renderAIPlan(plan) {
+  return plan?.ai_generated
+    ? `<div class="ai-plan-note"><p class="eyebrow">${icon("blocks")} ${bt("aiTitle")}</p><h3>${esc(plan.title)}</h3><p>${esc(plan.rationale)}</p><small>${state.profile.language === "it" ? "Fonti consultate" : "Sources consulted"}: ${(plan.planning_sources || []).length} · Claude Haiku</small></div>`
+    : `<p class="builder-note">${bt("aiNote")}</p>`;
+}
 function renderPlanFacts(plan, editable = false) {
   if (!plan) return "";
   const lang = state.profile.language,
@@ -250,11 +271,12 @@ async function updateCustomChoice(j, s, value) {
     );
   savePlans();
   store("studia-mi-checklists", state.progress);
+  $("#validation-status").textContent = bt("aiReplanning");
   document
     .querySelectorAll("#journey-view button,#journey-view input")
     .forEach((el) => (el.disabled = true));
   try {
-    const response = await fetch("/api/plan/compose", {
+    const response = await fetch("/api/plan/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -262,11 +284,14 @@ async function updateCustomChoice(j, s, value) {
         profile: state.profile,
         residence_choice: value,
         suppressed_blocks: state.custom.suppressed_blocks || [],
+        previous: j,
+        preserve_through: s.id,
       }),
     });
     if (!response.ok) throw new Error();
     const plan = await response.json();
     state.custom.residence_choice = value;
+    state.custom.generated_plan = plan;
     store("studia-mi-custom", state.custom);
     const index = state.journeys.findIndex((item) => item.id === "custom");
     state.journeys[index] = plan;
@@ -319,6 +344,9 @@ const builder = {
   available: [],
   preview: false,
   pending: false,
+  generating: false,
+  generationError: false,
+  residence_choice: null,
   error: false,
   story: "",
   example: false,
@@ -347,6 +375,9 @@ async function openBuilder(mode) {
   builder.question = 0;
   builder.pending = false;
   builder.error = false;
+  builder.generationError = false;
+  builder.generating = false;
+  builder.residence_choice = null;
   builder.preview = false;
   builder.example = false;
   builder.profile = {
@@ -360,10 +391,12 @@ async function openBuilder(mode) {
   if (mode === "edit" && state.custom) {
     builder.blocks = [...state.custom.blocks];
     builder.suppressed = [...(state.custom.suppressed_blocks || [])];
-    builder.profile.residence_intent =
+    builder.residence_choice =
       currentJourney()?.residence_choice ||
       state.custom.residence_choice ||
-      builder.profile.residence_intent;
+      null;
+    if (builder.residence_choice === "undecided")
+      builder.residence_choice = null;
     builder.preview = true;
   }
   if (mode === "giulia") {
@@ -390,6 +423,9 @@ async function openBuilder(mode) {
   if (builder.preview) await refreshBuilderCards();
 }
 async function refreshBuilderCards() {
+  const previous = builder.plan?.ai_generated
+    ? builder.plan
+    : state.custom?.generated_plan;
   const version = ++builderVersion;
   builder.pending = true;
   builder.error = false;
@@ -414,12 +450,18 @@ async function refreshBuilderCards() {
           blocks: builder.blocks,
           profile: builderProfile(),
           suppressed_blocks: builder.suppressed,
+          residence_choice: builder.residence_choice,
         }),
       });
       if (!response.ok) throw new Error();
       const plan = await response.json();
       if (version !== builderVersion) return;
-      builder.plan = plan;
+      builder.plan =
+        previous?.base_revision === plan.plan_revision &&
+        previous.language === state.profile.language
+          ? previous
+          : plan;
+      builder.generationError = false;
     } else builder.plan = null;
   } catch {
     if (version === builderVersion) builder.error = true;
@@ -494,6 +536,16 @@ function renderBuilder() {
       content += `<p>${bt("qGoalsNote")}</p><div class="builder-goals">${builder.available.map((j) => `<button data-builder-goal="${j.id}" aria-pressed="${builder.blocks.includes(j.id)}">${esc(j.title)} ${builder.blocks.includes(j.id) ? icon("check") : icon("plus")}</button>`).join("")}</div>`;
     content += `<div class="builder-footer"><button class="button secondary" data-builder-prev ${q === 0 ? "disabled" : ""}>${iconLabel(bt("previous"))}</button><button class="button primary" data-builder-next ${builder.pending || (q === 2 && !builder.blocks.length) ? "disabled" : ""}>${iconLabel(q === 2 ? bt("propose") : bt("next"))}</button></div>`;
   }
+  if (builder.preview && builder.plan?.ready) {
+    content = renderAIPlan(builder.plan) + content;
+    if (!builder.plan.ai_generated)
+      content = content
+        .replace("data-builder-start", "data-builder-generate")
+        .replace(
+          iconLabel(bt("start")),
+          builder.generating ? bt("aiThinking") : bt("generateAI"),
+        );
+  }
   if (builder.preview && builder.plan?.questions?.length && !builder.pending) {
     const q = builder.plan.questions[0];
     content = `<p class="eyebrow">${bt("completeProfile")}</p><h2>${esc(q.title)}</h2><p>${esc(q.why)}</p>${q.kind === "country" ? `<form id="builder-answer-form"><label for="builder-country">${esc(q.title)}</label><input id="builder-country" name="country" minlength="2" maxlength="50" required autocomplete="off"><button class="button primary" type="submit">${iconLabel(bt("next"))}</button></form>` : `<div class="builder-goals">${q.options.map((o) => `<button data-answer-key="${q.key}" data-answer-value="${o.id}">${esc(o.title)}</button>`).join("")}</div>`}<p class="builder-note">${bt("unknownAnswer")}</p><button class="back-link" data-builder-restart>${bt("restart")}</button>`;
@@ -503,7 +555,46 @@ function renderBuilder() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   builder.lastQuestion = nextQuestion;
   $("#builder-view").innerHTML =
-    `<button class="back-link" data-home>${icon("arrow-left")} ${t("back")}</button><div class="builder-heading"><p class="eyebrow">STUDIAMI · ${t("yourJourney")}</p><h1>${bt("title")}</h1><p>${bt("intro")}</p></div><div class="builder-panel">${!builder.preview ? tabs : ""}${content}${builder.error ? `<p class="error-message" role="alert">${bt("error")}</p>` : ""}</div>`;
+    `<button class="back-link" data-home>${icon("arrow-left")} ${t("back")}</button><div class="builder-heading"><p class="eyebrow">STUDIAMI · ${t("yourJourney")}</p><h1>${bt("title")}</h1><p>${bt("intro")}</p></div><div class="builder-panel">${!builder.preview ? tabs : ""}${content}${builder.error || builder.generationError ? `<p class="error-message" role="alert">${bt(builder.generationError ? "aiError" : "error")}</p>` : ""}</div>`;
+  if (builder.generating)
+    $("#builder-view")
+      .querySelectorAll("button,input,select,textarea")
+      .forEach((el) => (el.disabled = true));
+}
+async function generateBuilderPlan() {
+  if (builder.pending || builder.generating || !builder.plan?.ready) return;
+  const version = ++builderVersion;
+  builder.generating = true;
+  builder.generationError = false;
+  renderBuilder();
+  try {
+    const previous = state.custom?.generated_plan;
+    const response = await fetch("/api/plan/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        blocks: builder.blocks,
+        profile: builderProfile(),
+        suppressed_blocks: builder.suppressed,
+        residence_choice: builder.residence_choice,
+        story: builder.story,
+        previous:
+          previous?.base_revision === builder.plan.plan_revision
+            ? previous
+            : null,
+      }),
+    });
+    if (!response.ok) throw new Error();
+    const plan = await response.json();
+    if (version === builderVersion) builder.plan = plan;
+  } catch {
+    if (version === builderVersion) builder.generationError = true;
+  } finally {
+    if (version === builderVersion) {
+      builder.generating = false;
+      if (location.hash === "#builder") renderBuilder();
+    }
+  }
 }
 async function suggestBlocks() {
   const version = ++builderVersion;
@@ -536,7 +627,8 @@ async function startCustom() {
     builder.pending ||
     builder.error ||
     !builder.blocks.length ||
-    !builder.plan?.ready
+    !builder.plan?.ready ||
+    !builder.plan?.ai_generated
   )
     return;
   const previousCustom = state.custom,
@@ -544,6 +636,8 @@ async function startCustom() {
   state.custom = {
     blocks: [...builder.blocks],
     suppressed_blocks: [...builder.suppressed],
+    generated_plan: builder.plan,
+    residence_choice: builder.residence_choice,
   };
   builder.pending = true;
   renderBuilder();
@@ -572,6 +666,10 @@ async function startCustom() {
 document.addEventListener("click", async (e) => {
   const el = e.target.closest("button");
   if (!el) return;
+  if (el.hasAttribute("data-builder-generate")) {
+    await generateBuilderPlan();
+    return;
+  }
   if (el.dataset.answerKey) {
     builder.profile[el.dataset.answerKey] = el.dataset.answerValue;
     if (el.dataset.answerKey === "citizenship")
@@ -672,6 +770,7 @@ document.addEventListener("click", async (e) => {
 document.addEventListener("change", async (e) => {
   if (e.target.matches("[data-builder-profile]")) {
     const key = e.target.dataset.builderProfile;
+    if (key === "residence_intent") builder.residence_choice = null;
     builder.profile[key] =
       key === "country" ? e.target.value.trim() || "unknown" : e.target.value;
     if (key === "citizenship") {

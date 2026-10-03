@@ -20,6 +20,15 @@ APPROVED_HOSTS = {'studyandwork.yesmilano.it', 'www.yesmilano.it', 'www.comune.m
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT.parent / '.env')
 BASE = 'https://studyandwork.yesmilano.it'
+EXTRA_STUDENT_GUIDES = [
+    BASE + '/en/study/declaration-temporary-residence-milano',
+    BASE + '/en/study/universities-in-milano',
+    BASE + '/en/study/based-milano',
+    BASE + '/en/emergency-calls',
+    'https://www.yesmilano.it/en/traveller-information/getting-around',
+    'https://www.comune.milano.it/en/servizi/giovani/study-in-milan',
+    'https://servizicrm.comune.milano.it/centro-supporto/KA-02415/Iscrizione-ad-una-biblioteca-pubblica-lettura',
+]
 GUIDES = [
     'https://italiana.esteri.it/italiana/opportunity/studying-in-italy/visas-and-permits/',
     BASE + '/en/study/how-to/first-steps',
@@ -44,7 +53,7 @@ GUIDES = [
     'https://www.comune.milano.it/servizi/anagrafe/certificati-anagrafici',
 ]
 
-GUIDES = list(dict.fromkeys([entry['indexed_url'] for entry in CATALOG] + GUIDES))
+GUIDES = list(dict.fromkeys([entry['indexed_url'] for entry in CATALOG] + GUIDES + EXTRA_STUDENT_GUIDES))
 
 
 def scrape(url, api_key):
@@ -91,7 +100,7 @@ def scrape(url, api_key):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--limit', type=int, default=39)
+    parser.add_argument('--limit', type=int, default=46)
     parser.add_argument('--url', action='append')
     parser.add_argument('--snapshot', action='store_true', help='Update deployable public-content seed JSON')
     args = parser.parse_args()

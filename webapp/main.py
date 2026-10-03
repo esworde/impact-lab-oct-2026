@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 from webapp.journeys import localized, JOURNEYS
 from webapp.builder import compose
 from webapp.personalization import Profile
+from webapp.planning import AuthoredPlan, materialize, author_plan
 from webapp.knowledge import Knowledge
 
 ROOT = Path(__file__).resolve().parent
@@ -112,6 +113,49 @@ def reserve_model_request():
     requests_today.append(now)
 
 
+class GeneratePlanRequest(ComposeRequest):
+    story: str = Field(default='', max_length=2000)
+    previous: AuthoredPlan | None = None
+    preserve_through: str | None = Field(default=None, max_length=40)
+
+
+@app.post('/api/plan/generate')
+async def generate_plan(body: GeneratePlanRequest):
+    try:
+        p = body.profile.model_dump()
+        base = compose(body.blocks, p['language'], p['citizenship'], p, body.residence_choice, body.suppressed_blocks)
+        if not base['ready']:
+            raise HTTPException(422, 'PLAN_NEEDS_ANSWERS')
+        frozen = []
+        if body.previous:
+            previous = body.previous
+            old_choice = previous.residence_choice if previous.residence_choice in {'keep','temporary','transfer'} else None
+            old_base = compose(body.blocks, previous.language, p['citizenship'], p, old_choice, body.suppressed_blocks)
+            old_plan = materialize(old_base, previous, knowledge.sources())
+            if body.preserve_through:
+                if body.preserve_through != base['decision_step_id'] or previous.language != p['language']:
+                    raise ValueError('Invalid preserved decision')
+                index = next(i for i,s in enumerate(old_plan['steps']) if s['id'] == body.preserve_through)
+                frozen = old_plan['steps'][:index + 1]
+                if [s['id'] for s in frozen] != [s['id'] for s in base['steps'][:index + 1]]:
+                    raise ValueError('Changed prerequisite prefix')
+        elif body.preserve_through:
+            raise ValueError('Previous plan required to preserve a prefix')
+    except (ValueError, StopIteration) as exc:
+        raise HTTPException(422, 'INVALID_PLAN_CONTEXT') from exc
+    async with chat_slots:
+        client = anthropic.AsyncAnthropic(api_key=os.getenv('ANTHROPIC_API_KEY') or 'not-configured', timeout=75, max_retries=1)
+        try:
+            return await author_plan(client, os.getenv('CLAUDE_MODEL','claude-haiku-4-5-20251001'),
+                base, p, knowledge, reserve_model_request, body.story, body.previous, frozen)
+        except (ValueError, KeyError, TypeError) as exc:
+            raise HTTPException(502, 'PLAN_GENERATION_FAILED') from exc
+        except anthropic.APIError as exc:
+            raise HTTPException(502, 'CLAUDE_REQUEST_FAILED') from exc
+        finally:
+            await client.close()
+
+
 @app.post('/api/plan/suggest')
 async def suggest_plan(body: SuggestPlanRequest):
     reserve_model_request()
@@ -181,9 +225,12 @@ class ChatRequest(BaseModel):
     validated_step_ids: list[str] = Field(default_factory=list, max_length=100)
     custom_blocks: list[str] = Field(default_factory=list, max_length=15)
     suppressed_blocks: list[str] = Field(default_factory=list, max_length=15)
+    generated_plan: AuthoredPlan | None = None
 
 
 SYSTEM = '''You are StudiaMI, a warm, practical assistant for student life in Milan.
+YesMilano is the primary source for student guidance. Use the competent Comune,
+national authority or service to supplement and verify the procedure it owns.
 The current journey is a sequential plan. The user sees its outline, while step
 details unlock only after the user checks every item and explicitly confirms.
 You explain and prepare drafts; you never confirm or unlock a step for the user.
@@ -252,6 +299,8 @@ async def chat(body: ChatRequest):
     if body.journey_id == 'custom':
         try:
             current = compose(body.custom_blocks, body.profile.language, body.profile.citizenship, body.profile.model_dump(), body.plan_choice, body.suppressed_blocks)
+            if body.generated_plan:
+                current = materialize(current, body.generated_plan, knowledge.sources())
         except ValueError as exc:
             raise HTTPException(422, str(exc)) from exc
     else:
