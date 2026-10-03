@@ -1026,6 +1026,16 @@ h4 {
   margin: 0 0 0 auto;
   font-size: 14px;
 }
+.footer-credits {
+  flex-basis: 100%;
+  margin: 0;
+  color: #d4d4d4;
+  font-size: 14px;
+}
+.footer-credits a {
+  color: #fff;
+  text-underline-offset: 3px;
+}
 
 /* Floating question bar */
 .floating-ask {
