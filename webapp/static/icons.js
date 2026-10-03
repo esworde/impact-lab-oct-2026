@@ -1,6 +1,8 @@
 // Lucide Static 1.51.0 · ISC / MIT · license: assets/LUCIDE-LICENSE.txt
 "use strict";
 const ICON_PATHS = Object.freeze({
+  route:
+    '<circle cx="6" cy="19" r="3" /><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15" /><circle cx="18" cy="5" r="3" />',
   "arrow-up-right": '<path d="M7 7h10v10" />\n  <path d="M7 17 17 7" />',
   "arrow-right": '<path d="M5 12h14" />\n  <path d="m12 5 7 7-7 7" />',
   "arrow-left": '<path d="m12 19-7-7 7-7" />\n  <path d="M19 12H5" />',

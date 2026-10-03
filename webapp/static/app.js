@@ -466,7 +466,9 @@ function translate() {
       ? "StudiaMI · La tua vita da studente a Milano"
       : "StudiaMI · Your student life in Milan";
   document.querySelectorAll("[data-t]").forEach((el) => {
-    el.innerHTML = iconLabel(t(el.dataset.t)).replace(/\n/g, "<br>");
+    el.innerHTML =
+      iconLabel(t(el.dataset.t)).replace(/\n/g, "<br>") +
+      (el.dataset.tIcon ? ` ${icon(el.dataset.tIcon)}` : "");
   });
   document.querySelectorAll("[data-placeholder]").forEach((el) => {
     el.placeholder = t(el.dataset.placeholder);

@@ -1,7 +1,7 @@
 "use strict";
 const BUILDER_COPY = {
   it: {
-    createPath: "Crea il mio percorso ↗",
+    createPath: "Crea il mio percorso",
     guideMe: "Guidami con le domande",
     storyExample: "UNA STORIA DA CUI PARTIRE",
     giuliaStory:
@@ -60,7 +60,7 @@ const BUILDER_COPY = {
     manual: "Puoi selezionare anche una sola card.",
   },
   en: {
-    createPath: "Create my journey ↗",
+    createPath: "Create my journey",
     guideMe: "Guide me with questions",
     storyExample: "A STORY TO START FROM",
     giuliaStory:
