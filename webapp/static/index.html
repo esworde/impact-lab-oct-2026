@@ -12,11 +12,25 @@
     <link rel="icon" href="/static/assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/static/styles.css" />
     <script src="/static/icons.js" defer></script>
+    <script src="/static/ambience.js" defer></script>
     <script src="/static/plan.js" defer></script>
     <script src="/static/app.js" defer></script>
     <script src="/static/builder.js" defer></script>
   </head>
   <body>
+    <div class="city-ambience" aria-hidden="true">
+      <video
+        id="city-video"
+        muted
+        loop
+        playsinline
+        preload="none"
+        poster="/static/assets/duomo-poster.webp"
+        data-src="/static/assets/duomo_hero_16x9.mp4"
+        tabindex="-1"
+        disablepictureinpicture
+      ></video>
+    </div>
     <a class="skip-link" href="#main" data-t="skip">Vai al contenuto</a>
     <div class="city-strip">
       <div class="shell">
@@ -49,6 +63,19 @@
         <button data-open="sources" data-t="sources">Le fonti</button>
       </nav>
       <div class="header-actions">
+        <button
+          id="ambience-toggle"
+          class="ambience-toggle"
+          type="button"
+          aria-label="Anima lo sfondo"
+          title="Anima lo sfondo"
+          hidden
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path class="ambience-play" d="m9 5 11 7-11 7Z" />
+            <path class="ambience-pause" d="M8 5v14M16 5v14" />
+          </svg>
+        </button>
         <div class="language-switch" aria-label="Lingua / Language">
           <button data-lang="it" aria-pressed="true">IT</button
           ><button data-lang="en" aria-pressed="false">EN</button>
