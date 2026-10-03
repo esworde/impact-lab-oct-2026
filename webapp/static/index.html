@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#a60d27" />
+    <meta
+      name="description"
+      content="StudiaMI: percorsi e un assistente per la tua vita da studente a Milano. Casa, documenti, trasporti e primi passi, con fonti ufficiali."
+    />
+    <title>StudiaMI · La tua vita da studente a Milano</title>
+    <link rel="icon" href="/static/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+    <script src="/static/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main" data-t="skip">Vai al contenuto</a>
+    <div class="city-strip">
+      <div class="shell">
+        <span data-t="lab">CLAUDE IMPACT LAB · MILANO</span
+        ><a
+          href="https://www.comune.milano.it/"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-t="city"
+          >Esplora il sito del Comune ↗</a
+        >
+      </div>
+    </div>
+    <header class="site-header shell">
+      <a class="brand" href="#" aria-label="StudiaMI home"
+        ><span class="brand-symbol" aria-hidden="true"
+          ><svg viewBox="0 0 32 32">
+            <path
+              d="M4 14 16 7l12 7-12 7zM9 18v7c5 3 9 3 14 0v-7M28 14v10"
+            /></svg></span
+        ><span
+          >Studia<span class="brand-mi">MI</span
+          ><span class="brand-dot">.</span></span
+        ></a
+      >
+      <nav aria-label="Menu principale">
+        <a href="#journeys" data-nav="journeys" data-t="journeys">Percorsi</a>
+        <button data-open="how" data-t="how">Come funziona</button>
+        <button data-open="sources" data-t="sources">Le fonti</button>
+      </nav>
+      <div class="header-actions">
+        <div class="language-switch" aria-label="Lingua / Language">
+          <button data-lang="it" aria-pressed="true">IT</button
+          ><button data-lang="en" aria-pressed="false">EN</button>
+        </div>
+        <button class="button primary header-chat" data-open="chat">
+          <span data-t="openChat">Apri la chat</span
+          ><span aria-hidden="true">↗</span>
+        </button>
+      </div>
+    </header>
+    <main id="main" tabindex="-1">
+      <div id="home-view">
+        <section class="hero shell">
+          <div class="hero-kicker">
+            <span></span><span data-t="kicker">STUDENT LIFE, MADE SIMPLE</span>
+          </div>
+          <h1>
+            <span data-t="hero1">La tua nuova vita,</span><br /><em
+              data-t="hero2"
+              >comincia a Milano.</em
+            >
+          </h1>
+          <p class="hero-description" data-t="heroDescription">
+            Casa, documenti, primi giorni. Trova il tuo prossimo passo,<br
+              class="desktop-break"
+            />
+            con una guida che parla la tua lingua.
+          </p>
+          <form class="ask-form hero-ask" data-chat-form>
+            <span class="ask-spark" aria-hidden="true">✳</span>
+            <input
+              name="question"
+              data-placeholder="askPlaceholder"
+              placeholder="Sto per trasferirmi a Milano. Da dove inizio?"
+              aria-label="Fai una domanda a StudiaMI"
+              maxlength="3000"
+              required
+            />
+            <button
+              type="submit"
+              class="round-button"
+              aria-label="Invia domanda"
+            >
+              <span aria-hidden="true">↗</span>
+            </button>
+          </form>
+          <div class="suggestions">
+            <button data-question="housing" data-t="suggestHousing">
+              Cerco una stanza</button
+            ><button data-question="documents" data-t="suggestDocuments">
+              Mi servono i documenti</button
+            ><button data-question="arrival" data-t="suggestArrival">
+              Sto per arrivare
+            </button>
+          </div>
+          <div class="hero-caption">
+            <span class="tiny-check" aria-hidden="true">✓</span
+            ><span data-t="sourcePromise"
+              >Risposte con fonti ufficiali. Nessun account richiesto.</span
+            >
+          </div>
+          <div class="hero-decoration decoration-left" aria-hidden="true">
+            <span class="map-line"></span><span class="map-dot">MI</span>
+          </div>
+          <div class="hero-decoration decoration-right" aria-hidden="true">
+            <svg viewBox="0 0 100 140">
+              <path
+                d="M8 116h84M17 116V66l9 7V55l9 6V42l9 7V25l6-16 6 16v24l9-7v19l9-6v18l9-7v50M44 116V96a6 6 0 0 1 12 0v20M29 91v13M71 91v13"
+              />
+            </svg>
+          </div>
+        </section>
+        <section id="journeys" class="journeys-section shell">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow" data-t="yourJourney">IL TUO PERCORSO</p>
+              <h2 data-t="startWhere">Da dove vuoi partire?</h2>
+              <p data-t="journeysIntro">
+                Scegli un obiettivo. Al resto pensiamo un passo alla volta.
+              </p>
+            </div>
+            <span class="section-note"
+              ><span aria-hidden="true">↘</span
+              ><span data-t="madeForYou">Fatto per la tua vita qui.</span></span
+            >
+          </div>
+          <div class="profile-bar">
+            <span data-t="personalize">Personalizza per te</span>
+            <div class="audience-options" aria-label="Profilo studente">
+              <button data-audience="italian" aria-pressed="false">
+                <span aria-hidden="true">◉</span
+                ><span data-t="italian">Studente italiano</span></button
+              ><button data-audience="international" aria-pressed="false">
+                <span aria-hidden="true">◎</span
+                ><span data-t="international">Studente internazionale</span>
+              </button>
+            </div>
+            <div class="stage-options">
+              <button
+                data-stage="arriving"
+                aria-pressed="true"
+                data-t="arriving"
+              >
+                Sto arrivando</button
+              ><button
+                data-stage="here"
+                aria-pressed="false"
+                data-t="alreadyHere"
+              >
+                Sono già qui
+              </button>
+            </div>
+          </div>
+          <div id="international-options" class="international-options" hidden>
+            <span data-t="citizenshipNote"
+              >Per i documenti, quale percorso ti riguarda?</span
+            ><button data-citizenship="eu" data-t="eu">Cittadinanza UE</button
+            ><button data-citizenship="non-eu" data-t="nonEu">
+              Cittadinanza non UE</button
+            ><button data-citizenship="international" data-t="unsure">
+              Da verificare
+            </button>
+          </div>
+          <div id="journey-grid" class="journey-grid" aria-live="polite"></div>
+        </section>
+        <section class="how-section shell" id="how-it-works">
+          <div class="how-heading">
+            <p class="eyebrow" data-t="lessSearching">
+              MENO RICERCHE. PIÙ CHIAREZZA.
+            </p>
+            <h2 data-t="oneStep">Una cosa alla volta.<br />Un posto solo.</h2>
+          </div>
+          <div class="how-items">
+            <div>
+              <span>01</span>
+              <h3 data-t="how1Title">Scegli da dove partire</h3>
+              <p data-t="how1Body">
+                Un percorso pensato per il tuo obiettivo e la tua situazione.
+              </p>
+            </div>
+            <div>
+              <span>02</span>
+              <h3 data-t="how2Title">Segui i passaggi</h3>
+              <p data-t="how2Body">
+                Checklist, indicazioni e link ai servizi. Sai sempre cosa viene
+                dopo.
+              </p>
+            </div>
+            <div>
+              <span>03</span>
+              <h3 data-t="how3Title">Chiedi, quando vuoi</h3>
+              <p data-t="how3Body">
+                L’assistente conosce il passo in cui sei e ti aiuta a capirlo.
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+      <div id="journey-view" class="shell journey-view" hidden></div>
+    </main>
+    <footer class="site-footer shell">
+      <div class="footer-left">
+        <div class="municipal-logo">
+          <img
+            src="/static/assets/comune-milano.webp"
+            alt="Comune di Milano"
+            width="120"
+            height="58"
+          />
+        </div>
+        <div>
+          <strong>StudiaMI</strong>
+          <p data-t="footerDescription">
+            La tua vita da studente, un passo alla volta.
+          </p>
+        </div>
+      </div>
+      <div class="footer-right">
+        <p data-t="prototype">
+          Prototipo indipendente · Claude Impact Lab Milano 2026
+        </p>
+        <a
+          href="https://github.com/esworde/impact-lab-oct-2026"
+          target="_blank"
+          rel="noopener noreferrer"
+          >GitHub ↗</a
+        ><button data-open="sources" data-t="sources">Le fonti</button
+        ><button data-open="privacy" data-t="privacy">Privacy</button>
+      </div>
+    </footer>
+    <div class="floating-ask" id="floating-ask">
+      <form class="ask-form" data-chat-form>
+        <span class="ask-spark" aria-hidden="true">✳</span
+        ><input
+          name="question"
+          data-placeholder="floatingPlaceholder"
+          placeholder="Chiedi a StudiaMI…"
+          aria-label="Fai una domanda a StudiaMI"
+          maxlength="3000"
+          required
+        /><button class="round-button" type="submit" aria-label="Invia domanda">
+          <span aria-hidden="true">↗</span>
+        </button>
+      </form>
+      <p data-t="personalData">Non inserire dati personali.</p>
+    </div>
+    <dialog id="chat-dialog" class="chat-dialog" aria-labelledby="chat-title">
+      <div class="chat-header">
+        <div class="chat-avatar" aria-hidden="true">✳</div>
+        <div>
+          <h2 id="chat-title">StudiaMI</h2>
+          <p data-t="chatSubtitle">Un aiuto per la tua vita a Milano.</p>
+        </div>
+        <button class="icon-button close-dialog" aria-label="Chiudi chat">
+          ×
+        </button>
+      </div>
+      <div id="chat-context" class="chat-context" hidden></div>
+      <div
+        id="chat-messages"
+        class="chat-messages"
+        aria-live="polite"
+        aria-relevant="additions"
+      >
+        <div class="chat-welcome">
+          <span class="welcome-star" aria-hidden="true">✳</span>
+          <h3 data-t="chatWelcome">Ciao, da dove cominciamo?</h3>
+          <p data-t="chatWelcomeBody">
+            Puoi chiedermi dei primi passi a Milano o approfondire il percorso
+            che stai seguendo.
+          </p>
+          <div>
+            <button data-question="housing" data-t="suggestHousing">
+              Cerco una stanza</button
+            ><button data-question="arrival" data-t="suggestArrival">
+              Sto per arrivare
+            </button>
+          </div>
+        </div>
+      </div>
+      <form class="chat-composer" id="chat-form">
+        <label class="sr-only" for="chat-input" data-t="yourQuestion"
+          >La tua domanda</label
+        ><textarea
+          id="chat-input"
+          rows="2"
+          data-placeholder="chatPlaceholder"
+          placeholder="Scrivi la tua domanda…"
+          maxlength="3000"
+          required
+        ></textarea
+        ><button class="round-button" type="submit" aria-label="Invia domanda">
+          <span aria-hidden="true">↑</span>
+        </button>
+      </form>
+      <div class="chat-footnote">
+        <span data-t="chatNote"
+          >Le informazioni vanno verificate alla fonte. Non inserire dati
+          personali.</span
+        ><button id="clear-chat" data-t="clearChat">Nuova chat</button>
+      </div>
+    </dialog>
+    <dialog id="info-dialog" class="info-dialog" aria-labelledby="info-title">
+      <button class="icon-button close-dialog" aria-label="Chiudi finestra">
+        ×
+      </button>
+      <div id="info-content"></div>
+    </dialog>
+    <div id="toast" class="toast" role="status" hidden></div>
+  </body>
+</html>

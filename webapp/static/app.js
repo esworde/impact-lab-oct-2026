@@ -1,0 +1,859 @@
+"use strict";
+const COPY = {
+  it: {
+    skip: "Vai al contenuto",
+    lab: "CLAUDE IMPACT LAB · MILANO",
+    city: "Esplora il sito del Comune ↗",
+    journeys: "Percorsi",
+    how: "Come funziona",
+    sources: "Le fonti",
+    openChat: "Apri la chat",
+    kicker: "STUDENT LIFE, MADE SIMPLE",
+    hero1: "La tua nuova vita,",
+    hero2: "comincia a Milano.",
+    heroDescription:
+      "Casa, documenti, primi giorni. Trova il tuo prossimo passo, con una guida che parla la tua lingua.",
+    askPlaceholder: "Sto per trasferirmi a Milano. Da dove inizio?",
+    suggestHousing: "Cerco una stanza",
+    suggestDocuments: "Mi servono i documenti",
+    suggestArrival: "Sto per arrivare",
+    sourcePromise: "Risposte con fonti ufficiali. Nessun account richiesto.",
+    yourJourney: "IL TUO PERCORSO",
+    startWhere: "Da dove vuoi partire?",
+    journeysIntro:
+      "Scegli un obiettivo. Al resto pensiamo un passo alla volta.",
+    madeForYou: "Fatto per la tua vita qui.",
+    personalize: "Personalizza per te",
+    italian: "Studente italiano",
+    international: "Studente internazionale",
+    arriving: "Sto arrivando",
+    alreadyHere: "Sono già qui",
+    citizenshipNote: "Per i documenti, quale percorso ti riguarda?",
+    eu: "Cittadinanza UE",
+    nonEu: "Cittadinanza non UE",
+    unsure: "Da verificare",
+    lessSearching: "MENO RICERCHE. PIÙ CHIAREZZA.",
+    oneStep: "Una cosa alla volta.\nUn posto solo.",
+    how1Title: "Scegli da dove partire",
+    how1Body: "Un percorso pensato per il tuo obiettivo e la tua situazione.",
+    how2Title: "Segui i passaggi",
+    how2Body:
+      "Checklist, indicazioni e link ai servizi. Sai sempre cosa viene dopo.",
+    how3Title: "Chiedi, quando vuoi",
+    how3Body: "L’assistente conosce il passo in cui sei e ti aiuta a capirlo.",
+    footerDescription: "La tua vita da studente, un passo alla volta.",
+    prototype: "Prototipo indipendente · Claude Impact Lab Milano 2026",
+    privacy: "Privacy",
+    floatingPlaceholder: "Chiedi a StudiaMI…",
+    personalData: "Non inserire dati personali.",
+    chatSubtitle: "Un aiuto per la tua vita a Milano.",
+    chatWelcome: "Ciao, da dove cominciamo?",
+    chatWelcomeBody:
+      "Puoi chiedermi dei primi passi a Milano o approfondire il percorso che stai seguendo.",
+    yourQuestion: "La tua domanda",
+    chatPlaceholder: "Scrivi la tua domanda…",
+    chatNote:
+      "Le informazioni vanno verificate alla fonte. Non inserire dati personali.",
+    clearChat: "Nuova chat",
+    steps: "passi",
+    startPath: "Esplora il percorso",
+    resumePath: "Riprendi il percorso",
+    back: "Tutti i percorsi",
+    editProfile: "Modifica profilo",
+    progress: "Passaggi verificati",
+    step: "PASSO",
+    of: "DI",
+    officialSource: "LA FONTE PER QUESTO PASSAGGIO",
+    readGuide: "Apri la guida",
+    checklist: "La tua checklist",
+    checklistNote:
+      "Spunta ciò che hai verificato. Non equivale all’invio di una pratica.",
+    needHelp: "Un dubbio su questo passaggio?",
+    helpStep: "Chiedi a StudiaMI",
+    previous: "Indietro",
+    next: "Passo successivo",
+    summary: "Vedi riepilogo",
+    summaryTitle: "Il tuo percorso, a colpo d’occhio.",
+    summaryBody:
+      "Tieni traccia di quello che hai verificato e torna sui passaggi ancora aperti. Le pratiche si completano sui servizi ufficiali.",
+    verified: "Verificato",
+    toVerify: "Da verificare",
+    download: "Scarica la checklist",
+    backHome: "Esplora altri percorsi",
+    thinking: "Consulto le guide…",
+    usedSources: "FONTI CONSULTATE",
+    fetched: "Recuperata il",
+    updated: "Aggiornamento dichiarato",
+    openSuggested: "Apri il percorso",
+    profileTitle: "Un percorso che parte da te.",
+    profileBody:
+      "Scegli il profilo per adattare i passaggi. Puoi cambiarlo in qualsiasi momento.",
+    intlTitle: "Quale percorso internazionale?",
+    intlBody:
+      "Questa scelta serve ad adattare i passaggi sui documenti. Non determina la tua idoneità a un servizio.",
+    privacyTitle: "Solo quello che serve.",
+    privacyBody:
+      "Non chiediamo un account. Profilo generico e checklist rimangono nel tuo browser. La conversazione resta in memoria nella pagina e scompare ricaricandola; non viene salvata nel nostro database. Per rispondere, domanda e contesto vengono inviati a Claude (Anthropic), secondo le sue condizioni di trattamento. Non scrivere nomi, indirizzi, documenti o informazioni mediche.",
+    sourceIntro:
+      "Le risposte si basano sulle guide pubbliche di YesMilano e del Comune di Milano. La data di recupero non indica necessariamente l’ultimo aggiornamento del contenuto.",
+    loadError: "Non riesco a caricare i percorsi. Riprova tra poco.",
+    chatUnavailable:
+      "La chat è in attivazione. Intanto puoi seguire i percorsi e aprire tutte le fonti ufficiali.",
+    chatError:
+      "L’assistente non riesce a rispondere adesso. Riprova oppure consulta la fonte del passaggio.",
+    chatLimit:
+      "La chat ha raggiunto il limite di questa demo. I percorsi e le fonti restano disponibili.",
+    retry: "Riprova",
+    helpPrompt: "Aiutami con questo passaggio: ",
+    saved: "Checklist salvata nel tuo browser.",
+    close: "Chiudi",
+    send: "Invia domanda",
+    sourceError: "Le fonti non sono disponibili in questo momento.",
+    context: "Stai seguendo",
+    completed: "verificati",
+    questionHousing:
+      "Sto cercando una stanza a Milano. Cosa devo controllare prima di firmare?",
+    questionDocuments:
+      "Sono uno studente a Milano. Quali documenti devo verificare per iniziare?",
+    questionArrival:
+      "Sto per arrivare a Milano per studiare. Da dove comincio?",
+  },
+  en: {
+    skip: "Skip to content",
+    lab: "CLAUDE IMPACT LAB · MILAN",
+    city: "Explore the City website ↗",
+    journeys: "Journeys",
+    how: "How it works",
+    sources: "Our sources",
+    openChat: "Open chat",
+    kicker: "STUDENT LIFE, MADE SIMPLE",
+    hero1: "Your new chapter,",
+    hero2: "starts in Milan.",
+    heroDescription:
+      "Housing, paperwork, your first days. Find your next step, with a guide that speaks your language.",
+    askPlaceholder: "I’m moving to Milan. Where do I start?",
+    suggestHousing: "I need a room",
+    suggestDocuments: "Help with paperwork",
+    suggestArrival: "I’m arriving soon",
+    sourcePromise: "Answers with official sources. No account needed.",
+    yourJourney: "YOUR JOURNEY",
+    startWhere: "Where would you like to start?",
+    journeysIntro: "Choose a goal. We’ll take it one step at a time.",
+    madeForYou: "Made for your life here.",
+    personalize: "Make it yours",
+    italian: "Italian student",
+    international: "International student",
+    arriving: "Arriving soon",
+    alreadyHere: "Already here",
+    citizenshipNote: "Which document route is relevant to you?",
+    eu: "EU citizenship",
+    nonEu: "Non-EU citizenship",
+    unsure: "Not sure yet",
+    lessSearching: "LESS SEARCHING. MORE CLARITY.",
+    oneStep: "One step at a time.\nAll in one place.",
+    how1Title: "Choose your starting point",
+    how1Body: "A journey shaped around your goal and situation.",
+    how2Title: "Follow the steps",
+    how2Body:
+      "Checklists, guidance and service links. Always know what comes next.",
+    how3Title: "Ask whenever you need",
+    how3Body:
+      "Your assistant knows which step you’re on and helps you understand it.",
+    footerDescription: "Your student life, one step at a time.",
+    prototype: "Independent prototype · Claude Impact Lab Milano 2026",
+    privacy: "Privacy",
+    floatingPlaceholder: "Ask StudiaMI…",
+    personalData: "Do not enter personal information.",
+    chatSubtitle: "A hand with your new life in Milan.",
+    chatWelcome: "Hello, where shall we start?",
+    chatWelcomeBody:
+      "Ask about your first steps in Milan, or get help with the journey you’re following.",
+    yourQuestion: "Your question",
+    chatPlaceholder: "Write your question…",
+    chatNote:
+      "Check information at the source. Do not enter personal information.",
+    clearChat: "New chat",
+    steps: "steps",
+    startPath: "Explore this journey",
+    resumePath: "Continue your journey",
+    back: "All journeys",
+    editProfile: "Edit profile",
+    progress: "Steps checked",
+    step: "STEP",
+    of: "OF",
+    officialSource: "THE SOURCE FOR THIS STEP",
+    readGuide: "Open the guide",
+    checklist: "Your checklist",
+    checklistNote:
+      "Tick what you have checked. This does not submit an application.",
+    needHelp: "A question about this step?",
+    helpStep: "Ask StudiaMI",
+    previous: "Back",
+    next: "Next step",
+    summary: "View summary",
+    summaryTitle: "Your journey, at a glance.",
+    summaryBody:
+      "Keep track of what you have checked and return to any open steps. Official applications are completed through the relevant services.",
+    verified: "Checked",
+    toVerify: "To check",
+    download: "Download checklist",
+    backHome: "Explore other journeys",
+    thinking: "Checking the guides…",
+    usedSources: "SOURCES CONSULTED",
+    fetched: "Retrieved on",
+    updated: "Stated update",
+    openSuggested: "Open this journey",
+    profileTitle: "A journey that starts with you.",
+    profileBody:
+      "Choose a profile to adapt the steps. You can change it at any time.",
+    intlTitle: "Which international route?",
+    intlBody:
+      "This choice adapts the document steps. It does not determine eligibility for a service.",
+    privacyTitle: "Just what you need.",
+    privacyBody:
+      "No account needed. Your generic profile and checklists stay in your browser. The conversation stays in page memory and disappears when you reload; it is not saved in our database. To answer, your question and context are sent to Claude (Anthropic), subject to its data-processing terms. Do not enter names, addresses, documents or medical information.",
+    sourceIntro:
+      "Answers use public YesMilano and City of Milan guides. Retrieval dates do not necessarily reflect the last content update.",
+    loadError: "The journeys could not be loaded. Please try again shortly.",
+    chatUnavailable:
+      "Chat is being activated. You can still follow all the journeys and open official sources.",
+    chatError:
+      "The assistant cannot answer right now. Try again or open the source for this step.",
+    chatLimit:
+      "This demo’s chat limit has been reached. Journeys and sources remain available.",
+    retry: "Try again",
+    helpPrompt: "Help me with this step: ",
+    saved: "Checklist saved in your browser.",
+    close: "Close",
+    send: "Send question",
+    sourceError: "Sources are unavailable right now.",
+    context: "Your current journey",
+    completed: "checked",
+    questionHousing:
+      "I’m looking for a room in Milan. What should I check before signing?",
+    questionDocuments:
+      "I am a student in Milan. Which documents should I check to get started?",
+    questionArrival: "I’m moving to Milan to study. Where do I start?",
+  },
+};
+const ART = {
+  arrival:
+    '<ellipse cx="120" cy="143" rx="84" ry="5" fill="#000" opacity=".06"/><path d="M28 116C9 76 47 47 78 42" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 5"/><path d="m69 38 14 3-9 11" fill="none" stroke="currentColor" stroke-width="1.5"/><g transform="rotate(-8 112 83)"><rect x="71" y="33" width="83" height="103" rx="11" fill="currentColor"/><rect x="94" y="23" width="37" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="5"/><path d="M91 37v94M135 37v94" stroke="#fff" opacity=".25" stroke-width="3"/><rect x="95" y="61" width="31" height="23" rx="3" fill="#fff9f0"/><path d="m100 72 6-6 5 4 8-4v12h-19z" fill="currentColor" opacity=".5"/><circle cx="87" cy="139" r="4" fill="currentColor"/><circle cx="139" cy="139" r="4" fill="currentColor"/></g><g transform="rotate(10 174 101)"><rect x="146" y="62" width="46" height="68" rx="5" fill="#fffaf1"/><circle cx="169" cy="84" r="11" fill="none" stroke="currentColor" stroke-width="1.3"/><ellipse cx="169" cy="84" rx="5" ry="11" fill="none" stroke="currentColor"/><path d="M158 84h22M158 112h22M160 117h18" stroke="currentColor" stroke-width="1.5"/></g><circle cx="199" cy="44" r="15" fill="#fff" opacity=".6"/><path d="m192 44 5 5 9-10" fill="none" stroke="currentColor" stroke-width="2"/>',
+  housing:
+    '<ellipse cx="120" cy="143" rx="88" ry="5" fill="#000" opacity=".06"/><path d="M29 78 82 37l52 41" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M39 78v61h86V78L82 45z" fill="#fffaf4"/><rect x="76" y="98" width="23" height="41" rx="11" fill="currentColor"/><rect x="50" y="88" width="16" height="20" rx="3" fill="currentColor" opacity=".3"/><rect x="96" y="60" width="12" height="29" rx="2" fill="currentColor" opacity=".4"/><g transform="rotate(-27 168 84)"><circle cx="165" cy="70" r="21" fill="none" stroke="currentColor" stroke-width="9"/><path d="M165 91v43h14v-12h-14m0-11h14" fill="none" stroke="currentColor" stroke-width="8" stroke-linejoin="round"/></g><path d="M29 138h180" stroke="currentColor" stroke-width="1.2" opacity=".5"/><path d="M209 134v-18m0 4c-13 0-14-13-14-13s14 0 14 13m0 7c11 0 12-11 12-11s-12 0-12 11" fill="none" stroke="currentColor" stroke-width="2"/>',
+  documents:
+    '<ellipse cx="120" cy="143" rx="66" ry="4" fill="#000" opacity=".06"/><g transform="rotate(-7 110 78)"><path d="M73 27h62l25 25v84H73z" fill="#fff"/><path d="M135 27v25h25" fill="currentColor" opacity=".2"/><path d="M88 66h48M88 78h40M88 90h43M88 102h25" stroke="currentColor" stroke-width="4" stroke-linecap="round" opacity=".35"/></g><circle cx="158" cy="114" r="21" fill="currentColor"/><path d="m149 114 6 6 12-13" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="m152 133-5 17 11-4 7 4 2-18" fill="currentColor" opacity=".55"/>',
+  transport:
+    '<ellipse cx="120" cy="143" rx="74" ry="4" fill="#000" opacity=".06"/><rect x="75" y="25" width="90" height="108" rx="18" fill="currentColor"/><rect x="83" y="43" width="74" height="48" rx="6" fill="#fffcf6"/><path d="M120 43v48" stroke="currentColor" stroke-width="3"/><rect x="100" y="32" width="40" height="5" rx="2" fill="#fff" opacity=".6"/><circle cx="94" cy="107" r="6" fill="#fff"/><circle cx="146" cy="107" r="6" fill="#fff"/><path d="M95 128 83 145m62-17 12 17M94 137h52" stroke="currentColor" stroke-width="3"/><path d="M45 56h17M38 72h24M46 88h16M176 52h20M176 68h28" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".3"/>',
+  health:
+    '<ellipse cx="120" cy="143" rx="66" ry="4" fill="#000" opacity=".06"/><rect x="65" y="55" width="110" height="78" rx="10" fill="#fffaf5"/><path d="M99 55V40h42v15" fill="none" stroke="currentColor" stroke-width="5"/><path d="M112 74h16v14h14v16h-14v14h-16v-14H98V88h14z" fill="currentColor"/><path d="M164 45c-10-14-33 0-20 15l20 17 20-17c13-15-10-29-20-15z" fill="currentColor" opacity=".5"/><path d="M48 119v-19m0 5c-13 0-15-13-15-13s15 0 15 13m0 7c12 0 14-11 14-11s-14 0-14 11" fill="none" stroke="currentColor" stroke-width="2"/>',
+  citylife:
+    '<ellipse cx="120" cy="143" rx="82" ry="4" fill="#000" opacity=".06"/><rect x="42" y="106" width="95" height="20" rx="3" fill="currentColor"/><rect x="50" y="89" width="91" height="18" rx="3" fill="#fffcf6"/><rect x="57" y="73" width="80" height="16" rx="3" fill="currentColor" opacity=".45"/><path d="M155 78h42v40a15 15 0 0 1-15 15h-12a15 15 0 0 1-15-15z" fill="#fffcf6"/><path d="M197 84h7a11 11 0 0 1 0 22h-7" fill="none" stroke="currentColor" stroke-width="3"/><path d="M166 65c-10-9 10-13 0-22m17 22c-10-9 10-13 0-22" fill="none" stroke="currentColor" stroke-width="2" opacity=".6"/><path d="m91 29 6 13 15 2-11 10 3 15-13-7-13 7 3-15-11-10 15-2z" fill="currentColor" opacity=".35"/>',
+};
+const $ = (s) => document.querySelector(s);
+const esc = (s) =>
+  String(s ?? "").replace(
+    /[&<>"']/g,
+    (c) =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[
+        c
+      ],
+  );
+const readStored = (key, fallback) => {
+  try {
+    return JSON.parse(localStorage.getItem(key)) || fallback;
+  } catch {
+    return fallback;
+  }
+};
+const saved = readStored("studia-mi-profile", {});
+const state = {
+  profile: {
+    language: ["it", "en"].includes(saved.language) ? saved.language : "it",
+    citizenship: ["italian", "international", "eu", "non-eu"].includes(
+      saved.citizenship,
+    )
+      ? saved.citizenship
+      : null,
+    stage: saved.stage === "here" ? "here" : "arriving",
+  },
+  journeys: [],
+  sources: [],
+  progress: readStored("studia-mi-checklists", {}),
+  journeyId: null,
+  stepIndex: 0,
+  messages: [],
+  pending: false,
+  ready: false,
+};
+const t = (key) => COPY[state.profile.language][key] || key;
+const store = (key, value) => {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    /* Private browser mode: progress remains in page memory. */
+  }
+};
+const art = (id) =>
+  `<svg viewBox="0 0 240 160" aria-hidden="true" focusable="false">${ART[id] || ART.arrival}</svg>`;
+const currentJourney = () =>
+  state.journeys.find((j) => j.id === state.journeyId);
+const progressKey = (journey) =>
+  `${state.profile.citizenship || "international"}:${journey.id}`;
+const checked = (journey, step, index) =>
+  !!state.progress[progressKey(journey)]?.[`${step.id}:${index}`];
+const done = (journey, step) =>
+  step.checklist.length > 0 &&
+  step.checklist.every((_, i) => checked(journey, step, i));
+const doneCount = (journey) =>
+  journey.steps.filter((s) => done(journey, s)).length;
+const safeURL = (url) => {
+  try {
+    const u = new URL(url);
+    return ["https:", "http:"].includes(u.protocol) ? u.href : "#";
+  } catch {
+    return "#";
+  }
+};
+const sourceHost = (url) => {
+  try {
+    return new URL(url).hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+};
+const date = (value) => {
+  try {
+    return new Intl.DateTimeFormat(
+      state.profile.language === "it" ? "it-IT" : "en-GB",
+      {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "Europe/Rome",
+      },
+    ).format(new Date(value));
+  } catch {
+    return "";
+  }
+};
+
+function translate() {
+  document.documentElement.lang = state.profile.language;
+  document.title =
+    state.profile.language === "it"
+      ? "StudiaMI · La tua vita da studente a Milano"
+      : "StudiaMI · Your student life in Milan";
+  document.querySelectorAll("[data-t]").forEach((el) => {
+    el.innerHTML = esc(t(el.dataset.t)).replace(/\n/g, "<br>");
+  });
+  document.querySelectorAll("[data-placeholder]").forEach((el) => {
+    el.placeholder = t(el.dataset.placeholder);
+  });
+  document
+    .querySelectorAll("[data-lang]")
+    .forEach((el) =>
+      el.setAttribute(
+        "aria-pressed",
+        String(el.dataset.lang === state.profile.language),
+      ),
+    );
+  document
+    .querySelectorAll(".close-dialog")
+    .forEach((el) => el.setAttribute("aria-label", t("close")));
+  document
+    .querySelectorAll("button[type=submit]")
+    .forEach((el) => el.setAttribute("aria-label", t("send")));
+  document
+    .querySelectorAll("[data-chat-form] input")
+    .forEach((el) => el.setAttribute("aria-label", t("yourQuestion")));
+  updateProfileControls();
+}
+
+function updateProfileControls() {
+  const intl =
+    state.profile.citizenship && state.profile.citizenship !== "italian";
+  document
+    .querySelectorAll("[data-audience]")
+    .forEach((el) =>
+      el.setAttribute(
+        "aria-pressed",
+        String(
+          el.dataset.audience === "italian"
+            ? state.profile.citizenship === "italian"
+            : !!intl,
+        ),
+      ),
+    );
+  document
+    .querySelectorAll("[data-stage]")
+    .forEach((el) =>
+      el.setAttribute(
+        "aria-pressed",
+        String(el.dataset.stage === state.profile.stage),
+      ),
+    );
+  $("#international-options").hidden = !intl;
+  document
+    .querySelectorAll("[data-citizenship]")
+    .forEach((el) =>
+      el.classList.toggle(
+        "selected",
+        el.dataset.citizenship === state.profile.citizenship,
+      ),
+    );
+}
+
+async function loadJourneys() {
+  const params = new URLSearchParams({
+    language: state.profile.language,
+    citizenship: state.profile.citizenship || "international",
+  });
+  const r = await fetch("/api/journeys?" + params);
+  if (!r.ok) throw new Error("journeys");
+  state.journeys = await r.json();
+  state.ready = true;
+  renderJourneys();
+  renderRoute();
+}
+
+function renderJourneys() {
+  $("#journey-grid").innerHTML = state.journeys
+    .map((j, i) => {
+      const count = doneCount(j);
+      return `<article class="journey-card ${esc(j.tone)} ${i < 2 ? "featured" : ""}"><div class="card-art">${art(j.icon)}<span class="step-badge"><span class="badge-dot"></span>${j.steps.length} ${t("steps")}</span></div><div class="card-body"><p class="card-tag">${esc(j.tag)}</p><h3 class="card-title"><button data-journey="${esc(j.id)}">${esc(j.title)}</button></h3><p class="card-description">${esc(j.subtitle)}</p>${count ? `<p class="resume-mark">${count}/${j.steps.length} ${t("completed")}</p>` : ""}<button class="card-action" data-journey="${esc(j.id)}"><span>${count ? t("resumePath") : t("startPath")}</span><span aria-hidden="true">↗</span></button>${j.questions
+        .slice(0, i < 2 ? 2 : 1)
+        .map(
+          (q) =>
+            `<button class="card-question" data-ask="${esc(q)}"><span>${esc(q)}</span><span aria-hidden="true">↗</span></button>`,
+        )
+        .join("")}</div></article>`;
+    })
+    .join("");
+}
+
+function navigate(journeyId, index = 0) {
+  $("#chat-dialog").close();
+  if (!state.profile.citizenship) {
+    showProfile(() => navigate(journeyId, index));
+    return;
+  }
+  const hash = `#journey/${journeyId}/${index}`;
+  if (location.hash === hash) renderRoute();
+  else location.hash = hash;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function renderRoute() {
+  if (!state.ready) return;
+  const match = location.hash.match(/^#journey\/([a-z]+)\/(\d+|summary)$/);
+  const j = match && state.journeys.find((item) => item.id === match[1]);
+  state.journeyId = j?.id || null;
+  $("#home-view").hidden = !!j;
+  $("#journey-view").hidden = !j;
+  $("#floating-ask").hidden = !j && state.heroVisible !== false;
+  if (!j) {
+    updateChatContext();
+    return;
+  }
+  state.stepIndex =
+    match[2] === "summary"
+      ? "summary"
+      : Math.min(Number(match[2]), j.steps.length - 1);
+  const label =
+    state.profile.citizenship === "italian"
+      ? t("italian")
+      : state.profile.citizenship === "eu"
+        ? t("eu")
+        : state.profile.citizenship === "non-eu"
+          ? t("nonEu")
+          : t("international");
+  const summary = state.stepIndex === "summary";
+  $("#journey-view").innerHTML =
+    `<button class="back-link" data-home><span aria-hidden="true">←</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ↗</button></div><div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : `<div class="step-pagination"><button class="button secondary" data-step="${Math.max(0, state.stepIndex - 1)}" ${state.stepIndex === 0 ? "disabled" : ""}>← ${t("previous")}</button><button class="button primary" data-step="${state.stepIndex === j.steps.length - 1 ? "summary" : state.stepIndex + 1}">${state.stepIndex === j.steps.length - 1 ? t("summary") : t("next")} <span aria-hidden="true">→</span></button></div>`}</section></div>`;
+  updateProgress();
+  updateChatContext();
+}
+
+function renderStep(j, s) {
+  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(j.icon)}</div></div><h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p><a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">↗</span></a><h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">✳</span>${t("helpStep")} ↗</button></div>`;
+}
+
+function renderSummary(j) {
+  return `<p class="eyebrow">${t("summary")}</p><h2 class="completion-title">${t("summaryTitle")}</h2><p class="completion-description">${t("summaryBody")}</p><ul class="completion-list">${j.steps.map((s, i) => `<li><button data-step="${i}">${done(j, s) ? "✓" : "○"} ${esc(s.title)}</button><span>${done(j, s) ? t("verified") : t("toVerify")}</span></li>`).join("")}</ul><div class="completion-actions"><button class="button primary" data-download>${t("download")} ↓</button><button class="button secondary" data-home>${t("backHome")} ↗</button></div>`;
+}
+
+function updateProgress() {
+  const j = currentJourney();
+  if (!j) return;
+  $("#progress-count").textContent = `${doneCount(j)}/${j.steps.length}`;
+  $("#progress-fill").style.width =
+    `${Math.round((100 * doneCount(j)) / j.steps.length)}%`;
+  $("#step-nav").innerHTML = j.steps
+    .map(
+      (s, i) =>
+        `<li><button data-step="${i}" class="${state.stepIndex === i ? "active" : ""} ${done(j, s) ? "done" : ""}" ${state.stepIndex === i ? 'aria-current="step"' : ""}><span class="step-number">${done(j, s) ? "✓" : i + 1}</span><span class="step-name">${esc(s.title)}</span></button></li>`,
+    )
+    .join("");
+}
+
+async function changeProfile(values) {
+  Object.assign(state.profile, values);
+  store("studia-mi-profile", state.profile);
+  translate();
+  try {
+    await loadJourneys();
+  } catch {
+    toast(t("loadError"));
+  }
+}
+
+function showProfile(onDone = () => {}) {
+  const dialog = $("#info-dialog");
+  $("#info-content").innerHTML =
+    `<p class="eyebrow">STUDIAMΙ</p><h2 id="info-title">${t("profileTitle")}</h2><p>${t("profileBody")}</p><div class="profile-choices"><button data-pick-profile="italian">${t("italian")} →</button><button data-pick-profile="international">${t("international")} →</button></div>`;
+  const handler = async (e) => {
+    const btn = e.target.closest("[data-pick-profile]");
+    if (!btn) return;
+    if (btn.dataset.pickProfile === "international") {
+      $("#info-content").innerHTML =
+        `<h2 id="info-title">${t("intlTitle")}</h2><p>${t("intlBody")}</p><div class="profile-choices"><button data-pick-profile="eu">${t("eu")} →</button><button data-pick-profile="non-eu">${t("nonEu")} →</button><button data-pick-profile="unsure">${t("unsure")} →</button></div>`;
+      return;
+    }
+    dialog.removeEventListener("click", handler);
+    dialog.close();
+    await changeProfile({
+      citizenship:
+        btn.dataset.pickProfile === "unsure"
+          ? "international"
+          : btn.dataset.pickProfile,
+    });
+    onDone();
+  };
+  dialog.addEventListener("click", handler);
+  dialog.addEventListener(
+    "close",
+    () => dialog.removeEventListener("click", handler),
+    { once: true },
+  );
+  if (!dialog.open) dialog.showModal();
+}
+
+function sourceCards(sources) {
+  return sources
+    .map(
+      (s) =>
+        `<a class="source-item" href="${esc(safeURL(s.url))}" target="_blank" rel="noopener noreferrer"><strong>${esc(s.title)} ↗</strong><small>${esc(sourceHost(s.url))}${s.fetched_at ? " · " + t("fetched") + " " + esc(date(s.fetched_at)) : ""}${s.stated_updated_date ? " · " + t("updated") + " " + esc(s.stated_updated_date) : ""}</small></a>`,
+    )
+    .join("");
+}
+
+async function showInfo(kind) {
+  const d = $("#info-dialog");
+  if (kind === "sources") {
+    $("#info-content").innerHTML =
+      `<p class="eyebrow">STUDIAMΙ</p><h2 id="info-title">${t("sources")}</h2><p>${t("sourceIntro")}</p><div id="all-sources">…</div>`;
+    if (!d.open) d.showModal();
+    try {
+      const r = await fetch("/api/sources");
+      if (!r.ok) throw new Error();
+      state.sources = await r.json();
+      $("#all-sources").innerHTML = sourceCards(state.sources);
+    } catch {
+      $("#all-sources").textContent = t("sourceError");
+    }
+  } else {
+    $("#info-content").innerHTML =
+      kind === "privacy"
+        ? `<h2 id="info-title">${t("privacyTitle")}</h2><p>${t("privacyBody")}</p>`
+        : `<p class="eyebrow">${t("lessSearching")}</p><h2 id="info-title">${esc(t("oneStep")).replace("\n", "<br>")}</h2>${[1, 2, 3].map((i) => `<p><strong>0${i} · ${t(`how${i}Title`)}</strong><br>${t(`how${i}Body`)}</p>`).join("")}`;
+    if (!d.open) d.showModal();
+  }
+}
+
+function updateChatContext() {
+  const j = currentJourney(),
+    s = j && state.stepIndex !== "summary" ? j.steps[state.stepIndex] : null;
+  $("#chat-context").hidden = !j;
+  $("#chat-context").textContent = j
+    ? `${t("context")}: ${j.title}${s ? " → " + s.title : ""}`
+    : "";
+}
+
+function openChat(question = "") {
+  const d = $("#chat-dialog");
+  updateChatContext();
+  if (!d.open) d.showModal();
+  if (question) $("#chat-input").value = question;
+  $("#chat-input").focus();
+}
+
+function markdown(text) {
+  // Escape all HTML first. Only create links for http(s); no raw HTML from the model.
+  let html = esc(text);
+  html = html.replace(
+    /\[([^\]\n]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    (_, label, url) =>
+      `<a href="${esc(safeURL(url.replace(/&amp;/g, "&")))}" target="_blank" rel="noopener noreferrer">${label}</a>`,
+  );
+  html = html.replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>");
+  return html
+    .split("\n")
+    .map((line) =>
+      /^#{1,4} /.test(line)
+        ? `<h4>${line.replace(/^#{1,4} /, "")}</h4>`
+        : /^[-*] /.test(line)
+          ? `<div class="list-line">${line.slice(2)}</div>`
+          : line + "<br>",
+    )
+    .join("");
+}
+
+function appendMessage(role, text, data = {}) {
+  const welcome = $(".chat-welcome");
+  if (welcome) welcome.remove();
+  const el = document.createElement("div");
+  el.className = "message " + role;
+  if (role === "user") el.textContent = text;
+  else
+    el.innerHTML = `<div class="message-label">✳ STUDIAMI</div><div class="message-text">${markdown(text)}</div>${data.freshness_notice ? `<p class="freshness-notice">${esc(data.freshness_notice)}</p>` : ""}${data.sources?.length ? `<div class="source-list"><p class="source-label">${t("usedSources")}</p>${sourceCards(data.sources)}</div>` : ""}${data.suggested_journey ? `<button class="suggested-journey" data-journey="${esc(data.suggested_journey)}">${t("openSuggested")} →</button>` : ""}`;
+  $("#chat-messages").append(el);
+  scrollChat();
+}
+
+function scrollChat() {
+  const el = $("#chat-messages");
+  el.scrollTop = el.scrollHeight;
+}
+
+async function sendQuestion(question, retry = false) {
+  const text = question.trim();
+  if (!text || state.pending) return;
+  openChat();
+  state.pending = true;
+  $("#chat-input").value = "";
+  document
+    .querySelectorAll("form button[type=submit]")
+    .forEach((b) => (b.disabled = true));
+  document.querySelectorAll(".error-message").forEach((e) => e.remove());
+  if (!retry) {
+    state.messages.push({ role: "user", content: text });
+    appendMessage("user", text);
+  }
+  const thinking = document.createElement("div");
+  thinking.className = "thinking";
+  thinking.innerHTML = `<span></span><span></span><span></span><small>${t("thinking")}</small>`;
+  $("#chat-messages").append(thinking);
+  scrollChat();
+  const j = currentJourney(),
+    s = j && state.stepIndex !== "summary" ? j.steps[state.stepIndex] : null;
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        messages: state.messages.slice(-10),
+        profile: {
+          ...state.profile,
+          citizenship: state.profile.citizenship || "international",
+        },
+        journey_id: j?.id || null,
+        step_id: s?.id || null,
+      }),
+    });
+    const result = await response.json();
+    if (!response.ok) {
+      const error = new Error(result.detail || "chat");
+      error.status = response.status;
+      throw error;
+    }
+    thinking.remove();
+    state.messages.push({ role: "assistant", content: result.answer });
+    appendMessage("assistant", result.answer, result);
+  } catch (error) {
+    thinking.remove();
+    const el = document.createElement("div");
+    el.className = "error-message";
+    el.textContent =
+      error.message === "CLAUDE_NOT_CONFIGURED"
+        ? t("chatUnavailable")
+        : error.status === 429
+          ? t("chatLimit")
+          : t("chatError");
+    const retryButton = document.createElement("button");
+    retryButton.textContent = t("retry");
+    retryButton.addEventListener("click", () => sendQuestion(text, true));
+    el.append(retryButton);
+    $("#chat-messages").append(el);
+    scrollChat();
+  } finally {
+    state.pending = false;
+    document
+      .querySelectorAll("form button[type=submit]")
+      .forEach((b) => (b.disabled = false));
+  }
+}
+
+function downloadChecklist() {
+  const j = currentJourney();
+  if (!j) return;
+  const content =
+    `StudiaMI — ${j.title}\n\n${t("checklistNote")}\n\n` +
+    j.steps
+      .map(
+        (s) =>
+          `${s.title}\n${s.checklist.map((item, i) => `[${checked(j, s, i) ? "x" : " "}] ${item}`).join("\n")}\n${s.source}\n`,
+      )
+      .join("\n");
+  const url = URL.createObjectURL(
+    new Blob([content], { type: "text/plain;charset=utf-8" }),
+  );
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `StudiaMI-${j.id}.txt`;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 2000);
+}
+
+function toast(message) {
+  $("#toast").textContent = message;
+  $("#toast").hidden = false;
+  setTimeout(() => ($("#toast").hidden = true), 3500);
+}
+
+document.addEventListener("click", async (e) => {
+  const el = e.target.closest("button,a");
+  if (!el) return;
+  if (el.classList.contains("close-dialog")) {
+    el.closest("dialog").close();
+    return;
+  }
+  if (el.dataset.lang) {
+    await changeProfile({ language: el.dataset.lang });
+    return;
+  }
+  if (el.dataset.audience) {
+    await changeProfile({ citizenship: el.dataset.audience });
+    return;
+  }
+  if (el.dataset.citizenship) {
+    await changeProfile({ citizenship: el.dataset.citizenship });
+    return;
+  }
+  if (el.dataset.stage) {
+    await changeProfile({ stage: el.dataset.stage });
+    return;
+  }
+  if (el.dataset.open) {
+    el.dataset.open === "chat" ? openChat() : showInfo(el.dataset.open);
+    return;
+  }
+  if (el.dataset.journey) {
+    e.preventDefault();
+    navigate(el.dataset.journey);
+    return;
+  }
+  if (el.dataset.step !== undefined) {
+    location.hash = `#journey/${state.journeyId}/${el.dataset.step}`;
+    return;
+  }
+  if (el.hasAttribute("data-home")) {
+    location.hash = "";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
+  if (el.hasAttribute("data-edit-profile")) {
+    showProfile();
+    return;
+  }
+  if (el.hasAttribute("data-help-step")) {
+    const s = currentJourney()?.steps[state.stepIndex];
+    if (s) sendQuestion(t("helpPrompt") + s.title);
+    return;
+  }
+  if (el.hasAttribute("data-download")) {
+    downloadChecklist();
+    return;
+  }
+  if (el.dataset.ask) {
+    sendQuestion(el.dataset.ask);
+    return;
+  }
+  if (el.dataset.question) {
+    const key =
+      "question" +
+      el.dataset.question[0].toUpperCase() +
+      el.dataset.question.slice(1);
+    sendQuestion(t(key));
+    return;
+  }
+  if (el.dataset.nav === "journeys" && state.journeyId) {
+    e.preventDefault();
+    location.hash = "#journeys";
+    setTimeout(() => $("#journeys").scrollIntoView({ behavior: "smooth" }), 30);
+  }
+});
+document.addEventListener("change", (e) => {
+  if (!e.target.matches("[data-check]")) return;
+  const j = currentJourney(),
+    s = j.steps[state.stepIndex],
+    key = progressKey(j);
+  state.progress[key] ??= {};
+  state.progress[key][`${s.id}:${e.target.dataset.check}`] = e.target.checked;
+  store("studia-mi-checklists", state.progress);
+  e.target.closest("label").classList.toggle("checked", e.target.checked);
+  updateProgress();
+  renderJourneys();
+});
+document.querySelectorAll("[data-chat-form]").forEach((form) =>
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const input = form.elements.question;
+    sendQuestion(input.value);
+    input.value = "";
+  }),
+);
+$("#chat-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  sendQuestion($("#chat-input").value);
+});
+$("#chat-input").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendQuestion(e.target.value);
+  }
+});
+$("#clear-chat").addEventListener("click", () => {
+  if (state.pending) return;
+  state.messages = [];
+  $("#chat-messages").innerHTML =
+    `<div class="chat-welcome"><span class="welcome-star" aria-hidden="true">✳</span><h3>${t("chatWelcome")}</h3><p>${t("chatWelcomeBody")}</p></div>`;
+  $("#chat-input").value = "";
+  $("#chat-input").focus();
+});
+for (const d of document.querySelectorAll("dialog"))
+  d.addEventListener("click", (e) => {
+    if (e.target === d) {
+      const r = d.getBoundingClientRect();
+      if (
+        e.clientX < r.left ||
+        e.clientX > r.right ||
+        e.clientY < r.top ||
+        e.clientY > r.bottom
+      )
+        d.close();
+    }
+  });
+window.addEventListener("hashchange", renderRoute);
+new IntersectionObserver(
+  (entries) => {
+    state.heroVisible = entries[0].isIntersecting;
+    $("#floating-ask").hidden = !state.journeyId && state.heroVisible;
+  },
+  { threshold: 0.3 },
+).observe($(".hero-ask"));
+translate();
+loadJourneys().catch(() => {
+  toast(t("loadError"));
+  $("#journey-grid").innerHTML = `<p>${t("loadError")}</p>`;
+});
