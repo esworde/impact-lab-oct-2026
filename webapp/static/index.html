@@ -11,6 +11,7 @@
     <title>StudiaMI · La tua vita da studente a Milano</title>
     <link rel="icon" href="/static/assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/static/styles.css" />
+    <script src="/static/icons.js" defer></script>
     <script src="/static/plan.js" defer></script>
     <script src="/static/app.js" defer></script>
     <script src="/static/builder.js" defer></script>
@@ -32,7 +33,11 @@
     <header class="site-header shell">
       <a class="brand" href="#" aria-label="StudiaMI home"
         ><span class="brand-municipal"
-          ><img src="/static/assets/comune-milano.webp" alt="Comune di Milano" width="120" height="58" /></span
+          ><img
+            src="/static/assets/comune-milano.webp"
+            alt="Comune di Milano"
+            width="120"
+            height="58" /></span
         ><span
           >Studia<span class="brand-mi">MI</span
           ><span class="brand-dot">.</span></span
@@ -50,7 +55,7 @@
         </div>
         <button class="button primary header-chat" data-open="chat">
           <span data-t="openChat">Apri la chat</span
-          ><span aria-hidden="true">↗</span>
+          ><span aria-hidden="true" data-icon="arrow-up-right"></span>
         </button>
       </div>
     </header>
@@ -90,7 +95,11 @@
           </div>
           <div id="saved-path" class="saved-path" hidden></div>
           <button class="hero-story" data-builder="giulia">
-            <span class="story-avatar" aria-hidden="true">G</span>
+            <span
+              class="story-avatar"
+              aria-hidden="true"
+              data-icon="user-round"
+            ></span>
             <span
               ><small data-t="storyExample">UNA STORIA DA CUI PARTIRE</small
               ><strong data-t="giuliaStory"
@@ -100,12 +109,18 @@
                 >Componi il percorso di Giulia →</span
               ></span
             >
-            <span class="story-blocks" aria-hidden="true"
-              ><i>01</i><i>02</i><i>03</i></span
-            >
+            <span
+              class="story-blocks"
+              aria-hidden="true"
+              data-icon="blocks"
+            ></span>
           </button>
           <div class="hero-caption">
-            <span class="tiny-check" aria-hidden="true">✓</span
+            <span
+              class="tiny-check"
+              aria-hidden="true"
+              data-icon="circle-check"
+            ></span
             ><span data-t="sourcePromise"
               >Risposte con fonti ufficiali. Nessun account richiesto.</span
             >
@@ -131,7 +146,7 @@
               </p>
             </div>
             <span class="section-note"
-              ><span aria-hidden="true">↘</span
+              ><span aria-hidden="true" data-icon="arrow-down-right"></span
               ><span data-t="madeForYou">Fatto per la tua vita qui.</span></span
             >
           </div>
@@ -139,10 +154,10 @@
             <span data-t="personalize">Personalizza per te</span>
             <div class="audience-options" aria-label="Profilo studente">
               <button data-audience="italian" aria-pressed="false">
-                <span aria-hidden="true">◉</span
+                <span aria-hidden="true" data-icon="user-round"></span
                 ><span data-t="italian">Studente italiano</span></button
               ><button data-audience="international" aria-pressed="false">
-                <span aria-hidden="true">◎</span
+                <span aria-hidden="true" data-icon="globe"></span
                 ><span data-t="international">Studente internazionale</span>
               </button>
             </div>
@@ -178,10 +193,12 @@
           >
             <span data-t="tryPersona">Prova una storia</span>
             <button data-persona="giulia">
-              Giulia <span data-t="giuliaDemo">· studentessa fuorisede</span> ↗
+              Giulia <span data-t="giuliaDemo">· studentessa fuorisede</span>
+              <span data-icon="arrow-up-right"></span>
             </button>
             <button data-persona="reza">
-              Reza <span data-t="rezaDemo">· studente non UE</span> ↗
+              Reza <span data-t="rezaDemo">· studente non UE</span>
+              <span data-icon="arrow-up-right"></span>
             </button>
           </div>
           <p class="catalog-source">
@@ -259,14 +276,18 @@
           href="https://github.com/esworde/impact-lab-oct-2026"
           target="_blank"
           rel="noopener noreferrer"
-          >GitHub ↗</a
+          >GitHub <span data-icon="arrow-up-right"></span></a
         ><button data-open="sources" data-t="sources">Le fonti</button
         ><button data-open="privacy" data-t="privacy">Privacy</button>
       </div>
     </footer>
     <div class="floating-ask" id="floating-ask">
       <form class="ask-form" data-chat-form>
-        <span class="ask-spark" aria-hidden="true">✳</span
+        <span
+          class="ask-spark"
+          aria-hidden="true"
+          data-icon="message-circle"
+        ></span
         ><input
           name="question"
           data-placeholder="floatingPlaceholder"
@@ -275,20 +296,24 @@
           maxlength="3000"
           required
         /><button class="round-button" type="submit" aria-label="Invia domanda">
-          <span aria-hidden="true">↗</span>
+          <span aria-hidden="true" data-icon="arrow-up-right"></span>
         </button>
       </form>
       <p data-t="personalData">Non inserire dati personali.</p>
     </div>
     <dialog id="chat-dialog" class="chat-dialog" aria-labelledby="chat-title">
       <div class="chat-header">
-        <div class="chat-avatar" aria-hidden="true">✳</div>
+        <div
+          class="chat-avatar"
+          aria-hidden="true"
+          data-icon="message-circle"
+        ></div>
         <div>
           <h2 id="chat-title">StudiaMI</h2>
           <p data-t="chatSubtitle">Un aiuto per la tua vita a Milano.</p>
         </div>
         <button class="icon-button close-dialog" aria-label="Chiudi chat">
-          ×
+          <span data-icon="x"></span>
         </button>
       </div>
       <div id="chat-context" class="chat-context" hidden></div>
@@ -299,7 +324,11 @@
         aria-relevant="additions"
       >
         <div class="chat-welcome">
-          <span class="welcome-star" aria-hidden="true">✳</span>
+          <span
+            class="welcome-star"
+            aria-hidden="true"
+            data-icon="message-circle"
+          ></span>
           <h3 data-t="chatWelcome">Ciao, da dove cominciamo?</h3>
           <p data-t="chatWelcomeBody">
             Puoi chiedermi dei primi passi a Milano o approfondire il percorso
@@ -326,7 +355,7 @@
           required
         ></textarea
         ><button class="round-button" type="submit" aria-label="Invia domanda">
-          <span aria-hidden="true">↑</span>
+          <span aria-hidden="true" data-icon="arrow-up"></span>
         </button>
       </form>
       <div class="chat-footnote">
@@ -338,7 +367,7 @@
     </dialog>
     <dialog id="info-dialog" class="info-dialog" aria-labelledby="info-title">
       <button class="icon-button close-dialog" aria-label="Chiudi finestra">
-        ×
+        <span data-icon="x"></span>
       </button>
       <div id="info-content"></div>
     </dialog>

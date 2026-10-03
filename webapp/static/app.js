@@ -466,7 +466,7 @@ function translate() {
       ? "StudiaMI · La tua vita da studente a Milano"
       : "StudiaMI · Your student life in Milan";
   document.querySelectorAll("[data-t]").forEach((el) => {
-    el.innerHTML = esc(t(el.dataset.t)).replace(/\n/g, "<br>");
+    el.innerHTML = iconLabel(t(el.dataset.t)).replace(/\n/g, "<br>");
   });
   document.querySelectorAll("[data-placeholder]").forEach((el) => {
     el.placeholder = t(el.dataset.placeholder);
@@ -566,15 +566,15 @@ async function loadJourneys() {
 function renderJourneys() {
   const card = (j) => {
     const count = doneCount(j);
-    return `<article class="journey-card ${esc(j.tone)}"><div class="card-art">${art(j.icon)}<span class="step-badge"><span class="badge-dot"></span>${j.steps.length} ${t(j.steps.length === 1 ? "stepSingular" : "steps")}</span></div><div class="card-body"><p class="card-tag">${t("guideLink")} · HOW TO</p><h3 class="card-title"><button data-journey="${esc(j.id)}">${esc(j.title)}</button></h3><p class="card-description">${esc(j.subtitle)}</p>${j.scope ? `<p class="card-scope">${esc(j.scope)}</p>` : ""}${count ? `<p class="resume-mark">${count}/${j.steps.length} ${t("completed")}</p>` : ""}<button class="card-action" data-journey="${esc(j.id)}"><span>${count ? t("resumePath") : t("startPath")}</span><span aria-hidden="true">↗</span></button>${j.questions
+    return `<article class="journey-card ${esc(j.tone)}"><div class="card-art">${art(j.icon)}<span class="step-badge"><span class="badge-dot"></span>${j.steps.length} ${t(j.steps.length === 1 ? "stepSingular" : "steps")}</span></div><div class="card-body"><p class="card-tag">${t("guideLink")} · HOW TO</p><h3 class="card-title"><button data-journey="${esc(j.id)}">${esc(j.title)}</button></h3><p class="card-description">${esc(j.subtitle)}</p>${j.scope ? `<p class="card-scope">${esc(j.scope)}</p>` : ""}${count ? `<p class="resume-mark">${count}/${j.steps.length} ${t("completed")}</p>` : ""}<button class="card-action" data-journey="${esc(j.id)}"><span>${count ? t("resumePath") : t("startPath")}</span><span aria-hidden="true">${icon("arrow-up-right")}</span></button>${j.questions
       .slice(0, 1)
       .map(
         (q) =>
-          `<button class="card-question" data-ask="${esc(q)}"><span>${esc(q)}</span><span aria-hidden="true">↗</span></button>`,
+          `<button class="card-question" data-ask="${esc(q)}"><span>${esc(q)}</span><span aria-hidden="true">${icon("arrow-up-right")}</span></button>`,
       )
       .join(
         "",
-      )}<a class="card-guide" href="${esc(safeURL(j.guide_url))}" target="_blank" rel="noopener noreferrer">${t("guideLink")} ↗</a></div></article>`;
+      )}<a class="card-guide" href="${esc(safeURL(j.guide_url))}" target="_blank" rel="noopener noreferrer">${t("guideLink")} ${icon("arrow-up-right")}</a></div></article>`;
   };
   $("#journey-grid").innerHTML = [
     ["before", "groupBefore", "groupBeforeBody"],
@@ -649,7 +649,7 @@ function renderRoute() {
           : t("international");
   const summary = state.stepIndex === "summary";
   $("#journey-view").innerHTML =
-    `<button class="back-link" data-home><span aria-hidden="true">←</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ↗</button></div>${j.id === "custom" ? `<div class="adaptive-facts">${renderPlanFacts(j)}</div><div class="custom-outline"><button class="button secondary" data-builder="edit">${bt("editBlocks")} ↗</button><p>${esc(j.priority)}</p></div>` : ""}${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
+    `<button class="back-link" data-home><span aria-hidden="true">${icon("arrow-left")}</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ${icon("arrow-up-right")}</button></div>${j.id === "custom" ? `<div class="adaptive-facts">${renderPlanFacts(j)}</div><div class="custom-outline"><button class="button secondary" data-builder="edit">${bt("editBlocks")} ${icon("arrow-up-right")}</button><p>${esc(j.priority)}</p></div>` : ""}${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
   updateProgress();
   updateChatContext();
 }
@@ -658,11 +658,11 @@ function renderStep(j, s) {
   if (s.routes) {
     s = { ...s, ...s.routes[planFor(j).choices?.[s.follows_choice]] };
   }
-  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(s.icon || j.icon)}</div></div>${s.block_title ? `<p class="eyebrow">${esc(s.block_title)}</p>` : ""}<h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p>${s.owner ? `<p class="step-owner"><small>${t("owner")}</small> ${esc(s.owner)}</p>` : ""}${renderChoices(j, s)}<a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">↗</span></a>${(s.extra_sources || []).map((source) => `<a class="secondary-source" href="${esc(safeURL(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>`).join("")}<h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div>${s.draft || (s.follows_choice && planFor(j).choices?.[s.follows_choice] === "temporary") ? `<button class="draft-button" data-draft>${t("draft")} ↗</button>` : ""}<div class="validation-panel"><h3>${t("validationTitle")}</h3><p>${esc(s.validation || t("validationReady"))}</p><small id="validation-status" role="status"></small><p class="validation-note">${t("validationNote")}</p></div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">✳</span>${t("helpStep")} ↗</button></div>`;
+  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(s.icon || j.icon)}</div></div>${s.block_title ? `<p class="eyebrow">${esc(s.block_title)}</p>` : ""}<h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p>${s.owner ? `<p class="step-owner"><small>${t("owner")}</small> ${esc(s.owner)}</p>` : ""}${renderChoices(j, s)}<a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">${icon("arrow-up-right")}</span></a>${(s.extra_sources || []).map((source) => `<a class="secondary-source" href="${esc(safeURL(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ${icon("arrow-up-right")}</a>`).join("")}<h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div>${s.draft || (s.follows_choice && planFor(j).choices?.[s.follows_choice] === "temporary") ? `<button class="draft-button" data-draft>${t("draft")} ${icon("arrow-up-right")}</button>` : ""}<div class="validation-panel"><h3>${t("validationTitle")}</h3><p>${esc(s.validation || t("validationReady"))}</p><small id="validation-status" role="status"></small><p class="validation-note">${t("validationNote")}</p></div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">${icon("message-circle")}</span>${t("helpStep")} ${icon("arrow-up-right")}</button></div>`;
 }
 
 function renderSummary(j) {
-  return `<p class="eyebrow">${t("summary")}</p><h2 class="completion-title">${t("summaryTitle")}</h2><p class="completion-description">${t("summaryBody")}</p><ul class="completion-list">${j.steps.map((s, i) => `<li><button data-step="${i}">${done(j, s) ? "✓" : "○"} ${esc(s.title)}</button><span>${done(j, s) ? t("verified") : t("toVerify")}</span></li>`).join("")}</ul><div class="completion-actions"><button class="button primary" data-download>${t("download")} ↓</button><button class="button secondary" data-home>${t("backHome")} ↗</button></div>`;
+  return `<p class="eyebrow">${t("summary")}</p><h2 class="completion-title">${t("summaryTitle")}</h2><p class="completion-description">${t("summaryBody")}</p><ul class="completion-list">${j.steps.map((s, i) => `<li><button data-step="${i}">${done(j, s) ? icon("circle-check") : icon("circle")} ${esc(s.title)}</button><span>${done(j, s) ? t("verified") : t("toVerify")}</span></li>`).join("")}</ul><div class="completion-actions"><button class="button primary" data-download>${t("download")} ${icon("arrow-down")}</button><button class="button secondary" data-home>${t("backHome")} ${icon("arrow-up-right")}</button></div>`;
 }
 
 function renderChoices(j, s) {
@@ -681,7 +681,7 @@ function renderChoices(j, s) {
 function renderPagination(j) {
   const s = j.steps[state.stepIndex],
     validated = done(j, s);
-  return `<div class="step-pagination"><button class="button secondary" data-step="${Math.max(0, state.stepIndex - 1)}" ${state.stepIndex === 0 ? "disabled" : ""}>← ${t("previous")}</button><button id="validate-step" class="button primary" data-validate ${!ready(j, s) ? "disabled" : ""}>${validated ? (state.stepIndex === j.steps.length - 1 ? t("summary") : t("next")) : state.stepIndex === j.steps.length - 1 ? t("validateFinish") : t("validateNext")} <span aria-hidden="true">→</span></button></div>`;
+  return `<div class="step-pagination"><button class="button secondary" data-step="${Math.max(0, state.stepIndex - 1)}" ${state.stepIndex === 0 ? "disabled" : ""}>${icon("arrow-left")} ${t("previous")}</button><button id="validate-step" class="button primary" data-validate ${!ready(j, s) ? "disabled" : ""}>${validated ? (state.stepIndex === j.steps.length - 1 ? t("summary") : t("next")) : state.stepIndex === j.steps.length - 1 ? t("validateFinish") : t("validateNext")} <span aria-hidden="true">${icon("arrow-right")}</span></button></div>`;
 }
 function updateProgress() {
   const j = currentJourney();
@@ -699,7 +699,7 @@ function updateProgress() {
             : locked
               ? t("locked")
               : t("current");
-      return `${s.block_title && (i === 0 || j.steps[i - 1].block_id !== s.block_id) ? `<li class="block-nav-title">${esc(s.block_title)}</li>` : ""}<li><button data-step="${i}" aria-label="${i + 1}. ${esc(s.title)} · ${esc(status)}" class="${state.stepIndex === i ? "active" : ""} ${i < openUntil ? "done" : ""} ${locked ? "locked" : ""}" ${locked ? "disabled" : ""} ${state.stepIndex === i ? 'aria-current="step"' : ""}><span class="step-number">${i < openUntil ? "✓" : locked ? "⌑" : i + 1}</span><span class="step-name">${esc(s.title)}<small>${esc(status)}</small></span></button></li>`;
+      return `${s.block_title && (i === 0 || j.steps[i - 1].block_id !== s.block_id) ? `<li class="block-nav-title">${esc(s.block_title)}</li>` : ""}<li><button data-step="${i}" aria-label="${i + 1}. ${esc(s.title)} · ${esc(status)}" class="${state.stepIndex === i ? "active" : ""} ${i < openUntil ? "done" : ""} ${locked ? "locked" : ""}" ${locked ? "disabled" : ""} ${state.stepIndex === i ? 'aria-current="step"' : ""}><span class="step-number">${i < openUntil ? icon("check") : locked ? icon("lock-keyhole") : i + 1}</span><span class="step-name">${esc(s.title)}<small>${esc(status)}</small></span></button></li>`;
     })
     .join("");
   if (state.stepIndex !== "summary") {
@@ -739,13 +739,13 @@ async function changeProfile(values) {
 function showProfile(onDone = () => {}) {
   const dialog = $("#info-dialog");
   $("#info-content").innerHTML =
-    `<p class="eyebrow">STUDIAMΙ</p><h2 id="info-title">${t("profileTitle")}</h2><p>${t("profileBody")}</p><div class="profile-choices"><button data-pick-profile="italian">${t("italian")} →</button><button data-pick-profile="international">${t("international")} →</button></div>`;
+    `<p class="eyebrow">STUDIAMΙ</p><h2 id="info-title">${t("profileTitle")}</h2><p>${t("profileBody")}</p><div class="profile-choices"><button data-pick-profile="italian">${t("italian")} ${icon("arrow-right")}</button><button data-pick-profile="international">${t("international")} ${icon("arrow-right")}</button></div>`;
   const handler = async (e) => {
     const btn = e.target.closest("[data-pick-profile]");
     if (!btn) return;
     if (btn.dataset.pickProfile === "international") {
       $("#info-content").innerHTML =
-        `<h2 id="info-title">${t("intlTitle")}</h2><p>${t("intlBody")}</p><div class="profile-choices"><button data-pick-profile="eu">${t("eu")} →</button><button data-pick-profile="non-eu">${t("nonEu")} →</button><button data-pick-profile="unsure">${t("unsure")} →</button></div>`;
+        `<h2 id="info-title">${t("intlTitle")}</h2><p>${t("intlBody")}</p><div class="profile-choices"><button data-pick-profile="eu">${t("eu")} ${icon("arrow-right")}</button><button data-pick-profile="non-eu">${t("nonEu")} ${icon("arrow-right")}</button><button data-pick-profile="unsure">${t("unsure")} ${icon("arrow-right")}</button></div>`;
       return;
     }
     dialog.removeEventListener("click", handler);
@@ -771,7 +771,7 @@ function sourceCards(sources) {
   return sources
     .map(
       (s) =>
-        `<a class="source-item" href="${esc(safeURL(s.url))}" target="_blank" rel="noopener noreferrer"><strong>${esc(s.title)} ↗</strong><small>${esc(sourceHost(s.url))}${s.fetched_at ? " · " + t("fetched") + " " + esc(date(s.fetched_at)) : ""}${s.stated_updated_date ? " · " + t("updated") + " " + esc(s.stated_updated_date) : ""}</small></a>`,
+        `<a class="source-item" href="${esc(safeURL(s.url))}" target="_blank" rel="noopener noreferrer"><strong>${esc(s.title)} ${icon("arrow-up-right")}</strong><small>${esc(sourceHost(s.url))}${s.fetched_at ? " · " + t("fetched") + " " + esc(date(s.fetched_at)) : ""}${s.stated_updated_date ? " · " + t("updated") + " " + esc(s.stated_updated_date) : ""}</small></a>`,
     )
     .join("");
 }
@@ -844,7 +844,7 @@ function appendMessage(role, text, data = {}) {
   el.className = "message " + role;
   if (role === "user") el.textContent = text;
   else
-    el.innerHTML = `<div class="message-label">✳ STUDIAMI</div><div class="message-text">${markdown(text)}</div>${data.freshness_notice ? `<p class="freshness-notice">${esc(data.freshness_notice)}</p>` : ""}${data.sources?.length ? `<div class="source-list"><p class="source-label">${t("usedSources")}</p>${sourceCards(data.sources)}</div>` : ""}${data.suggested_journey ? `<button class="suggested-journey" data-journey="${esc(data.suggested_journey)}">${t("openSuggested")} →</button>` : ""}`;
+    el.innerHTML = `<div class="message-label">${icon("message-circle")} STUDIAMI</div><div class="message-text">${markdown(text)}</div>${data.freshness_notice ? `<p class="freshness-notice">${esc(data.freshness_notice)}</p>` : ""}${data.sources?.length ? `<div class="source-list"><p class="source-label">${t("usedSources")}</p>${sourceCards(data.sources)}</div>` : ""}${data.suggested_journey ? `<button class="suggested-journey" data-journey="${esc(data.suggested_journey)}">${t("openSuggested")} ${icon("arrow-right")}</button>` : ""}`;
   $("#chat-messages").append(el);
   scrollChat();
 }
@@ -1115,7 +1115,7 @@ $("#clear-chat").addEventListener("click", () => {
   if (state.pending) return;
   state.messages = [];
   $("#chat-messages").innerHTML =
-    `<div class="chat-welcome"><span class="welcome-star" aria-hidden="true">✳</span><h3>${t("chatWelcome")}</h3><p>${t("chatWelcomeBody")}</p></div>`;
+    `<div class="chat-welcome"><span class="welcome-star" aria-hidden="true">${icon("message-circle")}</span><h3>${t("chatWelcome")}</h3><p>${t("chatWelcomeBody")}</p></div>`;
   $("#chat-input").value = "";
   $("#chat-input").focus();
 });

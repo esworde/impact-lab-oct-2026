@@ -339,8 +339,6 @@ textarea:focus-visible {
 }
 .tiny-check {
   color: var(--red);
-  border: 1px solid #d6acb6;
-  border-radius: 50%;
   width: 14px;
   height: 14px;
   font-size: 9px;
@@ -2631,4 +2629,44 @@ dialog::backdrop {
   .plan-facts dl {
     grid-template-columns: 1fr;
   }
+}
+
+/* Lucide interface icons; service illustrations retain their original artwork. */
+.ui-icon {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+.tiny-check .ui-icon {
+  width: 14px;
+  height: 14px;
+}
+.ask-spark .ui-icon,
+.chat-avatar .ui-icon,
+.round-button .ui-icon {
+  width: 22px;
+  height: 22px;
+}
+.welcome-star .ui-icon {
+  width: 36px;
+  height: 36px;
+}
+.step-number .ui-icon {
+  width: 14px;
+  height: 14px;
+}
+.story-avatar .ui-icon {
+  width: 22px;
+  height: 22px;
+}
+.story-blocks .ui-icon {
+  width: 38px;
+  height: 38px;
+}
+.message-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }

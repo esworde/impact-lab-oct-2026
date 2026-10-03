@@ -221,7 +221,7 @@ function renderPlanFacts(plan, editable = false) {
       let opts = FACT_OPTIONS[key] || YES_OPTIONS;
       if (
         key === "residence_intent" &&
-        ((!['italian', 'eu'].includes(builder.profile?.citizenship)) ||
+        (!["italian", "eu"].includes(builder.profile?.citizenship) ||
           (builder.profile?.citizenship === "eu" &&
             builder.profile?.stay_duration === "year-plus"))
       )
@@ -338,7 +338,7 @@ function renderSavedPath() {
   const el = $("#saved-path");
   el.hidden = !state.custom;
   el.innerHTML = state.custom
-    ? `<button data-resume-custom ${!state.ready ? "disabled" : ""}>${bt("resume")}</button><small>${bt("saved")}</small>`
+    ? `<button data-resume-custom ${!state.ready ? "disabled" : ""}>${iconLabel(bt("resume"))}</button><small>${bt("saved")}</small>`
     : "";
 }
 async function openBuilder(mode) {
@@ -435,7 +435,7 @@ function renderBuilder() {
     ...state.profile,
     citizenship: state.profile.citizenship || "international",
   };
-  const tabs = `<div class="builder-tabs" aria-label="${bt("createPath")}"><button data-builder-mode="story" aria-pressed="${builder.mode === "story"}">${bt("story")}</button><button data-builder-mode="questions" aria-pressed="${builder.mode === "questions"}">${bt("questions")}</button></div>`;
+  const tabs = `<div class="builder-tabs" aria-label="${esc(bt("createPath").replace(/[↗→←]/g, "").trim())}"><button data-builder-mode="story" aria-pressed="${builder.mode === "story"}">${bt("story")}</button><button data-builder-mode="questions" aria-pressed="${builder.mode === "questions"}">${bt("questions")}</button></div>`;
   let content = "";
   if (builder.preview) {
     const selected = (builder.plan?.block_summaries || []).map((j) => ({
@@ -459,14 +459,17 @@ function renderBuilder() {
       )
       .join(
         "",
-      )}</select></label></div>${renderPlanFacts(builder.plan, true)}<p class="builder-count">${selected.length} ${bt("blocks")} · ${selected.reduce((sum, j) => sum + j.steps.length, 0)} ${bt("steps")}</p><ol class="builder-blocks">${selected.map((j, i) => `<li class="builder-block ${esc(j.tone)}"><div class="builder-block-art">${art(j.icon)}</div><div class="builder-block-body"><small>0${i + 1} · ${j.steps.length} ${t(j.steps.length === 1 ? "stepSingular" : "steps")}</small><h3>${esc(j.title)}</h3><p>${esc(j.subtitle)}</p>${j.personalization_reason ? `<p class="block-reason">${esc(j.personalization_reason)}</p>` : ""}<details><summary>${t("steps")}</summary><ol>${j.steps.map((s) => `<li>${esc(s.title)}</li>`).join("")}</ol></details></div><div class="block-tools"><button data-block-up="${j.id}" aria-label="${bt("up")}: ${esc(j.title)}" ${i === 0 || j.order_locked || selected[i - 1]?.order_locked ? "disabled" : ""}>↑</button><button data-block-down="${j.id}" aria-label="${bt("down")}: ${esc(j.title)}" ${i === selected.length - 1 || j.order_locked || selected[i + 1]?.order_locked ? "disabled" : ""}>↓</button><button data-block-remove="${j.id}" aria-label="${bt("remove")}: ${esc(j.title)}">×</button></div></li>`).join("")}</ol>${!selected.length ? `<p>${bt("empty")}</p>` : ""}<details class="builder-add"><summary>${bt("add")} +</summary><div class="builder-goals">${builder.available
+      )}</select></label></div>${renderPlanFacts(builder.plan, true)}<p class="builder-count">${selected.length} ${bt("blocks")} · ${selected.reduce((sum, j) => sum + j.steps.length, 0)} ${bt("steps")}</p><ol class="builder-blocks">${selected.map((j, i) => `<li class="builder-block ${esc(j.tone)}"><div class="builder-block-art">${art(j.icon)}</div><div class="builder-block-body"><small>0${i + 1} · ${j.steps.length} ${t(j.steps.length === 1 ? "stepSingular" : "steps")}</small><h3>${esc(j.title)}</h3><p>${esc(j.subtitle)}</p>${j.personalization_reason ? `<p class="block-reason">${esc(j.personalization_reason)}</p>` : ""}<details><summary>${t("steps")}</summary><ol>${j.steps.map((s) => `<li>${esc(s.title)}</li>`).join("")}</ol></details></div><div class="block-tools"><button data-block-up="${j.id}" aria-label="${bt("up")}: ${esc(j.title)}" ${i === 0 || j.order_locked || selected[i - 1]?.order_locked ? "disabled" : ""}>${icon("arrow-up")}</button><button data-block-down="${j.id}" aria-label="${bt("down")}: ${esc(j.title)}" ${i === selected.length - 1 || j.order_locked || selected[i + 1]?.order_locked ? "disabled" : ""}>${icon("arrow-down")}</button><button data-block-remove="${j.id}" aria-label="${bt("remove")}: ${esc(j.title)}">${icon("x")}</button></div></li>`).join("")}</ol>${!selected.length ? `<p>${bt("empty")}</p>` : ""}<details class="builder-add"><summary>${bt("add")} ${icon("plus")}</summary><div class="builder-goals">${builder.available
       .filter((j) => !selected.some((s) => s.id === j.id))
-      .map((j) => `<button data-block-add="${j.id}">${esc(j.title)} +</button>`)
+      .map(
+        (j) =>
+          `<button data-block-add="${j.id}">${esc(j.title)} ${icon("plus")}</button>`,
+      )
       .join(
         "",
-      )}</div></details><p class="builder-note">${bt("sequence")} ${bt("orderNote")}</p><small>${bt("reviewChange")}</small><div class="builder-footer"><button class="button secondary" data-builder-restart>${bt("restart")}</button><button class="button primary" data-builder-start ${!selected.length || builder.pending || builder.error || !builder.plan?.ready ? "disabled" : ""}>${bt("start")}</button></div>`;
+      )}</div></details><p class="builder-note">${bt("sequence")} ${bt("orderNote")}</p><small>${bt("reviewChange")}</small><div class="builder-footer"><button class="button secondary" data-builder-restart>${bt("restart")}</button><button class="button primary" data-builder-start ${!selected.length || builder.pending || builder.error || !builder.plan?.ready ? "disabled" : ""}>${iconLabel(bt("start"))}</button></div>`;
   } else if (builder.mode === "story") {
-    content = `<form id="builder-story-form"><label class="builder-label" for="builder-story">${bt("storyLabel")}</label><textarea id="builder-story" minlength="10" maxlength="2000" required placeholder="${esc(bt("placeholder"))}">${esc(builder.story)}</textarea><small>${bt("storyNote")}</small><div class="builder-footer"><button class="button primary" type="submit" ${builder.pending ? "disabled" : ""}>${builder.pending ? bt("thinking") : bt("propose")} ↗</button></div></form>`;
+    content = `<form id="builder-story-form"><label class="builder-label" for="builder-story">${bt("storyLabel")}</label><textarea id="builder-story" minlength="10" maxlength="2000" required placeholder="${esc(bt("placeholder"))}">${esc(builder.story)}</textarea><small>${bt("storyNote")}</small><div class="builder-footer"><button class="button primary" type="submit" ${builder.pending ? "disabled" : ""}>${builder.pending ? bt("thinking") : bt("propose")} ${icon("arrow-up-right")}</button></div></form>`;
   } else {
     const q = builder.question;
     content = `<p class="eyebrow">${bt("questionCounter")} ${q + 1} ${bt("of")} 3</p><h2>${bt(["qProfile", "qStage", "qGoals"][q])}</h2>`;
@@ -488,19 +491,19 @@ function renderBuilder() {
         )
         .join("")}</div>`;
     if (q === 2)
-      content += `<p>${bt("qGoalsNote")}</p><div class="builder-goals">${builder.available.map((j) => `<button data-builder-goal="${j.id}" aria-pressed="${builder.blocks.includes(j.id)}">${esc(j.title)} ${builder.blocks.includes(j.id) ? "✓" : "+"}</button>`).join("")}</div>`;
-    content += `<div class="builder-footer"><button class="button secondary" data-builder-prev ${q === 0 ? "disabled" : ""}>${bt("previous")}</button><button class="button primary" data-builder-next ${builder.pending || (q === 2 && !builder.blocks.length) ? "disabled" : ""}>${q === 2 ? bt("propose") : bt("next")}</button></div>`;
+      content += `<p>${bt("qGoalsNote")}</p><div class="builder-goals">${builder.available.map((j) => `<button data-builder-goal="${j.id}" aria-pressed="${builder.blocks.includes(j.id)}">${esc(j.title)} ${builder.blocks.includes(j.id) ? icon("check") : icon("plus")}</button>`).join("")}</div>`;
+    content += `<div class="builder-footer"><button class="button secondary" data-builder-prev ${q === 0 ? "disabled" : ""}>${iconLabel(bt("previous"))}</button><button class="button primary" data-builder-next ${builder.pending || (q === 2 && !builder.blocks.length) ? "disabled" : ""}>${iconLabel(q === 2 ? bt("propose") : bt("next"))}</button></div>`;
   }
   if (builder.preview && builder.plan?.questions?.length && !builder.pending) {
     const q = builder.plan.questions[0];
-    content = `<p class="eyebrow">${bt("completeProfile")}</p><h2>${esc(q.title)}</h2><p>${esc(q.why)}</p>${q.kind === "country" ? `<form id="builder-answer-form"><label for="builder-country">${esc(q.title)}</label><input id="builder-country" name="country" minlength="2" maxlength="50" required autocomplete="off"><button class="button primary" type="submit">${bt("next")}</button></form>` : `<div class="builder-goals">${q.options.map((o) => `<button data-answer-key="${q.key}" data-answer-value="${o.id}">${esc(o.title)}</button>`).join("")}</div>`}<p class="builder-note">${bt("unknownAnswer")}</p><button class="back-link" data-builder-restart>${bt("restart")}</button>`;
+    content = `<p class="eyebrow">${bt("completeProfile")}</p><h2>${esc(q.title)}</h2><p>${esc(q.why)}</p>${q.kind === "country" ? `<form id="builder-answer-form"><label for="builder-country">${esc(q.title)}</label><input id="builder-country" name="country" minlength="2" maxlength="50" required autocomplete="off"><button class="button primary" type="submit">${iconLabel(bt("next"))}</button></form>` : `<div class="builder-goals">${q.options.map((o) => `<button data-answer-key="${q.key}" data-answer-value="${o.id}">${esc(o.title)}</button>`).join("")}</div>`}<p class="builder-note">${bt("unknownAnswer")}</p><button class="back-link" data-builder-restart>${bt("restart")}</button>`;
   }
   const nextQuestion = builder.plan?.questions?.[0]?.key;
   if (builder.preview && nextQuestion && nextQuestion !== builder.lastQuestion)
     window.scrollTo({ top: 0, behavior: "smooth" });
   builder.lastQuestion = nextQuestion;
   $("#builder-view").innerHTML =
-    `<button class="back-link" data-home>← ${t("back")}</button><div class="builder-heading"><p class="eyebrow">STUDIAMI · ${t("yourJourney")}</p><h1>${bt("title")}</h1><p>${bt("intro")}</p></div><div class="builder-panel">${!builder.preview ? tabs : ""}${content}${builder.error ? `<p class="error-message" role="alert">${bt("error")}</p>` : ""}</div>`;
+    `<button class="back-link" data-home>${icon("arrow-left")} ${t("back")}</button><div class="builder-heading"><p class="eyebrow">STUDIAMI · ${t("yourJourney")}</p><h1>${bt("title")}</h1><p>${bt("intro")}</p></div><div class="builder-panel">${!builder.preview ? tabs : ""}${content}${builder.error ? `<p class="error-message" role="alert">${bt("error")}</p>` : ""}</div>`;
 }
 async function suggestBlocks() {
   const version = ++builderVersion;
