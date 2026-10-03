@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#a60d27" />
+    <meta name="theme-color" content="#630817" />
     <meta
       name="description"
       content="StudiaMI: percorsi e un assistente per la tua vita da studente a Milano. Casa, documenti, trasporti e primi passi, con fonti ufficiali."
@@ -19,34 +19,23 @@
     <script src="/static/builder.js" defer></script>
   </head>
   <body>
-    <div class="city-ambience" aria-hidden="true">
-      <video
-        id="city-video"
-        muted
-        loop
-        playsinline
-        preload="none"
-        poster="/static/assets/duomo-poster.webp"
-        data-src="/static/assets/duomo_hero_16x9.mp4"
-        tabindex="-1"
-        disablepictureinpicture
-      ></video>
-    </div>
-    <a class="skip-link" href="#main" data-t="skip">Vai al contenuto</a>
-    <div class="city-strip">
-      <div class="shell">
-        <div class="strip-event">
-          <span data-t="lab">CLAUDE IMPACT LAB · MILANO</span>
-          <time datetime="2026-10-03">03.10.2026</time>
-        </div>
-        <div class="strip-links">
+    <a class="skip-link" href="#main" data-t="skip">Vai ai contenuti</a>
+    <a class="skip-link" href="#footer" data-t="skipFooter">Vai al footer</a>
+    <header class="site-header">
+      <div class="header-slim">
+        <div class="shell">
+          <span class="header-slim-brand"
+            ><span data-t="lab">Claude Impact Lab · Milano</span>
+            <time datetime="2026-10-03">03.10.2026</time></span
+          >
           <a
+            class="header-github"
             href="https://github.com/esworde/impact-lab-oct-2026"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub · esworde/impact-lab-oct-2026"
-            >GitHub <span aria-hidden="true" data-icon="arrow-up-right"></span></a
-          >
+            >GitHub <span aria-hidden="true" data-icon="arrow-up-right"></span
+          ></a>
           <a
             href="https://www.comune.milano.it/"
             target="_blank"
@@ -54,229 +43,256 @@
             data-t="city"
             >Esplora il sito del Comune ↗</a
           >
+          <div
+            class="language-switch"
+            role="group"
+            aria-label="Lingua / Language"
+          >
+            <button data-lang="it" aria-pressed="true">IT</button>
+            <button data-lang="en" aria-pressed="false">EN</button>
+          </div>
         </div>
       </div>
-    </div>
-    <header class="site-header shell">
-      <a class="brand" href="#" aria-label="StudiaMI home"
-        ><span class="brand-municipal"
-          ><img
-            src="/static/assets/comune-milano.webp"
-            alt="Comune di Milano"
-            width="120"
-            height="58" /></span
-        ><span
-          >Studia<span class="brand-mi">MI</span
-          ><span class="brand-dot">.</span></span
-        ></a
-      >
-      <nav aria-label="Menu principale">
-        <a href="#journeys" data-nav="journeys" data-t="journeys">Percorsi</a>
-        <button data-open="how" data-t="how">Come funziona</button>
-        <button data-open="sources" data-t="sources">Le fonti</button>
+      <div class="header-center">
+        <div class="shell">
+          <a class="brand" href="#" aria-label="StudiaMI home">
+            <img
+              src="/static/assets/comune-milano.webp"
+              alt="Comune di Milano"
+              width="169"
+              height="82"
+            />
+            <span class="brand-text">
+              <span class="brand-name"
+                >Studia<span class="brand-mi">MI</span></span
+              >
+              <span class="brand-tagline" data-t="footerDescription"
+                >La tua vita da studente, un passo alla volta.</span
+              >
+            </span>
+          </a>
+          <button class="header-chat" data-open="chat">
+            <span data-t="openChat">Apri la chat</span>
+            <span
+              class="header-chat-icon"
+              aria-hidden="true"
+              data-icon="message-circle"
+            ></span>
+          </button>
+        </div>
+      </div>
+      <nav class="header-nav" aria-label="Menu principale">
+        <div class="shell">
+          <a href="#journeys" data-nav="journeys" data-t="journeys">Percorsi</a>
+          <button data-open="how" data-t="how">Come funziona</button>
+          <button data-open="sources" data-t="sources">Le fonti</button>
+        </div>
       </nav>
-      <div class="header-actions">
-        <div class="language-switch" aria-label="Lingua / Language">
-          <button data-lang="it" aria-pressed="true">IT</button
-          ><button data-lang="en" aria-pressed="false">EN</button>
-        </div>
-        <button class="button primary header-chat" data-open="chat">
-          <span data-t="openChat">Apri la chat</span
-          ><span aria-hidden="true" data-icon="arrow-up-right"></span>
-        </button>
-      </div>
     </header>
     <main id="main" tabindex="-1">
       <div id="home-view">
-        <section class="hero shell">
-          <div class="hero-kicker">
-            <span></span><span data-t="kicker">STUDENT LIFE, MADE SIMPLE</span>
+        <section class="hero-band">
+          <div class="city-ambience" aria-hidden="true">
+            <video
+              id="city-video"
+              muted
+              loop
+              playsinline
+              preload="none"
+              poster="/static/assets/duomo-poster.webp"
+              data-src="/static/assets/duomo_hero_16x9.mp4"
+              tabindex="-1"
+              disablepictureinpicture
+            ></video>
           </div>
-          <h1>
-            <span data-t="hero1">La tua nuova vita,</span><br /><em
-              data-t="hero2"
-              >comincia a Milano.</em
-            >
-          </h1>
-          <p class="hero-description" data-t="heroDescription">
-            Casa, documenti, primi giorni. Trova il tuo prossimo passo,<br
-              class="desktop-break"
-            />
-            con una guida che parla la tua lingua.
-          </p>
-          <div class="hero-ask builder-actions">
-            <button
-              class="button primary"
-              data-builder="story"
-              data-t="createPath"
-              data-t-icon="route"
-            >
-              Crea il mio percorso <span data-icon="route"></span>
+          <div class="hero shell">
+            <p class="eyebrow" data-t="kicker">STUDENT LIFE, MADE SIMPLE</p>
+            <h1>
+              <span data-t="hero1">La tua nuova vita,</span><br /><em
+                data-t="hero2"
+                >comincia a Milano.</em
+              >
+            </h1>
+            <p class="hero-description" data-t="heroDescription">
+              Raccontaci la tua situazione o rispondi a poche domande. Adattiamo
+              servizi, passaggi e checklist al tuo caso.
+            </p>
+            <div class="hero-ask builder-actions">
+              <button
+                class="button primary"
+                data-builder="story"
+                data-t="createPath"
+                data-t-icon="route"
+              >
+                Crea il mio percorso <span data-icon="route"></span>
+              </button>
+              <button
+                class="button secondary"
+                data-builder="questions"
+                data-t="guideMe"
+                data-t-icon="message-circle-question-mark"
+              >
+                Guidami con le domande
+                <span data-icon="message-circle-question-mark"></span>
+              </button>
+            </div>
+            <div id="saved-path" class="saved-path" hidden></div>
+            <button class="hero-story" data-builder="giulia">
+              <span
+                class="story-avatar"
+                aria-hidden="true"
+                data-icon="user-round"
+              ></span>
+              <span
+                ><small data-t="storyExample">UNA STORIA DA CUI PARTIRE</small
+                ><strong data-t="giuliaStory"
+                  >Giulia arriva a Milano. Casa, borsa di studio, domicilio: come
+                  si incastrano?</strong
+                ><span data-t="tryGiulia"
+                  >Componi il percorso di Giulia →</span
+                ></span
+              >
+              <span
+                class="story-blocks"
+                aria-hidden="true"
+                data-icon="blocks"
+              ></span>
             </button>
-            <button
-              class="button secondary"
-              data-builder="questions"
-              data-t="guideMe"
-              data-t-icon="message-circle-question-mark"
-            >
-              Guidami con le domande
-              <span data-icon="message-circle-question-mark"></span>
-            </button>
-          </div>
-          <div id="saved-path" class="saved-path" hidden></div>
-          <button class="hero-story" data-builder="giulia">
-            <span
-              class="story-avatar"
-              aria-hidden="true"
-              data-icon="user-round"
-            ></span>
-            <span
-              ><small data-t="storyExample">UNA STORIA DA CUI PARTIRE</small
-              ><strong data-t="giuliaStory"
-                >Giulia arriva a Milano. Casa, borsa di studio, domicilio: come
-                si incastrano?</strong
-              ><span data-t="tryGiulia"
-                >Componi il percorso di Giulia →</span
+            <div class="hero-caption">
+              <span
+                class="tiny-check"
+                aria-hidden="true"
+                data-icon="circle-check"
               ></span
-            >
-            <span
-              class="story-blocks"
-              aria-hidden="true"
-              data-icon="blocks"
-            ></span>
-          </button>
-          <div class="hero-caption">
-            <span
-              class="tiny-check"
-              aria-hidden="true"
-              data-icon="circle-check"
-            ></span
-            ><span data-t="sourcePromise"
-              >Risposte con fonti ufficiali. Nessun account richiesto.</span
-            >
-          </div>
-          <div class="hero-decoration decoration-left" aria-hidden="true">
-            <span class="map-line"></span><span class="map-dot">MI</span>
-          </div>
-          <div class="hero-decoration decoration-right" aria-hidden="true">
-            <svg viewBox="0 0 100 140">
-              <path
-                d="M8 116h84M17 116V66l9 7V55l9 6V42l9 7V25l6-16 6 16v24l9-7v19l9-6v18l9-7v50M44 116V96a6 6 0 0 1 12 0v20M29 91v13M71 91v13"
-              />
-            </svg>
+              ><span data-t="sourcePromise"
+                >Guide ufficiali, un piano che scegli tu. Nessun account
+                richiesto.</span
+              >
+            </div>
           </div>
         </section>
-        <section id="journeys" class="journeys-section shell">
-          <div class="section-heading">
-            <div>
+        <section id="journeys" class="journeys-section">
+          <div class="shell">
+            <div class="section-heading">
               <p class="eyebrow" data-t="yourJourney">IL TUO PERCORSO</p>
               <h2 data-t="startWhere">Da dove vuoi partire?</h2>
               <p data-t="journeysIntro">
                 Scegli un obiettivo. Al resto pensiamo un passo alla volta.
               </p>
             </div>
-            <span class="section-note"
-              ><span aria-hidden="true" data-icon="arrow-down-right"></span
-              ><span data-t="madeForYou">Fatto per la tua vita qui.</span></span
-            >
-          </div>
-          <div class="profile-bar">
-            <span data-t="personalize">Personalizza per te</span>
-            <div class="audience-options" aria-label="Profilo studente">
-              <button data-audience="italian" aria-pressed="false">
-                <span aria-hidden="true" data-icon="user-round"></span
-                ><span data-t="italian">Studente italiano</span></button
-              ><button data-audience="international" aria-pressed="false">
-                <span aria-hidden="true" data-icon="globe"></span
-                ><span data-t="international">Studente internazionale</span>
-              </button>
-            </div>
-            <div class="stage-options">
-              <button
-                data-stage="arriving"
-                aria-pressed="true"
-                data-t="arriving"
+            <div class="profile-bar">
+              <span data-t="personalize">Personalizza per te</span>
+              <div
+                class="audience-options"
+                role="group"
+                aria-label="Profilo studente"
               >
-                Sto arrivando</button
+                <button data-audience="italian" aria-pressed="false">
+                  <span aria-hidden="true" data-icon="user-round"></span
+                  ><span data-t="italian">Studente italiano</span></button
+                ><button data-audience="international" aria-pressed="false">
+                  <span aria-hidden="true" data-icon="globe"></span
+                  ><span data-t="international">Studente internazionale</span>
+                </button>
+              </div>
+              <div class="stage-options">
+                <button
+                  data-stage="arriving"
+                  aria-pressed="true"
+                  data-t="arriving"
+                >
+                  Sto arrivando</button
+                ><button
+                  data-stage="here"
+                  aria-pressed="false"
+                  data-t="alreadyHere"
+                >
+                  Sono già qui
+                </button>
+              </div>
+            </div>
+            <div id="international-options" class="international-options" hidden>
+              <span data-t="citizenshipNote"
+                >Per i documenti, quale percorso ti riguarda?</span
+              ><button data-citizenship="eu" aria-pressed="false" data-t="eu">
+                Cittadinanza UE</button
               ><button
-                data-stage="here"
+                data-citizenship="non-eu"
                 aria-pressed="false"
-                data-t="alreadyHere"
+                data-t="nonEu"
               >
-                Sono già qui
+                Cittadinanza non UE</button
+              ><button
+                data-citizenship="international"
+                aria-pressed="false"
+                data-t="unsure"
+              >
+                Da verificare
               </button>
             </div>
-          </div>
-          <div id="international-options" class="international-options" hidden>
-            <span data-t="citizenshipNote"
-              >Per i documenti, quale percorso ti riguarda?</span
-            ><button data-citizenship="eu" data-t="eu">Cittadinanza UE</button
-            ><button data-citizenship="non-eu" data-t="nonEu">
-              Cittadinanza non UE</button
-            ><button data-citizenship="international" data-t="unsure">
-              Da verificare
-            </button>
-          </div>
-          <div
-            class="persona-demos"
-            aria-label="Esempi di percorsi / Journey examples"
-          >
-            <span data-t="tryPersona">Prova una storia</span>
-            <button data-persona="giulia">
-              Giulia <span data-t="giuliaDemo">· studentessa fuorisede</span>
-              <span data-icon="arrow-up-right"></span>
-            </button>
-            <button data-persona="reza">
-              Reza <span data-t="rezaDemo">· studente non UE</span>
-              <span data-icon="arrow-up-right"></span>
-            </button>
-          </div>
-          <p class="catalog-source">
-            <span data-t="catalogIntro"
-              >15 casistiche, dalle guide How to di YesMilano.</span
+            <div
+              class="persona-demos"
+              role="group"
+              aria-label="Esempi di percorsi / Journey examples"
             >
-            <a
-              href="https://www.yesmilano.it/en/study/how-to"
-              target="_blank"
-              rel="noopener noreferrer"
-              data-t="catalogLink"
-              >Esplora il catalogo originale ↗</a
-            >
-          </p>
-          <div id="journey-grid" class="howto-catalog" aria-live="polite"></div>
+              <span data-t="tryPersona">Prova una storia</span>
+              <button data-persona="giulia">
+                Giulia <span data-t="giuliaDemo">· studentessa fuorisede</span>
+                <span data-icon="arrow-up-right"></span>
+              </button>
+              <button data-persona="reza">
+                Reza <span data-t="rezaDemo">· studente non UE</span>
+                <span data-icon="arrow-up-right"></span>
+              </button>
+            </div>
+            <p class="catalog-source">
+              <span data-t="catalogIntro"
+                >15 casistiche, dalle guide How to di YesMilano.</span
+              >
+              <a
+                href="https://www.yesmilano.it/en/study/how-to"
+                target="_blank"
+                rel="noopener noreferrer"
+                data-t="catalogLink"
+                >Esplora il catalogo originale ↗</a
+              >
+            </p>
+            <div id="journey-grid" class="howto-catalog" aria-live="polite"></div>
+          </div>
         </section>
       </div>
       <section id="builder-view" class="shell builder-view" hidden></section>
       <div id="journey-view" class="shell journey-view" hidden></div>
     </main>
-    <footer class="site-footer shell">
-      <div class="footer-left">
-        <div class="municipal-logo">
+    <footer class="site-footer" id="footer" tabindex="-1">
+      <div class="shell">
+        <div class="footer-brand">
           <img
             src="/static/assets/comune-milano.webp"
             alt="Comune di Milano"
-            width="120"
-            height="58"
+            width="169"
+            height="82"
           />
+          <div>
+            <strong>StudiaMI</strong>
+            <p data-t="footerDescription">
+              La tua vita da studente, un passo alla volta.
+            </p>
+          </div>
         </div>
-        <div>
-          <strong>StudiaMI</strong>
-          <p data-t="footerDescription">
-            La tua vita da studente, un passo alla volta.
-          </p>
+        <div class="footer-links">
+          <a
+            href="https://github.com/esworde/impact-lab-oct-2026"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub <span data-icon="arrow-up-right"></span
+          ></a>
+          <button data-open="sources" data-t="sources">Le fonti</button>
+          <button data-open="privacy" data-t="privacy">Privacy</button>
         </div>
-      </div>
-      <div class="footer-right">
-        <p data-t="prototype">
+        <p class="footer-note" data-t="prototype">
           Prototipo indipendente · Claude Impact Lab Milano 2026
         </p>
-        <a
-          href="https://github.com/esworde/impact-lab-oct-2026"
-          target="_blank"
-          rel="noopener noreferrer"
-          >GitHub <span data-icon="arrow-up-right"></span></a
-        ><button data-open="sources" data-t="sources">Le fonti</button
-        ><button data-open="privacy" data-t="privacy">Privacy</button>
       </div>
     </footer>
     <div class="floating-ask" id="floating-ask">

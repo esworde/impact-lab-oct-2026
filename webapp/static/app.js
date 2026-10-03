@@ -1,8 +1,9 @@
 "use strict";
 const COPY = {
   it: {
-    skip: "Vai al contenuto",
-    lab: "CLAUDE IMPACT LAB · MILANO",
+    skip: "Vai ai contenuti",
+    skipFooter: "Vai al footer",
+    lab: "Claude Impact Lab · Milano",
     city: "Esplora il sito del Comune ↗",
     journeys: "Percorsi",
     how: "Come funziona",
@@ -21,7 +22,6 @@ const COPY = {
     startWhere: "Da dove vuoi partire?",
     journeysIntro:
       "Scegli un obiettivo. Al resto pensiamo un passo alla volta.",
-    madeForYou: "Fatto per la tua vita qui.",
     personalize: "Personalizza per te",
     italian: "Studente italiano",
     international: "Studente internazionale",
@@ -59,7 +59,8 @@ const COPY = {
     stepSingular: "passo",
     startPath: "Esplora il percorso",
     resumePath: "Riprendi il percorso",
-    back: "Tutti i percorsi",
+    home: "Home",
+    breadcrumb: "Percorso di navigazione",
     editProfile: "Modifica profilo",
     progress: "Passaggi validati da te",
     step: "PASSO",
@@ -157,7 +158,8 @@ const COPY = {
   },
   en: {
     skip: "Skip to content",
-    lab: "CLAUDE IMPACT LAB · MILAN",
+    skipFooter: "Skip to footer",
+    lab: "Claude Impact Lab · Milan",
     city: "Explore the City website ↗",
     journeys: "Journeys",
     how: "How it works",
@@ -175,7 +177,6 @@ const COPY = {
     yourJourney: "YOUR JOURNEY",
     startWhere: "Where would you like to start?",
     journeysIntro: "Choose a goal. We’ll take it one step at a time.",
-    madeForYou: "Made for your life here.",
     personalize: "Make it yours",
     italian: "Italian student",
     international: "International student",
@@ -214,7 +215,8 @@ const COPY = {
     stepSingular: "step",
     startPath: "Explore this journey",
     resumePath: "Continue your journey",
-    back: "All journeys",
+    home: "Home",
+    breadcrumb: "Breadcrumb",
     editProfile: "Edit profile",
     progress: "Steps you confirmed",
     step: "STEP",
@@ -397,6 +399,8 @@ const store = (key, value) => {
 };
 const art = (id) =>
   `<svg viewBox="0 0 240 160" aria-hidden="true" focusable="false">${ART[id] || ART.arrival}</svg>`;
+const crumbs = (title) =>
+  `<nav class="breadcrumb" aria-label="${t("breadcrumb")}"><ol><li><a href="#" data-home>${t("home")}</a></li><li><a href="#journeys" data-nav="journeys">${t("journeys")}</a></li><li aria-current="page">${esc(title)}</li></ol></nav>`;
 const currentJourney = () =>
   state.journeys.find((j) => j.id === state.journeyId);
 const progressKey = (journey) =>
@@ -520,9 +524,9 @@ function updateProfileControls() {
   document
     .querySelectorAll("[data-citizenship]")
     .forEach((el) =>
-      el.classList.toggle(
-        "selected",
-        el.dataset.citizenship === state.profile.citizenship,
+      el.setAttribute(
+        "aria-pressed",
+        String(el.dataset.citizenship === state.profile.citizenship),
       ),
     );
 }
@@ -663,7 +667,7 @@ function renderRoute() {
           : t("international");
   const summary = state.stepIndex === "summary";
   $("#journey-view").innerHTML =
-    `<button class="back-link" data-home><span aria-hidden="true">${icon("arrow-left")}</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ${icon("arrow-up-right")}</button></div>${j.id === "custom" ? `<div class="adaptive-facts">${renderAIPlan(j)}${renderPlanFacts(j)}</div><div class="custom-outline"><button class="button secondary" data-builder="edit">${bt("editBlocks")} ${icon("arrow-up-right")}</button><p>${esc(j.priority)}</p></div>` : ""}${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
+    `${crumbs(j.title)}<div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ${icon("arrow-up-right")}</button></div>${j.id === "custom" ? `<div class="adaptive-facts">${renderAIPlan(j)}${renderPlanFacts(j)}</div><div class="custom-outline"><button class="button secondary" data-builder="edit">${bt("editBlocks")} ${icon("arrow-up-right")}</button><p>${esc(j.priority)}</p></div>` : ""}${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
   updateProgress();
   updateChatContext();
 }
