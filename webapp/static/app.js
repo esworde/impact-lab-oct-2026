@@ -60,7 +60,7 @@ const COPY = {
     resumePath: "Riprendi il percorso",
     back: "Tutti i percorsi",
     editProfile: "Modifica profilo",
-    progress: "Passaggi verificati",
+    progress: "Passaggi validati da te",
     step: "PASSO",
     of: "DI",
     officialSource: "LA FONTE PER QUESTO PASSAGGIO",
@@ -76,7 +76,7 @@ const COPY = {
     summaryTitle: "Il tuo percorso, a colpo d’occhio.",
     summaryBody:
       "Tieni traccia di quello che hai verificato e torna sui passaggi ancora aperti. Le pratiche si completano sui servizi ufficiali.",
-    verified: "Verificato",
+    verified: "Validato da te",
     toVerify: "Da verificare",
     download: "Scarica la checklist",
     backHome: "Esplora altri percorsi",
@@ -93,7 +93,7 @@ const COPY = {
       "Questa scelta serve ad adattare i passaggi sui documenti. Non determina la tua idoneità a un servizio.",
     privacyTitle: "Solo quello che serve.",
     privacyBody:
-      "Non chiediamo un account. Profilo generico e checklist rimangono nel tuo browser. La conversazione resta in memoria nella pagina e scompare ricaricandola; non viene salvata nel nostro database. Per rispondere, domanda e contesto vengono inviati a Claude (Anthropic), secondo le sue condizioni di trattamento. Non scrivere nomi, indirizzi, documenti o informazioni mediche.",
+      "Non chiediamo un account. Profilo generico, scelte del piano, checklist e conferme rimangono nel tuo browser. La conversazione resta in memoria nella pagina e scompare ricaricandola; non viene salvata nel nostro database. Per rispondere, domanda e contesto vengono inviati a Claude (Anthropic), secondo le sue condizioni di trattamento. Non scrivere nomi, indirizzi, documenti o informazioni mediche.",
     sourceIntro:
       "Le risposte si basano sulle guide pubbliche di YesMilano e del Comune di Milano. La data di recupero non indica necessariamente l’ultimo aggiornamento del contenuto.",
     loadError: "Non riesco a caricare i percorsi. Riprova tra poco.",
@@ -104,13 +104,38 @@ const COPY = {
     chatLimit:
       "La chat ha raggiunto il limite di questa demo. I percorsi e le fonti restano disponibili.",
     retry: "Riprova",
+    tryPersona: "PROVA UNA STORIA",
+    giuliaDemo: "· studentessa fuorisede",
+    rezaDemo: "· studente non UE",
+    plan: "IL TUO PIANO",
+    inspiredBy: "Un caso come",
+    locked: "Bloccato",
+    current: "Da validare",
+    validatedStep: "Validato da te",
+    validationTitle: "Prima di andare avanti",
+    validationNote:
+      "Spunta tutti i controlli, poi conferma questo passaggio. La conferma riguarda il tuo piano: non approva una pratica e non invia documenti.",
+    validationReady: "Controlli completati. Ora puoi validare il passaggio.",
+    validationMissing:
+      "Completa tutti i controlli per sbloccare la validazione.",
+    validateNext: "Conferma e sblocca il prossimo passo",
+    validateFinish: "Conferma e apri il riepilogo",
+    lockedNotice:
+      "Prima valida il passaggio corrente per sbloccare quello successivo.",
+    choiceTitle: "La scelta per il tuo piano",
+    choiceRequired: "Scegli un’opzione e completa i controlli.",
+    yourChoice: "La tua scelta confermata",
+    owner: "CHI TI AIUTA",
+    draft: "Prepara una bozza con StudiaMI",
+    draftPrompt:
+      "Prepara una bozza non ufficiale per la richiesta di domicilio temporaneo di una studentessa fuorisede come Giulia, basata sulla fonte del Comune KA-00595. Usa solo segnaposti, nessun dato personale. Indica cosa deve controllare e firmare lo studente, senza inviare nulla.",
     helpPrompt: "Aiutami con questo passaggio: ",
     saved: "Checklist salvata nel tuo browser.",
     close: "Chiudi",
     send: "Invia domanda",
     sourceError: "Le fonti non sono disponibili in questo momento.",
     context: "Stai seguendo",
-    completed: "verificati",
+    completed: "validati da te",
     questionHousing:
       "Sto cercando una stanza a Milano. Cosa devo controllare prima di firmare?",
     questionDocuments:
@@ -178,7 +203,7 @@ const COPY = {
     resumePath: "Continue your journey",
     back: "All journeys",
     editProfile: "Edit profile",
-    progress: "Steps checked",
+    progress: "Steps you confirmed",
     step: "STEP",
     of: "OF",
     officialSource: "THE SOURCE FOR THIS STEP",
@@ -194,7 +219,7 @@ const COPY = {
     summaryTitle: "Your journey, at a glance.",
     summaryBody:
       "Keep track of what you have checked and return to any open steps. Official applications are completed through the relevant services.",
-    verified: "Checked",
+    verified: "Confirmed by you",
     toVerify: "To check",
     download: "Download checklist",
     backHome: "Explore other journeys",
@@ -211,7 +236,7 @@ const COPY = {
       "This choice adapts the document steps. It does not determine eligibility for a service.",
     privacyTitle: "Just what you need.",
     privacyBody:
-      "No account needed. Your generic profile and checklists stay in your browser. The conversation stays in page memory and disappears when you reload; it is not saved in our database. To answer, your question and context are sent to Claude (Anthropic), subject to its data-processing terms. Do not enter names, addresses, documents or medical information.",
+      "No account needed. Your generic profile, plan choices, checklists and confirmations stay in your browser. The conversation stays in page memory and disappears when you reload; it is not saved in our database. To answer, your question and context are sent to Claude (Anthropic), subject to its data-processing terms. Do not enter names, addresses, documents or medical information.",
     sourceIntro:
       "Answers use public YesMilano and City of Milan guides. Retrieval dates do not necessarily reflect the last content update.",
     loadError: "The journeys could not be loaded. Please try again shortly.",
@@ -222,13 +247,36 @@ const COPY = {
     chatLimit:
       "This demo’s chat limit has been reached. Journeys and sources remain available.",
     retry: "Try again",
+    tryPersona: "TRY A STORY",
+    giuliaDemo: "· Italian student away from home",
+    rezaDemo: "· non-EU student",
+    plan: "YOUR PLAN",
+    inspiredBy: "A case like",
+    locked: "Locked",
+    current: "Awaiting your confirmation",
+    validatedStep: "Confirmed by you",
+    validationTitle: "Before you move on",
+    validationNote:
+      "Tick every check, then confirm this step. Confirmation applies to your plan: it does not approve applications or send documents.",
+    validationReady: "Checks complete. You can now confirm this step.",
+    validationMissing: "Complete every check to enable confirmation.",
+    validateNext: "Confirm and unlock the next step",
+    validateFinish: "Confirm and view the summary",
+    lockedNotice: "Confirm the current step before unlocking the next one.",
+    choiceTitle: "Your plan choice",
+    choiceRequired: "Choose an option and complete the checks.",
+    yourChoice: "Your confirmed choice",
+    owner: "WHO CAN HELP",
+    draft: "Prepare a draft with StudiaMI",
+    draftPrompt:
+      "Prepare an unofficial draft for temporary student domicile for an Italian student like Giulia, based on City source KA-00595. Use placeholders only, no personal data. Explain what the student must check and sign; do not send anything.",
     helpPrompt: "Help me with this step: ",
     saved: "Checklist saved in your browser.",
     close: "Close",
     send: "Send question",
     sourceError: "Sources are unavailable right now.",
     context: "Your current journey",
-    completed: "checked",
+    completed: "confirmed by you",
     questionHousing:
       "I’m looking for a room in Milan. What should I check before signing?",
     questionDocuments:
@@ -280,6 +328,7 @@ const state = {
   journeys: [],
   sources: [],
   progress: readStored("studia-mi-checklists", {}),
+  plans: readStored("studia-mi-plans", {}),
   journeyId: null,
   stepIndex: 0,
   messages: [],
@@ -299,14 +348,29 @@ const art = (id) =>
 const currentJourney = () =>
   state.journeys.find((j) => j.id === state.journeyId);
 const progressKey = (journey) =>
-  `${state.profile.citizenship || "international"}:${journey.id}`;
+  `${journey.plan_revision}:${state.profile.citizenship || "international"}:${journey.id}`;
+const planFor = (journey) => (state.plans[progressKey(journey)] ??= {});
+const checksFor = (journey) => {
+  const key = progressKey(journey);
+  if (!state.progress[key] && journey.plan_revision === "guided-1") {
+    const old =
+      state.progress[
+        `${state.profile.citizenship || "international"}:${journey.id}`
+      ];
+    if (old) state.progress[key] = { ...old };
+  }
+  return state.progress[key] || {};
+};
 const checked = (journey, step, index) =>
-  !!state.progress[progressKey(journey)]?.[`${step.id}:${index}`];
+  checksFor(journey)[`${step.id}:${index}`] === true;
+const ready = (journey, step) =>
+  StudyPlan.ready(step, checksFor(journey), planFor(journey));
 const done = (journey, step) =>
-  step.checklist.length > 0 &&
-  step.checklist.every((_, i) => checked(journey, step, i));
-const doneCount = (journey) =>
-  journey.steps.filter((s) => done(journey, s)).length;
+  StudyPlan.validated(step, checksFor(journey), planFor(journey));
+const frontier = (journey) =>
+  StudyPlan.frontier(journey, checksFor(journey), planFor(journey));
+const doneCount = (journey) => frontier(journey);
+const savePlans = () => store("studia-mi-plans", state.plans);
 const safeURL = (url) => {
   try {
     const u = new URL(url);
@@ -465,6 +529,15 @@ function renderRoute() {
     match[2] === "summary"
       ? "summary"
       : Math.min(Number(match[2]), j.steps.length - 1);
+  const openUntil = frontier(j);
+  if (
+    (state.stepIndex === "summary" && openUntil < j.steps.length) ||
+    (state.stepIndex !== "summary" && state.stepIndex > openUntil)
+  ) {
+    state.stepIndex = Math.min(openUntil, j.steps.length - 1);
+    history.replaceState(null, "", `#journey/${j.id}/${state.stepIndex}`);
+    toast(t("lockedNotice"));
+  }
   const label =
     state.profile.citizenship === "italian"
       ? t("italian")
@@ -475,31 +548,78 @@ function renderRoute() {
           : t("international");
   const summary = state.stepIndex === "summary";
   $("#journey-view").innerHTML =
-    `<button class="back-link" data-home><span aria-hidden="true">←</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ↗</button></div><div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : `<div class="step-pagination"><button class="button secondary" data-step="${Math.max(0, state.stepIndex - 1)}" ${state.stepIndex === 0 ? "disabled" : ""}>← ${t("previous")}</button><button class="button primary" data-step="${state.stepIndex === j.steps.length - 1 ? "summary" : state.stepIndex + 1}">${state.stepIndex === j.steps.length - 1 ? t("summary") : t("next")} <span aria-hidden="true">→</span></button></div>`}</section></div>`;
+    `<button class="back-link" data-home><span aria-hidden="true">←</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ↗</button></div>${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
   updateProgress();
   updateChatContext();
 }
 
 function renderStep(j, s) {
-  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(j.icon)}</div></div><h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p><a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">↗</span></a><h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">✳</span>${t("helpStep")} ↗</button></div>`;
+  if (s.routes) {
+    s = { ...s, ...s.routes[planFor(j).choices?.[s.follows_choice]] };
+  }
+  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(j.icon)}</div></div><h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p>${s.owner ? `<p class="step-owner"><small>${t("owner")}</small> ${esc(s.owner)}</p>` : ""}${renderChoices(j, s)}<a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">↗</span></a>${(s.extra_sources || []).map((source) => `<a class="secondary-source" href="${esc(safeURL(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>`).join("")}<h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div>${s.follows_choice && planFor(j).choices?.[s.follows_choice] === "temporary" ? `<button class="draft-button" data-draft>${t("draft")} ↗</button>` : ""}<div class="validation-panel"><h3>${t("validationTitle")}</h3><p>${esc(s.validation || t("validationReady"))}</p><small id="validation-status" role="status"></small><p class="validation-note">${t("validationNote")}</p></div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">✳</span>${t("helpStep")} ↗</button></div>`;
 }
 
 function renderSummary(j) {
   return `<p class="eyebrow">${t("summary")}</p><h2 class="completion-title">${t("summaryTitle")}</h2><p class="completion-description">${t("summaryBody")}</p><ul class="completion-list">${j.steps.map((s, i) => `<li><button data-step="${i}">${done(j, s) ? "✓" : "○"} ${esc(s.title)}</button><span>${done(j, s) ? t("verified") : t("toVerify")}</span></li>`).join("")}</ul><div class="completion-actions"><button class="button primary" data-download>${t("download")} ↓</button><button class="button secondary" data-home>${t("backHome")} ↗</button></div>`;
 }
 
+function renderChoices(j, s) {
+  if (s.follows_choice) {
+    const previous = j.steps.find((item) => item.id === s.follows_choice);
+    const choice = previous?.choices?.find(
+      (c) => c.id === planFor(j).choices?.[previous.id],
+    );
+    return choice
+      ? `<div class="confirmed-choice"><small>${t("yourChoice")}</small><strong>${esc(choice.title)}</strong></div>`
+      : "";
+  }
+  if (!s.choices) return "";
+  return `<fieldset class="plan-choices"><legend>${t("choiceTitle")}</legend>${s.choices.map((c) => `<label><input type="radio" name="plan-choice" data-plan-choice="${esc(c.id)}" ${planFor(j).choices?.[s.id] === c.id ? "checked" : ""}><span><strong>${esc(c.title)}</strong><small>${esc(c.body)}</small></span></label>`).join("")}</fieldset>`;
+}
+function renderPagination(j) {
+  const s = j.steps[state.stepIndex],
+    validated = done(j, s);
+  return `<div class="step-pagination"><button class="button secondary" data-step="${Math.max(0, state.stepIndex - 1)}" ${state.stepIndex === 0 ? "disabled" : ""}>← ${t("previous")}</button><button id="validate-step" class="button primary" data-validate ${!ready(j, s) ? "disabled" : ""}>${validated ? (state.stepIndex === j.steps.length - 1 ? t("summary") : t("next")) : state.stepIndex === j.steps.length - 1 ? t("validateFinish") : t("validateNext")} <span aria-hidden="true">→</span></button></div>`;
+}
 function updateProgress() {
   const j = currentJourney();
   if (!j) return;
-  $("#progress-count").textContent = `${doneCount(j)}/${j.steps.length}`;
+  const openUntil = frontier(j);
+  $("#progress-count").textContent = `${openUntil}/${j.steps.length}`;
   $("#progress-fill").style.width =
-    `${Math.round((100 * doneCount(j)) / j.steps.length)}%`;
+    `${Math.round((100 * openUntil) / j.steps.length)}%`;
   $("#step-nav").innerHTML = j.steps
-    .map(
-      (s, i) =>
-        `<li><button data-step="${i}" aria-label="${i+1}. ${esc(s.title)}" class="${state.stepIndex === i ? "active" : ""} ${done(j, s) ? "done" : ""}" ${state.stepIndex === i ? 'aria-current="step"' : ""}><span class="step-number">${done(j, s) ? "✓" : i + 1}</span><span class="step-name">${esc(s.title)}</span></button></li>`,
-    )
+    .map((s, i) => {
+      const locked = i > openUntil,
+        status =
+          i < openUntil
+            ? t("validatedStep")
+            : locked
+              ? t("locked")
+              : t("current");
+      return `<li><button data-step="${i}" aria-label="${i + 1}. ${esc(s.title)} · ${esc(status)}" class="${state.stepIndex === i ? "active" : ""} ${i < openUntil ? "done" : ""} ${locked ? "locked" : ""}" ${locked ? "disabled" : ""} ${state.stepIndex === i ? 'aria-current="step"' : ""}><span class="step-number">${i < openUntil ? "✓" : locked ? "⌑" : i + 1}</span><span class="step-name">${esc(s.title)}<small>${esc(status)}</small></span></button></li>`;
+    })
     .join("");
+  if (state.stepIndex !== "summary") {
+    const step = j.steps[state.stepIndex];
+    $("#validate-step").disabled = !ready(j, step);
+    $("#validation-status").textContent = done(j, step)
+      ? t("validatedStep")
+      : ready(j, step)
+        ? t("validationReady")
+        : step.choices && !planFor(j).choices?.[step.id]
+          ? t("choiceRequired")
+          : t("validationMissing");
+    $("#validate-step").firstChild.textContent =
+      (done(j, step)
+        ? state.stepIndex === j.steps.length - 1
+          ? t("summary")
+          : t("next")
+        : state.stepIndex === j.steps.length - 1
+          ? t("validateFinish")
+          : t("validateNext")) + " ";
+  }
 }
 
 async function changeProfile(values) {
@@ -657,13 +777,19 @@ async function sendQuestion(question, retry = false) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        messages: state.messages.slice(-9).filter((m, i, a) => i > 0 || m.role === "user"),
+        messages: state.messages
+          .slice(-9)
+          .filter((m, i, a) => i > 0 || m.role === "user"),
         profile: {
           ...state.profile,
           citizenship: state.profile.citizenship || "international",
         },
         journey_id: j?.id || null,
         step_id: s?.id || null,
+        plan_choice: j ? planFor(j).choices?.["giulia-status"] || null : null,
+        validated_step_ids: j
+          ? j.steps.slice(0, frontier(j)).map((step) => step.id)
+          : [],
       }),
     });
     const result = await response.json();
@@ -707,7 +833,7 @@ function downloadChecklist() {
     j.steps
       .map(
         (s) =>
-          `${s.title}\n${s.checklist.map((item, i) => `[${checked(j, s, i) ? "x" : " "}] ${item}`).join("\n")}\n${s.source}\n`,
+          `${s.title} — ${done(j, s) ? t("validatedStep") : t("toVerify")}\n${s.checklist.map((item, i) => `[${checked(j, s, i) ? "x" : " "}] ${item}`).join("\n")}\n${s.source}\n`,
       )
       .join("\n");
   const url = URL.createObjectURL(
@@ -751,6 +877,30 @@ document.addEventListener("click", async (e) => {
   }
   if (el.dataset.open) {
     el.dataset.open === "chat" ? openChat() : showInfo(el.dataset.open);
+    return;
+  }
+  if (el.dataset.persona) {
+    await changeProfile({
+      citizenship: el.dataset.persona === "giulia" ? "italian" : "non-eu",
+      stage: "here",
+    });
+    navigate(
+      "arrival",
+      Math.min(frontier(state.journeys[0]), state.journeys[0].steps.length - 1),
+    );
+    return;
+  }
+  if (el.hasAttribute("data-validate")) {
+    const j = currentJourney();
+    if (StudyPlan.confirm(j, state.stepIndex, checksFor(j), planFor(j))) {
+      savePlans();
+      location.hash = `#journey/${j.id}/${state.stepIndex === j.steps.length - 1 ? "summary" : state.stepIndex + 1}`;
+      renderJourneys();
+    } else toast(t("lockedNotice"));
+    return;
+  }
+  if (el.hasAttribute("data-draft")) {
+    sendQuestion(t("draftPrompt"));
     return;
   }
   if (el.dataset.journey) {
@@ -799,14 +949,30 @@ document.addEventListener("click", async (e) => {
   }
 });
 document.addEventListener("change", (e) => {
-  if (!e.target.matches("[data-check]")) return;
+  if (!e.target.matches("[data-check], [data-plan-choice]")) return;
   const j = currentJourney(),
     s = j.steps[state.stepIndex],
     key = progressKey(j);
-  state.progress[key] ??= {};
-  state.progress[key][`${s.id}:${e.target.dataset.check}`] = e.target.checked;
-  store("studia-mi-checklists", state.progress);
-  e.target.closest("label").classList.toggle("checked", e.target.checked);
+  const requiresReview = done(j, s) || e.target.matches("[data-plan-choice]");
+  if (e.target.matches("[data-plan-choice]")) {
+    planFor(j).choices ??= {};
+    planFor(j).choices[s.id] = e.target.dataset.planChoice;
+  } else {
+    state.progress[key] ??= {};
+    state.progress[key][`${s.id}:${e.target.dataset.check}`] = e.target.checked;
+    store("studia-mi-checklists", state.progress);
+    e.target.closest("label").classList.toggle("checked", e.target.checked);
+  }
+  StudyPlan.reopen(j, state.stepIndex, planFor(j));
+  if (requiresReview) {
+    for (const later of j.steps.slice(state.stepIndex + 1)) {
+      later.checklist.forEach(
+        (_, i) => delete state.progress[key]?.[`${later.id}:${i}`],
+      );
+    }
+    store("studia-mi-checklists", state.progress);
+  }
+  savePlans();
   updateProgress();
   renderJourneys();
 });

@@ -1,4 +1,6 @@
 """Reviewed navigation/checklists, not automatic eligibility decisions."""
+from webapp.personas import arrival_for
+
 BASE = 'https://studyandwork.yesmilano.it/en'
 FIRST = BASE + '/study/how-to/first-steps'
 RENT = BASE + '/study/how-to/rents'
@@ -159,7 +161,17 @@ def localized(language='it', citizenship='international'):
         return value
     result = []
     for journey in JOURNEYS:
+        if journey['id'] == 'arrival':
+            persona_plan = arrival_for(citizenship)
+            if persona_plan:
+                journey = {**journey, **persona_plan}
+                journey['questions'] = ([b('Devo cambiare residenza? E la borsa di studio?', 'Should I change residence? What about my grant?'),
+                                         b('Come chiedo il domicilio temporaneo?', 'How do I request temporary student domicile?')]
+                                        if citizenship == 'italian' else
+                                        [b('Permesso, codice fiscale e residenza: in che ordine?', 'Permit, tax code and residence: in which order?'),
+                                         b('Non ho SPID: come accedo ai servizi?', 'I have no SPID: how do I access services?')])
         item = translate(journey)
+        item.setdefault('plan_revision', 'guided-1')
         item['steps'] = [translate(s) for s in journey['steps']
                          if not s['audiences'] or citizenship in s['audiences']]
         result.append(item)

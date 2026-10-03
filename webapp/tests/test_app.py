@@ -67,6 +67,28 @@ class JourneyTests(unittest.TestCase):
             self.assertEqual(len(journeys), 6)
             self.assertTrue(all(s['source'].startswith('https://') for j in journeys for s in j['steps']))
 
+    def test_persona_plans_address_different_student_barriers(self):
+        giulia = localized('it', 'italian')[0]
+        reza = localized('en', 'non-eu')[0]
+        self.assertEqual(giulia['persona'], 'Giulia')
+        self.assertEqual(reza['persona'], 'Reza')
+        self.assertEqual(len(giulia['steps']), 6)
+        self.assertEqual(len(reza['steps']), 8)
+        options = next(s for s in giulia['steps'] if s['id'] == 'giulia-status')
+        self.assertEqual({c['id'] for c in options['choices']}, {'keep','temporary','transfer'})
+        self.assertTrue(all(s['owner'] and s['validation'] for s in giulia['steps'] + reza['steps']))
+        ids = [s['id'] for s in reza['steps']]
+        self.assertLess(ids.index('permit'), ids.index('tax'))
+        self.assertLess(ids.index('receipt'), ids.index('reza-residence'))
+        self.assertIn('not mandatory', next(s for s in reza['steps'] if s['id']=='reza-residence')['body'])
+
+    def test_persona_faqs_have_clean_content_and_update_dates(self):
+        pages = json.loads((main.ROOT / 'data/seed.json').read_text())
+        faqs = [p for p in pages if 'servizicrm.comune.milano.it' in p['url']]
+        self.assertGreaterEqual(len(faqs), 4)
+        self.assertTrue(all(p['stated_updated_date'] for p in faqs))
+        self.assertTrue(all('Potrebbe' not in p['markdown'] and 'W3siQX' not in p['markdown'] for p in faqs))
+
 
 class ApiTests(unittest.TestCase):
     def setUp(self):
@@ -110,13 +132,15 @@ class ApiTests(unittest.TestCase):
             async def close(self):
                 pass
         with patch.dict(os.environ, {'ANTHROPIC_API_KEY': 'test-key'}), patch.object(main.anthropic,'AsyncAnthropic',FakeClaude):
-            response = self.client.post('/api/chat',json={'messages':[{'role':'user','content':'Explain the deposit'}], 'profile':{'citizenship':'non-eu','language':'en','stage':'arriving'},'journey_id':'housing','step_id':'deposit'})
+            response = self.client.post('/api/chat',json={'messages':[{'role':'user','content':'Explain the deposit'}], 'profile':{'citizenship':'non-eu','language':'en','stage':'arriving'},'journey_id':'housing','step_id':'deposit','validated_step_ids':['needs','viewing','contract']})
         self.assertEqual(response.status_code,200,response.text)
         self.assertTrue(response.json()['sources'])
         retrieved = json.loads(calls[1]['messages'][-2]['content'][0]['content'])
         self.assertTrue(any('rent' in r['url'] for r in retrieved))
         self.assertIn('deposit', calls[0]['system'])
         self.assertEqual(calls[0]['tool_choice']['name'],'search_guides')
+        self.assertIn('user_confirmed_steps', calls[0]['system'])
+        self.assertIn('never confirm or unlock', calls[0]['system'])
 
 
 if __name__ == '__main__':

@@ -95,9 +95,27 @@ class ChatRequest(BaseModel):
     profile: Profile = Field(default_factory=Profile)
     journey_id: str | None = Field(default=None, max_length=40)
     step_id: str | None = Field(default=None, max_length=40)
+    plan_choice: Literal['keep', 'temporary', 'transfer'] | None = None
+    validated_step_ids: list[str] = Field(default_factory=list, max_length=20)
 
 
 SYSTEM = '''You are StudiaMI, a warm, practical assistant for student life in Milan.
+The current journey is a sequential plan. The user sees its outline, while step
+details unlock only after the user checks every item and explicitly confirms.
+You explain and prepare drafts; you never confirm or unlock a step for the user.
+Treat user-confirmed steps as self-reported progress, not official approvals.
+For an Italian student like Giulia, clarify temporary domicile versus residence,
+refer grant/ISEE questions to the university, and follow the user's plan choice.
+For a non-EU student like Reza, explain dependencies and urgent permit deadlines.
+App locks never suspend deadlines: flag urgent parallel tasks when relevant.
+Healthcare coverage and individual grant eligibility belong to their competent
+services: route questions there without determining entitlement.
+Drafts must use placeholders only, identify themselves as unofficial, and require
+the student to review and sign outside this app. Never send email or documents.
+Format drafts as short letter text, not tables or code blocks. Personal fields
+are filled outside this app only. Show email addresses as plain text, not mailto
+links. After explaining a step, direct the user to the plan's confirmation button;
+do not ask for document details or try to validate progress through chat.
 Help Italian and international students navigate arrival, housing, documents,
 transport, healthcare access and everyday city life. Reply in the requested UI
 language unless the user explicitly asks for another language.
@@ -158,9 +176,16 @@ async def chat(body: ChatRequest):
     current_step = next((s for s in current['steps'] if s['id'] == body.step_id), None) if current else None
     if body.step_id and not current_step:
         raise HTTPException(422, 'Unknown or inapplicable step')
+    if current_step and current_step.get('routes'):
+        current_step = {**current_step, **current_step['routes'].get(body.plan_choice, {})}
+        current_step.pop('routes', None)
+    if body.validated_step_ids and (not current or any(
+            step_id not in {s['id'] for s in current['steps']} for step_id in body.validated_step_ids)):
+        raise HTTPException(422, 'Unknown confirmed step')
     journey_context = {k: current[k] for k in ['id', 'title', 'subtitle']} if current else None
     context = {'profile': body.profile.model_dump(), 'current_journey': journey_context,
                'current_step': current_step,
+               'plan_choice': body.plan_choice, 'user_confirmed_steps': body.validated_step_ids,
                'available_journeys': [{'id': j['id'], 'title': j['title']} for j in available]}
     messages = [m.model_dump() for m in body.messages]
     seen_sources = {}

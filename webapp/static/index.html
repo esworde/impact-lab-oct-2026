@@ -11,6 +11,7 @@
     <title>StudiaMI · La tua vita da studente a Milano</title>
     <link rel="icon" href="/static/assets/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/static/styles.css" />
+    <script src="/static/plan.js" defer></script>
     <script src="/static/app.js" defer></script>
   </head>
   <body>
@@ -166,6 +167,18 @@
               Cittadinanza non UE</button
             ><button data-citizenship="international" data-t="unsure">
               Da verificare
+            </button>
+          </div>
+          <div
+            class="persona-demos"
+            aria-label="Esempi di percorsi / Journey examples"
+          >
+            <span data-t="tryPersona">Prova una storia</span>
+            <button data-persona="giulia">
+              Giulia <span data-t="giuliaDemo">· studentessa fuorisede</span> ↗
+            </button>
+            <button data-persona="reza">
+              Reza <span data-t="rezaDemo">· studente non UE</span> ↗
             </button>
           </div>
           <div id="journey-grid" class="journey-grid" aria-live="polite"></div>

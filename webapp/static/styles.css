@@ -854,6 +854,9 @@ textarea:focus-visible {
   gap: 30px;
   align-items: start;
 }
+.journey-layout > * {
+  min-width: 0;
+}
 .journey-sidebar {
   position: sticky;
   top: 24px;
@@ -1941,5 +1944,189 @@ dialog::backdrop {
   * {
     animation: none !important;
     transition: none !important;
+  }
+}
+/* Plans expose their outline; only confirmed predecessors reveal step details. */
+.persona-demos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 0 0 24px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.persona-demos > span {
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+.persona-demos button {
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  padding: 10px 15px;
+  background: var(--paper);
+  color: var(--red);
+}
+.persona-plan {
+  padding: 22px 26px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--paper);
+  margin-bottom: 26px;
+}
+.persona-plan p {
+  font-size: 13px;
+  line-height: 1.7;
+  margin: 8px 0;
+}
+.persona-plan .eyebrow {
+  font-size: 10px;
+  color: var(--red);
+}
+.persona-plan small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+.step-nav .step-name small {
+  display: block;
+  font-size: 9px;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.step-nav button.locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.step-nav button.locked .step-number {
+  background: var(--paper);
+  color: var(--muted);
+}
+.step-owner {
+  font-size: 12px;
+  color: var(--red);
+  margin: 0 0 22px;
+}
+.step-owner small {
+  font-size: 9px;
+  letter-spacing: 0.6px;
+  margin-right: 8px;
+}
+.secondary-source {
+  display: block;
+  font-size: 12px;
+  color: var(--red);
+  margin: -16px 0 28px;
+}
+.validation-panel {
+  padding: 20px;
+  border: 1px solid #d8c2c5;
+  border-radius: 14px;
+  background: #faf2f1;
+  margin: 26px 0;
+}
+.validation-panel h3 {
+  font: 400 23px var(--serif);
+  margin: 0 0 10px;
+}
+.validation-panel p {
+  font-size: 12px;
+  line-height: 1.65;
+  margin: 0 0 12px;
+}
+.validation-panel small {
+  font-size: 11px;
+  color: var(--red);
+  display: block;
+  margin-bottom: 10px;
+}
+.validation-panel .validation-note {
+  font-size: 10px;
+  color: var(--muted);
+  margin: 0;
+}
+.plan-choices {
+  border: 0;
+  padding: 0;
+  margin: 24px 0;
+}
+.plan-choices legend {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+.plan-choices label {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background: var(--paper);
+}
+.plan-choices label:has(input:checked) {
+  border-color: var(--red);
+  background: #faf2f1;
+}
+.plan-choices input {
+  accent-color: var(--red);
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.plan-choices strong,
+.confirmed-choice strong {
+  display: block;
+  font-size: 12px;
+}
+.plan-choices small {
+  display: block;
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.65;
+  margin-top: 7px;
+}
+.confirmed-choice {
+  padding: 16px;
+  border-left: 3px solid var(--red);
+  background: var(--paper);
+  margin-bottom: 24px;
+}
+.confirmed-choice small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  margin-bottom: 7px;
+}
+.draft-button {
+  padding: 12px 16px;
+  border-radius: 20px;
+  background: var(--paper);
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-size: 12px;
+}
+.step-pagination .primary {
+  max-width: 70%;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.5;
+}
+@media (max-width: 600px) {
+  .persona-plan {
+    padding: 18px;
+  }
+  .step-pagination {
+    align-items: flex-start;
+  }
+  .step-pagination .primary {
+    font-size: 11px;
+    padding: 13px 16px;
+  }
+  .persona-demos button {
+    font-size: 11px;
   }
 }

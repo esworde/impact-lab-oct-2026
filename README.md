@@ -14,7 +14,8 @@ A student arriving in Milan must piece together housing, documents, transport an
 
 - A home page with a question box and six illustrated journeys: arrival, housing, documents, transport, healthcare access and city life.
 - Italian/international profiles, with EU/non-EU options where document routes differ. Language is a separate choice.
-- Step-by-step cards, official source links, checklists saved locally, a summary and downloadable checklist.
+- Sequential plans with a visible outline, locked future details, official sources, local checklists and explicit student confirmation before each next step. Direct links cannot skip confirmation; editing earlier decisions revokes dependent confirmations.
+- Persona plans for **Giulia (6 steps)** and **Reza (8 steps)**, accessible through the home-page story buttons or the Italian/non-EU profile. Giulia’s status choice changes her next action; Reza’s permit deadline is highlighted from the start. [Plan design and verified sources](docs/PERSONA_PLANS.md).
 - An assistant that receives the current journey/step and searches a SQLite FTS5 database before answering.
 - Italian and English interfaces, responsive layouts, keyboard navigation and reduced-motion support.
 
@@ -24,7 +25,7 @@ Design references: [America.gov](https://america.gov/how-it-works), the supplied
 
 **Model:** `claude-haiku-4-5-20251001`, chosen for speed and cost. Configurable through `CLAUDE_MODEL`.
 
-At runtime Claude understands the question and the generic student profile, rewrites search queries into the corpus language, searches source sections, reads full guides when needed, explains the next actions in the selected language and can suggest a journey. Contextual help includes the step currently open.
+At runtime Claude understands the question and the generic student profile, rewrites search queries into the corpus language, searches source sections, reads full guides when needed, explains the next actions in the selected language and can suggest a journey. Contextual help includes the step currently open, the student’s chosen route and self-reported confirmed steps. Claude explains the plan and can prepare an unofficial placeholder draft for temporary domicile; it cannot confirm or unlock a step.
 
 - Prompts and tools: [`webapp/main.py`](webapp/main.py).
 - Retrieval and versioned source storage: [`webapp/knowledge.py`](webapp/knowledge.py).
@@ -37,7 +38,7 @@ At runtime Claude understands the question and the generic student profile, rewr
 
 ## City data and sources
 
-**30 public pages acquired with Firecrawl on 3 October 2026, indexed as 229 source sections.** The initial three-page Jina pilot has been replaced by Firecrawl content in the deployment snapshot.
+**35 public pages acquired with Firecrawl on 3 October 2026, indexed as 234 source sections.** The initial three-page Jina pilot has been replaced by Firecrawl content in the deployment snapshot.
 
 | Source | Use |
 | --- | --- |
@@ -46,6 +47,7 @@ At runtime Claude understands the question and the generic student profile, rewr
 | [YesMilano Rents](https://studyandwork.yesmilano.it/en/study/how-to/rents) and 10 linked detail pages | Contracts, deposit, payments, required documents and rental support |
 | [Comune: cambio di residenza](https://www.comune.milano.it/servizi/anagrafe/cambio-di-residenza) | Municipal residence guidance |
 | [Comune: dichiarazione TARI](https://www.comune.milano.it/servizi/tributi/tari-dichiarazione-di-occupazione-di-appartamenti-e-immobili) | Occupancy declaration guidance |
+| [Comune support FAQs](docs/PERSONA_PLANS.md) | Temporary student domicile, Italian residence transfer, valid-permit and housing documents, non-resident TARI occupants |
 | [Comune: certificati anagrafici](https://www.comune.milano.it/servizi/anagrafe/certificati-anagrafici) | Certificates and official channels |
 
 The full acquisition snapshot and provenance are in [`webapp/data/seed.json`](webapp/data/seed.json). This is a curated student corpus, not a complete index of YesMilano. Linked PDFs have not been ingested. Fetch dates are not content-update dates: for example, the rental overview declares an update of 27 July 2023.
@@ -67,7 +69,7 @@ uv pip install --python .venv/bin/python -r webapp/requirements.lock
 Open `http://127.0.0.1:8000`. The public snapshot seeds the database on first startup. Without an Anthropic key, journeys and sources work; chat reports that it is unavailable.
 
 ```bash
-# Refresh up to 30 curated public pages with Firecrawl.
+# Refresh the 35 curated public pages with Firecrawl.
 .venv/bin/python -m webapp.ingest --snapshot
 
 # Refresh a smaller subset or a specific approved public source.
@@ -76,6 +78,7 @@ Open `http://127.0.0.1:8000`. The public snapshot seeds the database on first st
 
 # Verification
 .venv/bin/python -m unittest discover -s webapp/tests -v
+node webapp/tests/test_plan.cjs
 node --check webapp/static/app.js
 ```
 
@@ -89,11 +92,11 @@ To refresh the deployed persistent database, run `python -m webapp.ingest` insid
 
 ## Verification
 
-Seven automated tests cover atomic reindexing/version history, duplicate prevention, query escaping, real-corpus retrieval, profile-dependent journeys, API limits/errors and the Claude tool loop. A real Haiku call was tested against the indexed rental sources. Browser checks cover profile selection, step navigation and checklist persistence after reload.
+Nine Python tests and the JavaScript plan-state checks cover atomic reindexing/version history, duplicate prevention, query escaping, real-corpus retrieval, profile-dependent journeys, API limits/errors, persona routes, municipal FAQ isolation and the Claude tool loop. Plan checks cover required choices, explicit confirmation, ordered unlocking, storage round trips and invalidation of dependent confirmations. Real Haiku calls were tested against the indexed rental sources and for a placeholder temporary-domicile draft citing the municipal FAQ. Browser checks cover Giulia’s complete plan, route choice, locked direct URLs and summary, explicit confirmation, download and persistence after reload, invalidation, Reza’s dependencies, English and mobile layouts.
 
 ## Privacy and limits
 
-Only public source content is stored in SQLite. Generic preferences and checklist ticks are saved in browser storage; conversations remain in page memory and are not written to the app database. Questions and navigation context are sent to Anthropic for answering, subject to that provider's processing terms. The prototype asks users not to provide personal data. It does not upload documents, sign users into government services or submit applications. Application access logs are disabled; hosting/provider infrastructure has its own logging policies.
+Only public source content is stored in SQLite. Generic preferences, plan choices, checklist ticks and self-confirmation timestamps are saved in browser storage; conversations remain in page memory and are not written to the app database. Questions and navigation context are sent to Anthropic for answering, subject to that provider's processing terms. The prototype asks users not to provide personal data. It does not upload documents, sign users into government services or submit applications. Application access logs are disabled; hosting/provider infrastructure has its own logging policies.
 
 Before a broader release: review source freshness and journey wording with service owners, set an operating budget, configure authenticated operational refreshes and add multilingual retrieval evaluation.
 

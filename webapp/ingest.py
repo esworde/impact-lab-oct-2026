@@ -12,6 +12,9 @@ from dotenv import load_dotenv
 import httpx
 
 from webapp.knowledge import Knowledge
+from webapp.personas import PERSONA_GUIDES
+
+APPROVED_HOSTS = {'studyandwork.yesmilano.it', 'www.yesmilano.it', 'www.comune.milano.it', 'servizicrm.comune.milano.it'}
 
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT.parent / '.env')
@@ -42,7 +45,7 @@ GUIDES = [
 
 def scrape(url, api_key):
     parsed = urlparse(url)
-    if parsed.scheme != 'https' or parsed.hostname not in {'studyandwork.yesmilano.it','www.yesmilano.it','www.comune.milano.it'}:
+    if parsed.scheme != 'https' or parsed.hostname not in APPROVED_HOSTS:
         raise ValueError('Only approved public source hosts can be indexed')
     payload = {'url': url, 'formats': ['markdown', 'links'], 'maxAge': 0,
                'onlyMainContent': True, 'timeout': 60000}
@@ -63,10 +66,18 @@ def scrape(url, api_key):
         raise ValueError('Origin blocked or returned insufficient guide text')
     # A changed origin URL must remain an approved public source.
     canonical = meta.get('url') or meta.get('sourceURL') or url
-    if urlparse(canonical).hostname not in {'studyandwork.yesmilano.it','www.yesmilano.it','www.comune.milano.it'}:
+    if urlparse(canonical).hostname not in APPROVED_HOSTS:
         raise ValueError('Unexpected redirect outside approved hosts')
+    if urlparse(canonical).path in {'', '/'} and parsed.path not in {'', '/'}:
+        raise ValueError('Guide redirected to a homepage')
+    if parsed.hostname == 'servizicrm.comune.milano.it':
+        article = re.search(r'^## [^\n]+\n', markdown, re.M)
+        end = re.search(r'Ultimo aggiornamento:\s*\d{2}/\d{2}/\d{4}', markdown)
+        if not article or not end or end.end() < article.start():
+            raise ValueError('Municipal FAQ article could not be isolated')
+        markdown = markdown[article.start():end.end()].strip()
     markdown = markdown.split('### Join our Community!')[0].strip()
-    updated = re.search(r'Last updated:\s*(\d{2}/\d{2}/\d{4})', markdown)
+    updated = re.search(r'(?:Last updated|Ultimo aggiornamento):\s*(\d{2}/\d{2}/\d{4})', markdown)
     return {'url': url, 'title': meta.get('title', url).split(' | ')[0], 'markdown': markdown,
             'provider': 'firecrawl', 'fetched_at': datetime.now(timezone.utc).isoformat(),
             'language': meta.get('language', 'en'), 'stated_updated_date': updated.group(1) if updated else None,
@@ -76,7 +87,7 @@ def scrape(url, api_key):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--limit', type=int, default=30)
+    parser.add_argument('--limit', type=int, default=35)
     parser.add_argument('--url', action='append')
     parser.add_argument('--snapshot', action='store_true', help='Update deployable public-content seed JSON')
     args = parser.parse_args()
@@ -87,7 +98,7 @@ def main():
     knowledge.seed(ROOT / 'data/seed.json')
     rental_file = ROOT / 'data/rental-links.json'
     rentals = json.loads(rental_file.read_text()) if rental_file.exists() else []
-    urls = list(dict.fromkeys(args.url or GUIDES + rentals))[:max(1, min(args.limit, 30))]
+    urls = list(dict.fromkeys(args.url or GUIDES + PERSONA_GUIDES + rentals))[:max(1, min(args.limit, 60))]
     report = {'started_at': datetime.now(timezone.utc).isoformat(), 'success': [], 'errors': []}
     with ThreadPoolExecutor(max_workers=3) as pool:
         jobs = {pool.submit(scrape, url, key): url for url in urls}
