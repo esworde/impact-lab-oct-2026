@@ -127,6 +127,8 @@ Object.assign(BUILDER_COPY.it, {
     "Claude consulta le guide YesMilano e le fonti dei servizi, scrive le azioni per il tuo caso e spiega le priorità. Rivedi il piano prima di iniziare.",
   aiError:
     "Claude non è riuscito a completare il piano. Riprova: il percorso inizia solo dopo una proposta AI completa.",
+  aiConnectionError:
+    "La connessione si è interrotta durante la generazione. Le tue risposte sono ancora qui: premi Genera per riprovare.",
   completeProfile: "UNA DOMANDA PER ADATTARE IL PIANO",
   unknownAnswer:
     "Puoi scegliere “da verificare”: il piano ti guiderà a chiarire quel punto con l’ufficio, senza presumere una risposta.",
@@ -145,6 +147,8 @@ Object.assign(BUILDER_COPY.en, {
     "Claude consults YesMilano guides and service sources, writes actions for your situation and explains priorities. Review the plan before starting.",
   aiError:
     "Claude could not finish your plan. Retry: the journey starts only after a complete AI proposal.",
+  aiConnectionError:
+    "The connection was interrupted during generation. Your answers are still here: press Generate to retry.",
   completeProfile: "A QUESTION TO ADAPT YOUR PLAN",
   unknownAnswer:
     "You can choose “to check”: the plan will help clarify it with the office, without assuming an answer.",
@@ -276,20 +280,14 @@ async function updateCustomChoice(j, s, value) {
     .querySelectorAll("#journey-view button,#journey-view input")
     .forEach((el) => (el.disabled = true));
   try {
-    const response = await fetch("/api/plan/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        blocks: state.custom.blocks,
-        profile: state.profile,
-        residence_choice: value,
-        suppressed_blocks: state.custom.suppressed_blocks || [],
-        previous: j,
-        preserve_through: s.id,
-      }),
+    const plan = await StudyPlanAPI.generate({
+      blocks: state.custom.blocks,
+      profile: state.profile,
+      residence_choice: value,
+      suppressed_blocks: state.custom.suppressed_blocks || [],
+      previous: j,
+      preserve_through: s.id,
     });
-    if (!response.ok) throw new Error();
-    const plan = await response.json();
     state.custom.residence_choice = value;
     state.custom.generated_plan = plan;
     store("studia-mi-custom", state.custom);
@@ -556,7 +554,7 @@ function renderBuilder() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   builder.lastQuestion = nextQuestion;
   $("#builder-view").innerHTML =
-    `<button class="back-link" data-home>${icon("arrow-left")} ${t("back")}</button><div class="builder-heading"><p class="eyebrow">STUDIAMI · ${t("yourJourney")}</p><h1>${bt("title")}</h1><p>${bt("intro")}</p></div><div class="builder-panel">${!builder.preview ? tabs : ""}${content}${builder.error || builder.generationError ? `<p class="error-message" role="alert">${bt(builder.generationError ? "aiError" : "error")}</p>` : ""}</div>`;
+    `<button class="back-link" data-home>${icon("arrow-left")} ${t("back")}</button><div class="builder-heading"><p class="eyebrow">STUDIAMI · ${t("yourJourney")}</p><h1>${bt("title")}</h1><p>${bt("intro")}</p></div><div class="builder-panel">${!builder.preview ? tabs : ""}${content}${builder.error || builder.generationError ? `<p class="error-message" role="alert">${bt(builder.generationError === "PLAN_CONNECTION_INTERRUPTED" ? "aiConnectionError" : builder.generationError ? "aiError" : "error")}</p>` : ""}</div>`;
   if (builder.generating)
     $("#builder-view")
       .querySelectorAll("button,input,select,textarea")
@@ -570,26 +568,21 @@ async function generateBuilderPlan() {
   renderBuilder();
   try {
     const previous = state.custom?.generated_plan;
-    const response = await fetch("/api/plan/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        blocks: builder.blocks,
-        profile: builderProfile(),
-        suppressed_blocks: builder.suppressed,
-        residence_choice: builder.residence_choice,
-        story: builder.story,
-        previous:
-          previous?.base_revision === builder.plan.plan_revision
-            ? previous
-            : null,
-      }),
+    const plan = await StudyPlanAPI.generate({
+      blocks: builder.blocks,
+      profile: builderProfile(),
+      suppressed_blocks: builder.suppressed,
+      residence_choice: builder.residence_choice,
+      story: builder.story,
+      previous:
+        previous?.base_revision === builder.plan.plan_revision
+          ? previous
+          : null,
     });
-    if (!response.ok) throw new Error();
-    const plan = await response.json();
     if (version === builderVersion) builder.plan = plan;
-  } catch {
-    if (version === builderVersion) builder.generationError = true;
+  } catch (error) {
+    if (version === builderVersion)
+      builder.generationError = error.message || "PLAN_GENERATION_FAILED";
   } finally {
     if (version === builderVersion) {
       builder.generating = false;

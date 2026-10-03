@@ -97,6 +97,7 @@ Open `http://127.0.0.1:8000`. The public snapshot seeds the database on first st
 # Verification
 .venv/bin/python -m unittest discover -s webapp/tests -v
 node webapp/tests/test_plan.cjs
+node webapp/tests/test_plan_api.cjs
 node --check webapp/static/app.js
 ```
 
@@ -105,6 +106,8 @@ node --check webapp/static/app.js
 The root [`Dockerfile`](Dockerfile) deploys a single FastAPI service. Configure `/health` as its healthcheck in Railway. Mount a persistent Railway volume at `/data` and set `DATABASE_PATH=/data/knowledge.sqlite`. Use one replica: SQLite and a single attached volume are not a multi-replica design.
 
 Set `ANTHROPIC_API_KEY`, `FIRECRAWL_API_KEY` and `CLAUDE_MODEL` on the service. Keys stay server-side. The container binds to Railway's `PORT`; this deployment sets `PORT=8000` and routes the public domain to port 8000. Railway's former `railway.toml` configuration has been deprecated; service settings are applied directly through Railway.
+
+Set `RAILWAY_DEPLOYMENT_DRAINING_SECONDS=120` so in-flight AI requests can finish during shutdown. The container uses `exec uvicorn` to deliver SIGTERM to the server. The browser retries a network/proxy interruption once after two seconds with the identical request; explicit application, provider, validation and budget errors are not retried. Both initial generation and residence-branch updates use this recovery path.
 
 To refresh the deployed persistent database, run `python -m webapp.ingest` inside the service via `railway ssh`. Rebuilding the image alone does not overwrite existing pages on the persistent volume; startup only inserts missing seed pages. No refresh schedule has been configured yet.
 
