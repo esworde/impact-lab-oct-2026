@@ -304,7 +304,9 @@ async function updateCustomChoice(j, s, value) {
     renderSavedPath();
   }
 }
-for (const lang of ["it", "en"]) Object.assign(COPY[lang], BUILDER_COPY[lang]);
+// Builder copy fills keys app.js lacks; shared keys (previous, next, thinking…) keep app.js wording.
+for (const lang of ["it", "en"])
+  COPY[lang] = { ...BUILDER_COPY[lang], ...COPY[lang] };
 const bt = (key) => BUILDER_COPY[state.profile.language][key] || key;
 const validBlocks = new Set([
   "arrival",

@@ -17,7 +17,6 @@ const COPY = {
     suggestHousing: "Cerco una stanza",
     suggestDocuments: "Mi servono i documenti",
     suggestArrival: "Sto per arrivare",
-    sourcePromise: "Risposte con fonti ufficiali. Nessun account richiesto.",
     yourJourney: "IL TUO PERCORSO",
     startWhere: "Da dove vuoi partire?",
     journeysIntro:
@@ -173,7 +172,6 @@ const COPY = {
     suggestHousing: "I need a room",
     suggestDocuments: "Help with paperwork",
     suggestArrival: "I’m arriving soon",
-    sourcePromise: "Answers with official sources. No account needed.",
     yourJourney: "YOUR JOURNEY",
     startWhere: "Where would you like to start?",
     journeysIntro: "Choose a goal. We’ll take it one step at a time.",
@@ -466,8 +464,9 @@ function translate() {
       ? "StudiaMI · La tua vita da studente a Milano"
       : "StudiaMI · Your student life in Milan";
   document.querySelectorAll("[data-t]").forEach((el) => {
+    // Break lines in the copy before icons are added: a <br> inside an SVG ends it early.
     el.innerHTML =
-      iconLabel(t(el.dataset.t)).replace(/\n/g, "<br>") +
+      t(el.dataset.t).split("\n").map(iconLabel).join("<br>") +
       (el.dataset.tIcon ? ` ${icon(el.dataset.tIcon)}` : "");
   });
   document.querySelectorAll("[data-placeholder]").forEach((el) => {
@@ -754,7 +753,7 @@ async function changeProfile(values) {
 function showProfile(onDone = () => {}) {
   const dialog = $("#info-dialog");
   $("#info-content").innerHTML =
-    `<p class="eyebrow">STUDIAMΙ</p><h2 id="info-title">${t("profileTitle")}</h2><p>${t("profileBody")}</p><div class="profile-choices"><button data-pick-profile="italian">${t("italian")} ${icon("arrow-right")}</button><button data-pick-profile="international">${t("international")} ${icon("arrow-right")}</button></div>`;
+    `<p class="eyebrow">STUDIAMI</p><h2 id="info-title">${t("profileTitle")}</h2><p>${t("profileBody")}</p><div class="profile-choices"><button data-pick-profile="italian">${t("italian")} ${icon("arrow-right")}</button><button data-pick-profile="international">${t("international")} ${icon("arrow-right")}</button></div>`;
   const handler = async (e) => {
     const btn = e.target.closest("[data-pick-profile]");
     if (!btn) return;
@@ -795,7 +794,7 @@ async function showInfo(kind) {
   const d = $("#info-dialog");
   if (kind === "sources") {
     $("#info-content").innerHTML =
-      `<p class="eyebrow">STUDIAMΙ</p><h2 id="info-title">${t("sources")}</h2><p>${t("sourceIntro")}</p><div id="all-sources">…</div>`;
+      `<p class="eyebrow">STUDIAMI</p><h2 id="info-title">${t("sources")}</h2><p>${t("sourceIntro")}</p><div id="all-sources">…</div>`;
     if (!d.open) d.showModal();
     try {
       const r = await fetch("/api/sources");
