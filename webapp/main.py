@@ -21,7 +21,7 @@ from webapp.knowledge import Knowledge
 ROOT = Path(__file__).resolve().parent
 load_dotenv(ROOT.parent / '.env')
 knowledge = Knowledge(os.getenv('DATABASE_PATH', str(ROOT / 'data/knowledge.sqlite')))
-requests_this_hour = deque()
+requests_today = deque()
 chat_slots = asyncio.Semaphore(4)
 
 
@@ -123,7 +123,7 @@ If sources do not support an answer, say what is missing and guide the user to t
 Student Desk/source. Never pretend you fetched live data; you search saved guides.
 Describe options rather than declaring an option ideal for this person or deciding
 eligibility from the generic profile. Prefer plain prose, no emoji, and at most
-three short action bullets. Keep answers under 180 words: answer, next actions, sources.
+three short action bullets. Keep answers under 180 words: answer, next actions, sources. Skip praise and filler introductions.
 Use suggest_journey when a journey helps the user; the UI can then open it.
 This is an independent hackathon prototype, not the official Comune service.
 '''
@@ -146,11 +146,11 @@ async def chat(body: ChatRequest):
     if not key:
         raise HTTPException(503, 'CLAUDE_NOT_CONFIGURED')
     now = time.monotonic()
-    while requests_this_hour and requests_this_hour[0] < now - 3600:
-        requests_this_hour.popleft()
-    if len(requests_this_hour) >= int(os.getenv('CHAT_REQUESTS_PER_HOUR', '200')):
+    while requests_today and requests_today[0] < now - 86400:
+        requests_today.popleft()
+    if len(requests_today) >= int(os.getenv('CHAT_REQUESTS_PER_DAY', '200')):
         raise HTTPException(429, 'CHAT_LIMIT_REACHED')
-    requests_this_hour.append(now)
+    requests_today.append(now)
     available = localized(body.profile.language, body.profile.citizenship)
     current = next((j for j in available if j['id'] == body.journey_id), None)
     if body.journey_id and not current:
@@ -213,7 +213,9 @@ async def chat(body: ChatRequest):
                     args = block.input
                     try:
                         if block.name == 'search_guides':
-                            output = knowledge.retrieve(str(args['query'])[:200])
+                            output = knowledge.retrieve(str(args['query'])[:200], limit=4)
+                            for row in output:
+                                row['body'] = row['body'][:1800]
                             register(output)
                         elif block.name == 'read_guide':
                             output = knowledge.read(int(args['page_id']))

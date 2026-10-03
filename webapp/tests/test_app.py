@@ -70,7 +70,7 @@ class JourneyTests(unittest.TestCase):
 
 class ApiTests(unittest.TestCase):
     def setUp(self):
-        main.requests_this_hour.clear()
+        main.requests_today.clear()
         main.chat_slots = asyncio.Semaphore(4)
         self.client_context = TestClient(main.app)
         self.client = self.client_context.__enter__()

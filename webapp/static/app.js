@@ -653,7 +653,7 @@ async function sendQuestion(question, retry = false) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        messages: state.messages.slice(-10),
+        messages: state.messages.slice(-9).filter((m, i, a) => i > 0 || m.role === "user"),
         profile: {
           ...state.profile,
           citizenship: state.profile.citizenship || "international",

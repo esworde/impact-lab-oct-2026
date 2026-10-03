@@ -2,6 +2,8 @@
 
 > Claude Impact Lab Milano · 3 October 2026 · Track 01
 
+**Live app:** https://studia-mi-production.up.railway.app
+
 **Your student life in Milan, one step at a time.** A bilingual web app for Italian and international students, with guided journeys and a Claude assistant grounded in public YesMilano and City of Milan sources.
 
 ## The problem
@@ -30,7 +32,7 @@ At runtime Claude understands the question and the generic student profile, rewr
 - Every conversation turn first invokes `search_guides`. Results retain URLs, acquisition dates and declared content-update dates.
 - Sources are displayed separately from generated prose. A notice is displayed when a consulted guide declares an update older than 180 days.
 - Claude proposes guidance; students verify the original source and complete actions themselves on official services. Checkboxes never submit applications or approve eligibility.
-- Responses are capped at 1,000 output tokens, tool loops at four model calls, concurrency at four conversations and the public demo at 200 chat requests/hour by default. Token usage and model-call counts are returned in the API response.
+- Responses are capped at 1,000 output tokens, tool loops at four model calls, concurrency at four conversations and the public demo at 200 chat requests/day by default. Token usage and model-call counts are returned in the API response.
 - Missing configuration and provider failures produce explicit errors; there are no fabricated AI responses.
 
 ## City data and sources
