@@ -24,7 +24,7 @@ A student arriving in Milan must piece together housing, documents, transport an
 - Italian and English interfaces, responsive layouts, keyboard navigation and reduced-motion support.
 - [Lucide](https://lucide.dev/) icons for interface controls, chat and status indicators; service cards keep their original illustrations. A pinned subset of Lucide Static 1.51.0 is served locally, with the [upstream licence](webapp/static/assets/LUCIDE-LICENSE.txt); no icon CDN or browser package dependency is required.
 
-Design references: [America.gov](https://america.gov/how-it-works), the supplied Italia Aperta screenshots and [Comune di Milano](https://www.comune.milano.it/) (municipal red and original logo). This is an independent hackathon prototype. The municipal logo identifies the design/source reference; the app does not claim to be an official municipal service.
+Design system: the .italia tokens and Modello Comuni page structure documented in [`design/`](design/DESIGN.md) (slim header, center header and navbar, breadcrumbs, cards, callouts, dark footer), themed with the primary red that [comune.milano.it](https://www.comune.milano.it/) uses and the original municipal logo. Titillium Web is self-hosted under the [SIL Open Font License](webapp/static/assets/fonts/TITILLIUM-OFL.txt). This is an independent hackathon prototype. The municipal logo identifies the design/source reference; the app does not claim to be an official municipal service.
 
 ## Where Claude works
 

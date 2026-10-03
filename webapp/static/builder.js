@@ -304,7 +304,9 @@ async function updateCustomChoice(j, s, value) {
     renderSavedPath();
   }
 }
-for (const lang of ["it", "en"]) Object.assign(COPY[lang], BUILDER_COPY[lang]);
+// Builder copy fills keys app.js lacks; shared keys (previous, next, thinking…) keep app.js wording.
+for (const lang of ["it", "en"])
+  COPY[lang] = { ...BUILDER_COPY[lang], ...COPY[lang] };
 const bt = (key) => BUILDER_COPY[state.profile.language][key] || key;
 const validBlocks = new Set([
   "arrival",
@@ -554,7 +556,7 @@ function renderBuilder() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   builder.lastQuestion = nextQuestion;
   $("#builder-view").innerHTML =
-    `<button class="back-link" data-home>${icon("arrow-left")} ${t("back")}</button><div class="builder-heading"><p class="eyebrow">STUDIAMI · ${t("yourJourney")}</p><h1>${bt("title")}</h1><p>${bt("intro")}</p></div><div class="builder-panel">${!builder.preview ? tabs : ""}${content}${builder.error || builder.generationError ? `<p class="error-message" role="alert">${bt(builder.generationError === "PLAN_CONNECTION_INTERRUPTED" ? "aiConnectionError" : builder.generationError ? "aiError" : "error")}</p>` : ""}</div>`;
+    `${crumbs(bt("title"))}<div class="builder-heading"><p class="eyebrow">STUDIAMI · ${t("yourJourney")}</p><h1>${bt("title")}</h1><p>${bt("intro")}</p></div><div class="builder-panel">${!builder.preview ? tabs : ""}${content}${builder.error || builder.generationError ? `<p class="error-message" role="alert">${bt(builder.generationError === "PLAN_CONNECTION_INTERRUPTED" ? "aiConnectionError" : builder.generationError ? "aiError" : "error")}</p>` : ""}</div>`;
   if (builder.generating)
     $("#builder-view")
       .querySelectorAll("button,input,select,textarea")
