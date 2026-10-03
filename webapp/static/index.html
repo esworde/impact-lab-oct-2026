@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/static/styles.css" />
     <script src="/static/plan.js" defer></script>
     <script src="/static/app.js" defer></script>
+    <script src="/static/builder.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main" data-t="skip">Vai al contenuto</a>
@@ -74,33 +75,38 @@
             />
             con una guida che parla la tua lingua.
           </p>
-          <form class="ask-form hero-ask" data-chat-form>
-            <span class="ask-spark" aria-hidden="true">✳</span>
-            <input
-              name="question"
-              data-placeholder="askPlaceholder"
-              placeholder="Sto per trasferirmi a Milano. Da dove inizio?"
-              aria-label="Fai una domanda a StudiaMI"
-              maxlength="3000"
-              required
-            />
+          <div class="hero-ask builder-actions">
             <button
-              type="submit"
-              class="round-button"
-              aria-label="Invia domanda"
+              class="button primary"
+              data-builder="story"
+              data-t="createPath"
             >
-              <span aria-hidden="true">↗</span>
+              Crea il mio percorso ↗
             </button>
-          </form>
-          <div class="suggestions">
-            <button data-question="housing" data-t="suggestHousing">
-              Cerco una stanza</button
-            ><button data-question="documents" data-t="suggestDocuments">
-              Mi servono i documenti</button
-            ><button data-question="arrival" data-t="suggestArrival">
-              Sto per arrivare
+            <button
+              class="button secondary"
+              data-builder="questions"
+              data-t="guideMe"
+            >
+              Guidami con le domande
             </button>
           </div>
+          <div id="saved-path" class="saved-path" hidden></div>
+          <button class="hero-story" data-builder="giulia">
+            <span class="story-avatar" aria-hidden="true">G</span>
+            <span
+              ><small data-t="storyExample">UNA STORIA DA CUI PARTIRE</small
+              ><strong data-t="giuliaStory"
+                >Giulia arriva a Milano. Casa, borsa di studio, domicilio: come
+                si incastrano?</strong
+              ><span data-t="tryGiulia"
+                >Componi il percorso di Giulia →</span
+              ></span
+            >
+            <span class="story-blocks" aria-hidden="true"
+              ><i>01</i><i>02</i><i>03</i></span
+            >
+          </button>
           <div class="hero-caption">
             <span class="tiny-check" aria-hidden="true">✓</span
             ><span data-t="sourcePromise"
@@ -228,6 +234,7 @@
           </div>
         </section>
       </div>
+      <section id="builder-view" class="shell builder-view" hidden></section>
       <div id="journey-view" class="shell journey-view" hidden></div>
     </main>
     <footer class="site-footer shell">

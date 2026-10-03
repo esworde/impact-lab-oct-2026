@@ -12,7 +12,7 @@ const COPY = {
     hero1: "La tua nuova vita,",
     hero2: "comincia a Milano.",
     heroDescription:
-      "Casa, documenti, primi giorni. Trova il tuo prossimo passo, con una guida che parla la tua lingua.",
+      "Raccontaci la tua situazione o rispondi a poche domande. Mettiamo insieme le guide in un percorso tutto tuo.",
     askPlaceholder: "Sto per trasferirmi a Milano. Da dove inizio?",
     suggestHousing: "Cerco una stanza",
     suggestDocuments: "Mi servono i documenti",
@@ -34,8 +34,9 @@ const COPY = {
     unsure: "Da verificare",
     lessSearching: "MENO RICERCHE. PIÙ CHIAREZZA.",
     oneStep: "Una cosa alla volta.\nUn posto solo.",
-    how1Title: "Scegli da dove partire",
-    how1Body: "Un percorso pensato per il tuo obiettivo e la tua situazione.",
+    how1Title: "Crea il tuo percorso",
+    how1Body:
+      "Racconta la tua situazione o rispondi a tre domande. Rivedi le card proposte e scegli l’ordine.",
     how2Title: "Segui i passaggi",
     how2Body:
       "Checklist, indicazioni e link ai servizi. Sai sempre cosa viene dopo.",
@@ -94,7 +95,7 @@ const COPY = {
       "Questa scelta serve ad adattare i passaggi sui documenti. Non determina la tua idoneità a un servizio.",
     privacyTitle: "Solo quello che serve.",
     privacyBody:
-      "Non chiediamo un account. Profilo generico, scelte del piano, checklist e conferme rimangono nel tuo browser. La conversazione resta in memoria nella pagina e scompare ricaricandola; non viene salvata nel nostro database. Per rispondere, domanda e contesto vengono inviati a Claude (Anthropic), secondo le sue condizioni di trattamento. Non scrivere nomi, indirizzi, documenti o informazioni mediche.",
+      "Non chiediamo un account. Profilo generico, blocchi del percorso, scelte, checklist e conferme rimangono nel tuo browser. Il racconto per comporre un percorso viene inviato a Claude e non viene salvato nel piano. La conversazione resta in memoria nella pagina e scompare ricaricandola; non viene salvata nel nostro database. Per rispondere, domanda e contesto vengono inviati a Claude (Anthropic), secondo le sue condizioni di trattamento. Non scrivere nomi, indirizzi, documenti o informazioni mediche.",
     sourceIntro:
       "Le risposte si basano sulle guide pubbliche di YesMilano e del Comune di Milano. La data di recupero non indica necessariamente l’ultimo aggiornamento del contenuto.",
     loadError: "Non riesco a caricare i percorsi. Riprova tra poco.",
@@ -167,7 +168,7 @@ const COPY = {
     hero1: "Your new chapter,",
     hero2: "starts in Milan.",
     heroDescription:
-      "Housing, paperwork, your first days. Find your next step, with a guide that speaks your language.",
+      "Tell us your situation or answer a few questions. We’ll bring the guides together in a journey of your own.",
     askPlaceholder: "I’m moving to Milan. Where do I start?",
     suggestHousing: "I need a room",
     suggestDocuments: "Help with paperwork",
@@ -188,8 +189,9 @@ const COPY = {
     unsure: "Not sure yet",
     lessSearching: "LESS SEARCHING. MORE CLARITY.",
     oneStep: "One step at a time.\nAll in one place.",
-    how1Title: "Choose your starting point",
-    how1Body: "A journey shaped around your goal and situation.",
+    how1Title: "Create your journey",
+    how1Body:
+      "Tell your story or answer three questions. Review the suggested cards and choose their order.",
     how2Title: "Follow the steps",
     how2Body:
       "Checklists, guidance and service links. Always know what comes next.",
@@ -249,7 +251,7 @@ const COPY = {
       "This choice adapts the document steps. It does not determine eligibility for a service.",
     privacyTitle: "Just what you need.",
     privacyBody:
-      "No account needed. Your generic profile, plan choices, checklists and confirmations stay in your browser. The conversation stays in page memory and disappears when you reload; it is not saved in our database. To answer, your question and context are sent to Claude (Anthropic), subject to its data-processing terms. Do not enter names, addresses, documents or medical information.",
+      "No account needed. Your generic profile, journey blocks, choices, checklists and confirmations stay in your browser. Your story is sent to Claude to suggest blocks and is not saved in the plan. The conversation stays in page memory and disappears when you reload; it is not saved in our database. To answer, your question and context are sent to Claude (Anthropic), subject to its data-processing terms. Do not enter names, addresses, documents or medical information.",
     sourceIntro:
       "Answers use public YesMilano and City of Milan guides. Retrieval dates do not necessarily reflect the last content update.",
     loadError: "The journeys could not be loaded. Please try again shortly.",
@@ -512,9 +514,27 @@ async function loadJourneys() {
   if (!r.ok) throw new Error("journeys");
   const journeys = await r.json();
   if (version !== journeysLoadVersion) return;
+  if (state.custom?.blocks?.length) {
+    const response = await fetch("/api/plan/compose", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        blocks: state.custom.blocks,
+        profile: {
+          ...state.profile,
+          citizenship: state.profile.citizenship || "international",
+        },
+      }),
+    });
+    if (!response.ok) throw new Error("custom plan");
+    const custom = await response.json();
+    if (version !== journeysLoadVersion) return;
+    journeys.push(custom);
+  }
   state.journeys = journeys;
   state.ready = true;
   renderJourneys();
+  if (typeof renderSavedPath === "function") renderSavedPath();
   renderRoute();
 }
 
@@ -557,6 +577,16 @@ function navigate(journeyId, index = 0) {
 
 function renderRoute() {
   if (!state.ready) return;
+  if (typeof renderBuilder === "function" && location.hash === "#builder") {
+    state.journeyId = null;
+    $("#home-view").hidden = true;
+    $("#journey-view").hidden = true;
+    $("#builder-view").hidden = false;
+    $("#floating-ask").hidden = true;
+    renderBuilder();
+    return;
+  }
+  $("#builder-view").hidden = true;
   const match = location.hash.match(/^#journey\/([a-z]+)\/(\d+|summary)$/);
   const j = match && state.journeys.find((item) => item.id === match[1]);
   state.journeyId = j?.id || null;
@@ -590,7 +620,7 @@ function renderRoute() {
           : t("international");
   const summary = state.stepIndex === "summary";
   $("#journey-view").innerHTML =
-    `<button class="back-link" data-home><span aria-hidden="true">←</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ↗</button></div>${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
+    `<button class="back-link" data-home><span aria-hidden="true">←</span>${t("back")}</button><div class="journey-heading"><div><p class="eyebrow">${esc(j.tag)}</p><h1>${esc(j.title)}</h1><p>${esc(j.subtitle)}</p></div><button class="profile-summary" data-edit-profile>${esc(label)} · ${t("editProfile")} ↗</button></div>${j.id === "custom" ? `<div class="custom-outline"><button class="button secondary" data-builder="edit">${bt("editBlocks")} ↗</button><p>${esc(j.priority)}</p></div>` : ""}${j.plan_intro ? `<div class="persona-plan"><p class="eyebrow">${t("inspiredBy")} ${esc(j.persona)}</p><p>${esc(j.plan_intro)}</p><small>${esc(j.priority)}</small></div>` : ""}<div class="journey-layout"><aside class="journey-sidebar" aria-label="${t("steps")}"><div class="journey-progress"><div class="progress-label"><span>${t("progress")}</span><span id="progress-count">${doneCount(j)}/${j.steps.length}</span></div><div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div></div><ol class="step-nav" id="step-nav"></ol><p class="sidebar-note">${t("checklistNote")}</p></aside><section><div class="step-card ${esc(j.tone)}">${summary ? renderSummary(j) : renderStep(j, j.steps[state.stepIndex])}</div>${summary ? "" : renderPagination(j)}</section></div>`;
   updateProgress();
   updateChatContext();
 }
@@ -599,7 +629,7 @@ function renderStep(j, s) {
   if (s.routes) {
     s = { ...s, ...s.routes[planFor(j).choices?.[s.follows_choice]] };
   }
-  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(j.icon)}</div></div><h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p>${s.owner ? `<p class="step-owner"><small>${t("owner")}</small> ${esc(s.owner)}</p>` : ""}${renderChoices(j, s)}<a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">↗</span></a>${(s.extra_sources || []).map((source) => `<a class="secondary-source" href="${esc(safeURL(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>`).join("")}<h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div>${s.follows_choice && planFor(j).choices?.[s.follows_choice] === "temporary" ? `<button class="draft-button" data-draft>${t("draft")} ↗</button>` : ""}<div class="validation-panel"><h3>${t("validationTitle")}</h3><p>${esc(s.validation || t("validationReady"))}</p><small id="validation-status" role="status"></small><p class="validation-note">${t("validationNote")}</p></div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">✳</span>${t("helpStep")} ↗</button></div>`;
+  return `<div class="step-topline"><p>${t("step")} ${state.stepIndex + 1} ${t("of")} ${j.steps.length}</p><div class="step-illustration">${art(s.icon || j.icon)}</div></div>${s.block_title ? `<p class="eyebrow">${esc(s.block_title)}</p>` : ""}<h2>${esc(s.title)}</h2><p class="step-body">${esc(s.body)}</p>${s.owner ? `<p class="step-owner"><small>${t("owner")}</small> ${esc(s.owner)}</p>` : ""}${renderChoices(j, s)}<a class="official-link" href="${esc(safeURL(s.source))}" target="_blank" rel="noopener noreferrer"><span><small>${t("officialSource")}</small><strong>${t("readGuide")} · ${esc(sourceHost(s.source))}</strong></span><span aria-hidden="true">↗</span></a>${(s.extra_sources || []).map((source) => `<a class="secondary-source" href="${esc(safeURL(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>`).join("")}<h3 class="checklist-title">${t("checklist")}</h3><div class="checklist">${s.checklist.map((item, i) => `<label class="check-item ${checked(j, s, i) ? "checked" : ""}"><input type="checkbox" data-check="${i}" ${checked(j, s, i) ? "checked" : ""}><span>${esc(item)}</span></label>`).join("")}</div>${s.follows_choice && planFor(j).choices?.[s.follows_choice] === "temporary" ? `<button class="draft-button" data-draft>${t("draft")} ↗</button>` : ""}<div class="validation-panel"><h3>${t("validationTitle")}</h3><p>${esc(s.validation || t("validationReady"))}</p><small id="validation-status" role="status"></small><p class="validation-note">${t("validationNote")}</p></div><div class="step-help"><p>${t("needHelp")}</p><button class="help-button" data-help-step><span aria-hidden="true">✳</span>${t("helpStep")} ↗</button></div>`;
 }
 
 function renderSummary(j) {
@@ -640,7 +670,7 @@ function updateProgress() {
             : locked
               ? t("locked")
               : t("current");
-      return `<li><button data-step="${i}" aria-label="${i + 1}. ${esc(s.title)} · ${esc(status)}" class="${state.stepIndex === i ? "active" : ""} ${i < openUntil ? "done" : ""} ${locked ? "locked" : ""}" ${locked ? "disabled" : ""} ${state.stepIndex === i ? 'aria-current="step"' : ""}><span class="step-number">${i < openUntil ? "✓" : locked ? "⌑" : i + 1}</span><span class="step-name">${esc(s.title)}<small>${esc(status)}</small></span></button></li>`;
+      return `${s.block_title && (i === 0 || j.steps[i - 1].block_id !== s.block_id) ? `<li class="block-nav-title">${esc(s.block_title)}</li>` : ""}<li><button data-step="${i}" aria-label="${i + 1}. ${esc(s.title)} · ${esc(status)}" class="${state.stepIndex === i ? "active" : ""} ${i < openUntil ? "done" : ""} ${locked ? "locked" : ""}" ${locked ? "disabled" : ""} ${state.stepIndex === i ? 'aria-current="step"' : ""}><span class="step-number">${i < openUntil ? "✓" : locked ? "⌑" : i + 1}</span><span class="step-name">${esc(s.title)}<small>${esc(status)}</small></span></button></li>`;
     })
     .join("");
   if (state.stepIndex !== "summary") {
@@ -670,8 +700,10 @@ async function changeProfile(values) {
   translate();
   try {
     await loadJourneys();
+    return true;
   } catch {
     toast(t("loadError"));
+    return false;
   }
 }
 
@@ -828,7 +860,12 @@ async function sendQuestion(question, retry = false) {
         },
         journey_id: j?.id || null,
         step_id: s?.id || null,
-        plan_choice: j ? planFor(j).choices?.["giulia-status"] || null : null,
+        plan_choice: j
+          ? planFor(j).choices?.[
+              j.id === "custom" ? "arrival--giulia-status" : "giulia-status"
+            ] || null
+          : null,
+        custom_blocks: j?.id === "custom" ? j.blocks : [],
         validated_step_ids: j
           ? j.steps.slice(0, frontier(j)).map((step) => step.id)
           : [],
@@ -984,7 +1021,10 @@ document.addEventListener("click", async (e) => {
     sendQuestion(t(key));
     return;
   }
-  if (el.dataset.nav === "journeys" && state.journeyId) {
+  if (
+    el.dataset.nav === "journeys" &&
+    (state.journeyId || location.hash === "#builder")
+  ) {
     e.preventDefault();
     location.hash = "#journeys";
     setTimeout(() => $("#journeys").scrollIntoView({ behavior: "smooth" }), 30);
@@ -1061,12 +1101,8 @@ window.addEventListener("hashchange", renderRoute);
 new IntersectionObserver(
   (entries) => {
     state.heroVisible = entries[0].isIntersecting;
-    $("#floating-ask").hidden = !state.journeyId && state.heroVisible;
+    $("#floating-ask").hidden =
+      location.hash === "#builder" || (!state.journeyId && state.heroVisible);
   },
   { threshold: 0.3 },
 ).observe($(".hero-ask"));
-translate();
-loadJourneys().catch(() => {
-  toast(t("loadError"));
-  $("#journey-grid").innerHTML = `<p>${t("loadError")}</p>`;
-});

@@ -145,6 +145,55 @@ class ApiTests(unittest.TestCase):
             response = self.client.post('/api/chat', json={'messages':[{'role':'user','content':'hello'}], 'journey_id':'not-a-journey'})
             self.assertEqual(response.status_code, 422)
 
+    def test_composed_plan_preserves_choices_and_scopes_and_avoids_collisions(self):
+        from webapp.builder import compose
+        custom = compose(['arrival','housing','transport'], 'it', 'italian')
+        originals = {j['id']:j for j in localized('it','italian')}
+        self.assertEqual(len(custom['steps']),sum(len(originals[b]['steps']) for b in custom['blocks']))
+        self.assertEqual(len({s['id'] for s in custom['steps']}),len(custom['steps']))
+        choice = next(s for s in custom['steps'] if s.get('choices'))
+        dependent = next(s for s in custom['steps'] if s.get('follows_choice'))
+        self.assertEqual(dependent['follows_choice'],choice['id'])
+        self.assertEqual(choice['id'],'arrival--giulia-status')
+        self.assertIn('temporary',dependent['routes'])
+        self.assertEqual(custom['plan_revision'],compose(['arrival','housing','transport'],'en','italian')['plan_revision'])
+        self.assertNotEqual(custom['plan_revision'],compose(['housing','arrival','transport'],'it','italian')['plan_revision'])
+        self.assertEqual(len(compose(['permit'],'it','italian')['steps']),1)
+        reza = compose(['housing','permit'],'en','non-eu')
+        self.assertIn('8 working days',reza['priority'])
+        for blocks in [[],['housing','housing'],['invented']]:
+            self.assertEqual(self.client.post('/api/plan/compose',json={'blocks':blocks}).status_code,422)
+        self.assertEqual(self.client.post('/api/plan/compose',json={'blocks':['housing','transport']}).status_code,200)
+
+    def test_plan_selector_one_model_call_and_rejects_invented_blocks(self):
+        calls=[]
+        selection={'blocks':['arrival','housing','transport'],'citizenship':'italian','stage':'here'}
+        class FakeClaude:
+            def __init__(self,**kwargs): self.messages=self
+            async def create(self,**kwargs):
+                calls.append(kwargs)
+                return SimpleNamespace(model='test-model',usage=SimpleNamespace(input_tokens=1200,output_tokens=80),
+                    content=[SimpleNamespace(type='tool_use',name='select_blocks',input=selection)])
+            async def close(self): pass
+        body={'story':'Sono una studentessa italiana con borsa e dubbi sulla residenza.'}
+        with patch.dict(os.environ,{'ANTHROPIC_API_KEY':'test-key'}),patch.object(main.anthropic,'AsyncAnthropic',FakeClaude):
+            response=self.client.post('/api/plan/suggest',json=body)
+            self.assertEqual(response.status_code,200,response.text)
+            self.assertEqual(response.json()['blocks'],selection['blocks'])
+            self.assertEqual(response.json()['usage']['model_calls'],1)
+            self.assertNotIn('story',response.json())
+            self.assertEqual(calls[0]['max_tokens'],450)
+            self.assertEqual(calls[0]['tool_choice']['name'],'select_blocks')
+            selection['blocks']=['invented']
+            self.assertEqual(self.client.post('/api/plan/suggest',json=body).status_code,502)
+            selection['blocks']=['housing','housing']
+            self.assertEqual(self.client.post('/api/plan/suggest',json=body).status_code,502)
+        with patch.dict(os.environ,{'ANTHROPIC_API_KEY':''}):
+            self.assertEqual(self.client.post('/api/plan/suggest',json=body).status_code,503)
+        with patch.dict(os.environ,{'ANTHROPIC_API_KEY':'test-key','CHAT_REQUESTS_PER_DAY':'0'}):
+            self.assertEqual(self.client.post('/api/plan/suggest',json=body).status_code,429)
+        self.assertEqual(self.client.post('/api/plan/suggest',json={'story':'x'*2001}).status_code,422)
+
     def test_claude_tool_loop_reads_sqlite_and_returns_provenance(self):
         calls=[]
         class FakeClaude:
@@ -158,7 +207,7 @@ class ApiTests(unittest.TestCase):
             async def close(self):
                 pass
         with patch.dict(os.environ, {'ANTHROPIC_API_KEY': 'test-key'}), patch.object(main.anthropic,'AsyncAnthropic',FakeClaude):
-            response = self.client.post('/api/chat',json={'messages':[{'role':'user','content':'Explain the deposit'}], 'profile':{'citizenship':'non-eu','language':'en','stage':'arriving'},'journey_id':'housing','step_id':'deposit','validated_step_ids':['needs','viewing','contract']})
+            response = self.client.post('/api/chat',json={'messages':[{'role':'user','content':'Explain the deposit'}], 'profile':{'citizenship':'non-eu','language':'en','stage':'arriving'},'journey_id':'custom','custom_blocks':['housing','transport'],'step_id':'housing--deposit','validated_step_ids':['housing--needs','housing--viewing','housing--contract']})
         self.assertEqual(response.status_code,200,response.text)
         self.assertTrue(response.json()['sources'])
         retrieved = json.loads(calls[1]['messages'][-2]['content'][0]['content'])
