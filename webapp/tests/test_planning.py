@@ -79,6 +79,27 @@ class AIPlanningTests(unittest.TestCase):
         self.assertIn('mandatory proof of address',guide['text'])
         self.assertLessEqual(len(guide['text']),6000)
 
+    def test_unsupported_hostel_deadline_is_repaired_once_or_rejected(self):
+        calls=[]
+        parent=self.fake_claude(calls)
+        class WrongDeadline(parent):
+            always_wrong=False
+            async def create(self,**kwargs):
+                response=await super().create(**kwargs)
+                if len(calls)==1 or self.always_wrong:
+                    response.content[0].input['subtitle']='Your hostel expires in four days.'
+                return response
+        body={'blocks':self.blocks,'profile':self.profile,
+              'story':'I arrived four days ago and my hostel reservation runs out soon.'}
+        with patch.dict(os.environ,{'ANTHROPIC_API_KEY':'test-key'}),patch.object(main.anthropic,'AsyncAnthropic',WrongDeadline):
+            response=self.client.post('/api/plan/generate',json=body)
+            self.assertEqual(response.status_code,200,response.text)
+            self.assertEqual(response.json()['usage']['model_calls'],2)
+            self.assertNotIn('four days',response.json()['subtitle'])
+            calls.clear();WrongDeadline.always_wrong=True
+            self.assertEqual(self.client.post('/api/plan/generate',json=body).status_code,502)
+            self.assertEqual(len(calls),2)
+
     def test_reject_missing_steps_unknown_sources_and_changed_dependencies(self):
         memory = self.authored()
         missing = memory.model_copy(deep=True)

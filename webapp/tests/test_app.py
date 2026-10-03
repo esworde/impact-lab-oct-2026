@@ -193,6 +193,10 @@ class ApiTests(unittest.TestCase):
             self.assertNotIn('story',response.json())
             self.assertEqual(calls[0]['max_tokens'],650)
             self.assertEqual(calls[0]['tool_choice']['name'],'select_blocks')
+            selection['answers']['stay_duration']='unknown'
+            uncertain=self.client.post('/api/plan/suggest',json=body).json()
+            self.assertIsNone(uncertain['profile']['stay_duration'])
+            self.assertIn('stay_duration',{q['key'] for q in self.client.post('/api/plan/compose',json=uncertain).json()['questions']})
             selection['blocks']=['invented']
             self.assertEqual(self.client.post('/api/plan/suggest',json=body).status_code,502)
             selection['blocks']=['housing','housing']
