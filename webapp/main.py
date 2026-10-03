@@ -9,7 +9,6 @@ from datetime import datetime, timezone
 from typing import Literal
 
 import anthropic
-from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -20,9 +19,9 @@ from webapp.builder import compose
 from webapp.personalization import Profile
 from webapp.planning import AuthoredPlan, materialize, author_plan
 from webapp.knowledge import Knowledge
+from webapp.tracing import langfuse, observe
 
 ROOT = Path(__file__).resolve().parent
-load_dotenv(ROOT.parent / '.env')
 knowledge = Knowledge(os.getenv('DATABASE_PATH', str(ROOT / 'data/knowledge.sqlite')))
 requests_today = deque()
 chat_slots = asyncio.Semaphore(4)
@@ -31,7 +30,11 @@ chat_slots = asyncio.Semaphore(4)
 @asynccontextmanager
 async def lifespan(app):
     knowledge.seed(ROOT / 'data/seed.json')
-    yield
+    try:
+        yield
+    finally:
+        if langfuse:
+            await asyncio.to_thread(langfuse.flush)
 
 
 app = FastAPI(title='StudiaMI', docs_url=None, redoc_url=None, lifespan=lifespan)
@@ -120,6 +123,7 @@ class GeneratePlanRequest(ComposeRequest):
 
 
 @app.post('/api/plan/generate')
+@observe(name='studiami.plan.generate', capture_input=False, capture_output=False)
 async def generate_plan(body: GeneratePlanRequest):
     try:
         p = body.profile.model_dump()
@@ -157,6 +161,7 @@ async def generate_plan(body: GeneratePlanRequest):
 
 
 @app.post('/api/plan/suggest')
+@observe(name='studiami.plan.suggest', capture_input=False, capture_output=False)
 async def suggest_plan(body: SuggestPlanRequest):
     reserve_model_request()
     ids = [j['id'] for j in JOURNEYS]
@@ -294,6 +299,7 @@ TOOLS = [
 
 
 @app.post('/api/chat')
+@observe(name='studiami.chat', capture_input=False, capture_output=False)
 async def chat(body: ChatRequest):
     if body.messages[-1].role != 'user' or sum(len(m.content) for m in body.messages) > 16000:
         raise HTTPException(422, 'Invalid conversation size or final role')

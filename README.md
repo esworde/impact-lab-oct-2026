@@ -103,11 +103,21 @@ node webapp/tests/test_plan_api.cjs
 node --check webapp/static/app.js
 ```
 
+## Langfuse tracing
+
+To enable tracing, set `LANGFUSE_PUBLIC_KEY` and `LANGFUSE_SECRET_KEY` from your Langfuse project settings in `.env`, then restart the server. `LANGFUSE_BASE_URL` defaults to the EU cloud endpoint (`https://cloud.langfuse.com`); use your project's regional or self-hosted URL if different. Without both keys, tracing stays disabled. Set `LANGFUSE_TRACING_ENABLED=false` to disable it while keeping the keys configured.
+
+Each chat, service-selection and plan-generation request has its own trace. Anthropic calls (including tool-loop turns, planning batches and validation retries) record prompts, responses, model, token usage, latency and provider errors. Guide searches and reads appear as child observations. Langfuse infers costs when it has a matching model price definition. Pending traces flush in the background and on server shutdown.
+
+Enabling tracing sends model prompts and responses, including submitted stories, chat messages and generic profiles, to the configured Langfuse project. Keep using invented cases and public data; API keys remain server-side and are not trace inputs.
+
 ## Railway deployment
 
 The root [`Dockerfile`](Dockerfile) deploys a single FastAPI service. Configure `/health` as its healthcheck in Railway. Mount a persistent Railway volume at `/data` and set `DATABASE_PATH=/data/knowledge.sqlite`. Use one replica: SQLite and a single attached volume are not a multi-replica design.
 
 Set `ANTHROPIC_API_KEY`, `FIRECRAWL_API_KEY` and `CLAUDE_MODEL` on the service. Keys stay server-side. The container binds to Railway's `PORT`; this deployment sets `PORT=8000` and routes the public domain to port 8000. Railway's former `railway.toml` configuration has been deprecated; service settings are applied directly through Railway.
+
+For tracing, also set the Langfuse project keys and `LANGFUSE_BASE_URL` on the service. The Docker dependency lock includes the tracing SDKs.
 
 Set `RAILWAY_DEPLOYMENT_DRAINING_SECONDS=120` so in-flight AI requests can finish during shutdown. The container uses `exec uvicorn` to deliver SIGTERM to the server. The browser retries a network/proxy interruption once after two seconds with the identical request; explicit application, provider, validation and budget errors are not retried. Both initial generation and residence-branch updates use this recovery path.
 
