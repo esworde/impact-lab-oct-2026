@@ -405,14 +405,18 @@ function updateProfileControls() {
     );
 }
 
+let journeysLoadVersion = 0;
 async function loadJourneys() {
+  const version = ++journeysLoadVersion;
   const params = new URLSearchParams({
     language: state.profile.language,
     citizenship: state.profile.citizenship || "international",
   });
   const r = await fetch("/api/journeys?" + params);
   if (!r.ok) throw new Error("journeys");
-  state.journeys = await r.json();
+  const journeys = await r.json();
+  if (version !== journeysLoadVersion) return;
+  state.journeys = journeys;
   state.ready = true;
   renderJourneys();
   renderRoute();
