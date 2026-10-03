@@ -1,0 +1,152 @@
+[
+  {
+    "id": "arrival",
+    "group": "before",
+    "source_title": "Your First Steps in Milano",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/first-steps",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/first-steps",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "visa",
+    "group": "before",
+    "source_title": "Get a Student Visa",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/student-visa",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/student-visa",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "housing",
+    "group": "before",
+    "source_title": "Your guide to Rents",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/rents",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/rents",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "permit",
+    "group": "first",
+    "source_title": "Get the Residence Permit for Students",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/residence-permit-students",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/residence-permit-students",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "taxcode",
+    "group": "first",
+    "source_title": "Get your Tax Code",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/get-italian-tax-code-codice-fiscale",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/get-italian-tax-code-codice-fiscale",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "transport",
+    "group": "first",
+    "source_title": "Get your Transportation Pass",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/get-your-student-transportation-pass",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/get-your-student-transportation-pass",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "health",
+    "group": "first",
+    "source_title": "Access the National Healthcare System",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/national-health-service-students-step-step",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/national-health-service-students-step-step",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "residence",
+    "group": "first",
+    "source_title": "Take Residence in Milano",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/take-residence-milano-students",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/take-residence-milano-students",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "temporary",
+    "group": "first",
+    "source_title": "Get the Temporary Residence (EU only)",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/get-temporary-residence-milano",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/get-temporary-residence-milano",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "bank",
+    "group": "first",
+    "source_title": "Open a bank account",
+    "guide_url": "https://studyandwork.yesmilano.it/en/work/getting-started-guide/bank-account",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/work/getting-started-guide/bank-account",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "phone",
+    "group": "first",
+    "source_title": "Italian Phone Number",
+    "guide_url": "https://studyandwork.yesmilano.it/en/work/getting-started-guide/phone-number",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/work/getting-started-guide/phone-number",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "support",
+    "group": "settled",
+    "source_title": "How to use Patronato Services & CAF services",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/patronato",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/patronato",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "identity",
+    "group": "settled",
+    "source_title": "Get your Italian ID Card",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/id-card",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/id-card",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "work",
+    "group": "settled",
+    "source_title": "Work while Studying",
+    "guide_url": "https://www.yesmilano.it/en/study/how-to/work-students",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/study/how-to/work-students",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  },
+  {
+    "id": "language",
+    "group": "settled",
+    "source_title": "Learn Italian",
+    "guide_url": "https://studyandwork.yesmilano.it/en/work/getting-started-guide/learn-italian",
+    "indexed_url": "https://studyandwork.yesmilano.it/en/work/getting-started-guide/learn-italian",
+    "catalog_fetched_at": "2026-10-03T12:00:40.124788+00:00",
+    "catalog_url": "https://www.yesmilano.it/en/study/how-to",
+    "catalog_provider": "firecrawl"
+  }
+]

@@ -13,6 +13,7 @@ import httpx
 
 from webapp.knowledge import Knowledge
 from webapp.personas import PERSONA_GUIDES
+from webapp.howto import CATALOG
 
 APPROVED_HOSTS = {'studyandwork.yesmilano.it', 'www.yesmilano.it', 'www.comune.milano.it', 'servizicrm.comune.milano.it'}
 
@@ -41,6 +42,8 @@ GUIDES = [
     'https://www.comune.milano.it/servizi/tributi/tari-dichiarazione-di-occupazione-di-appartamenti-e-immobili',
     'https://www.comune.milano.it/servizi/anagrafe/certificati-anagrafici',
 ]
+
+GUIDES = list(dict.fromkeys([entry['indexed_url'] for entry in CATALOG] + GUIDES))
 
 
 def scrape(url, api_key):
@@ -87,7 +90,7 @@ def scrape(url, api_key):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--limit', type=int, default=35)
+    parser.add_argument('--limit', type=int, default=38)
     parser.add_argument('--url', action='append')
     parser.add_argument('--snapshot', action='store_true', help='Update deployable public-content seed JSON')
     args = parser.parse_args()

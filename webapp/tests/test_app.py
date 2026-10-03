@@ -64,8 +64,34 @@ class JourneyTests(unittest.TestCase):
         self.assertNotIn('permit', arrival_ids('italian'))
         for kind in ['italian','international','eu','non-eu']:
             journeys = localized('it', kind)
-            self.assertEqual(len(journeys), 6)
+            self.assertEqual(len(journeys), 15)
             self.assertTrue(all(s['source'].startswith('https://') for j in journeys for s in j['steps']))
+
+    def test_catalogue_cases_all_have_indexed_guides_and_tools(self):
+        from webapp.howto import CATALOG
+        pages = json.loads((main.ROOT / 'data/seed.json').read_text())
+        indexed = {p['url'] for p in pages}
+        expected = {'arrival','visa','housing','permit','taxcode','transport','health',
+                    'residence','temporary','bank','phone','support','identity','work','language'}
+        self.assertEqual({entry['id'] for entry in CATALOG}, expected)
+        self.assertTrue(all(entry['indexed_url'] in indexed for entry in CATALOG))
+        for citizenship in ['italian','eu','non-eu','international']:
+            journeys = localized('en', citizenship)
+            self.assertEqual({j['id'] for j in journeys}, expected)
+            self.assertTrue(all(j['steps'] and j['guide_url'] and j['source_title'] for j in journeys))
+        self.assertEqual([sum(c['group']==g for c in CATALOG) for g in ['before','first','settled']], [3,8,4])
+        tool = next(t for t in main.TOOLS if t['name']=='suggest_journey')
+        self.assertEqual(set(tool['input_schema']['properties']['journey_id']['enum']), expected)
+
+    def test_inapplicable_profiles_only_get_scope_orientation(self):
+        italian = {j['id']:j for j in localized('it','italian')}
+        non_eu = {j['id']:j for j in localized('en','non-eu')}
+        self.assertEqual(len(italian['visa']['steps']), 1)
+        self.assertEqual(len(italian['permit']['steps']), 1)
+        self.assertEqual(len(non_eu['temporary']['steps']), 1)
+        self.assertEqual(len(non_eu['visa']['steps']), 3)
+        self.assertEqual(len(non_eu['permit']['steps']), 3)
+        self.assertTrue(all('/KA-00595/' in s['source'] for s in italian['temporary']['steps']))
 
     def test_persona_plans_address_different_student_barriers(self):
         giulia = localized('it', 'italian')[0]

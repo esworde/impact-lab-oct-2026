@@ -517,7 +517,7 @@ textarea:focus-visible {
 }
 .journey-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 17px;
 }
 .journey-card {
@@ -2127,6 +2127,96 @@ dialog::backdrop {
     padding: 13px 16px;
   }
   .persona-demos button {
+    font-size: 11px;
+  }
+}
+
+.catalog-source {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--muted);
+  margin: 0 0 32px;
+}
+.catalog-source a {
+  color: var(--red);
+  margin-left: 5px;
+}
+.catalog-group {
+  margin-bottom: 44px;
+}
+.catalog-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.catalog-number {
+  height: 38px;
+  width: 38px;
+  display: grid;
+  place-items: center;
+  background: #f0e2e4;
+  color: var(--red);
+  border-radius: 50%;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.catalog-heading h3 {
+  font: 400 29px var(--serif);
+  letter-spacing: -0.6px;
+  margin: 0 0 6px;
+}
+.catalog-heading p {
+  font-size: 12px;
+  color: var(--muted);
+  margin: 0;
+  line-height: 1.6;
+}
+.catalog-count {
+  font-size: 10px;
+  color: var(--muted);
+  margin-left: auto;
+  white-space: nowrap;
+}
+.card-guide {
+  display: inline-block;
+  font-size: 10px;
+  color: var(--red);
+  margin-top: 15px;
+  text-underline-offset: 3px;
+}
+.card-scope {
+  font-size: 10px;
+  color: var(--red);
+  line-height: 1.6;
+  margin: 0 0 14px;
+}
+.card-description {
+  min-height: 38px;
+}
+@media (max-width: 720px) {
+  .catalog-heading {
+    align-items: flex-start;
+  }
+  .catalog-count {
+    display: none;
+  }
+  .catalog-heading h3 {
+    font-size: 25px;
+  }
+  .catalog-heading p {
+    font-size: 11px;
+  }
+  .card-art svg {
+    max-width: 100%;
+  }
+  .card-scope {
+    font-size: 9px;
+  }
+  .card-body {
+    min-width: 0;
+  }
+  .catalog-source {
     font-size: 11px;
   }
 }

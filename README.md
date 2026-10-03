@@ -12,7 +12,7 @@ A student arriving in Milan must piece together housing, documents, transport an
 
 ## What we built
 
-- A home page with a question box and six illustrated journeys: arrival, housing, documents, transport, healthcare access and city life.
+- A home page with a question box and **15 illustrated cases matching the YesMilano How To catalogue**, grouped into before arrival (3), first steps (8) and getting settled (4). Cases cover first steps, visa, rents, permit, tax code, transport, healthcare, residence, temporary registration, bank account, phone number, CAF/patronato, ID card, work and Italian courses.
 - Italian/international profiles, with EU/non-EU options where document routes differ. Language is a separate choice.
 - Sequential plans with a visible outline, locked future details, official sources, local checklists and explicit student confirmation before each next step. Direct links cannot skip confirmation; editing earlier decisions revokes dependent confirmations.
 - Persona plans for **Giulia (6 steps)** and **Reza (8 steps)**, accessible through the home-page story buttons or the Italian/non-EU profile. Giulia’s status choice changes her next action; Reza’s permit deadline is highlighted from the start. [Plan design and verified sources](docs/PERSONA_PLANS.md).
@@ -38,7 +38,7 @@ At runtime Claude understands the question and the generic student profile, rewr
 
 ## City data and sources
 
-**35 public pages acquired with Firecrawl on 3 October 2026, indexed as 234 source sections.** The initial three-page Jina pilot has been replaced by Firecrawl content in the deployment snapshot.
+**38 public pages acquired with Firecrawl on 3 October 2026, indexed as 253 source sections.** The initial three-page Jina pilot has been replaced by Firecrawl content in the deployment snapshot.
 
 | Source | Use |
 | --- | --- |
@@ -49,6 +49,8 @@ At runtime Claude understands the question and the generic student profile, rewr
 | [Comune: dichiarazione TARI](https://www.comune.milano.it/servizi/tributi/tari-dichiarazione-di-occupazione-di-appartamenti-e-immobili) | Occupancy declaration guidance |
 | [Comune support FAQs](docs/PERSONA_PLANS.md) | Temporary student domicile, Italian residence transfer, valid-permit and housing documents, non-resident TARI occupants |
 | [Comune: certificati anagrafici](https://www.comune.milano.it/servizi/anagrafe/certificati-anagrafici) | Certificates and official channels |
+
+The catalogue mapping, original card titles, groups, guide URLs and Firecrawl consultation date are in [`webapp/data/how-to-catalog.json`](webapp/data/how-to-catalog.json). The list matches [YesMilano How To](https://www.yesmilano.it/en/study/how-to), including Bank account, Phone number and Work while studying. EU-only/non-EU routes show scope orientation for other or unspecified profiles; procedural steps are available when the appropriate generic profile is selected. This is navigation, not an eligibility determination.
 
 The full acquisition snapshot and provenance are in [`webapp/data/seed.json`](webapp/data/seed.json). This is a curated student corpus, not a complete index of YesMilano. Linked PDFs have not been ingested. Fetch dates are not content-update dates: for example, the rental overview declares an update of 27 July 2023.
 
@@ -69,7 +71,7 @@ uv pip install --python .venv/bin/python -r webapp/requirements.lock
 Open `http://127.0.0.1:8000`. The public snapshot seeds the database on first startup. Without an Anthropic key, journeys and sources work; chat reports that it is unavailable.
 
 ```bash
-# Refresh the 35 curated public pages with Firecrawl.
+# Refresh the 38 curated public pages with Firecrawl.
 .venv/bin/python -m webapp.ingest --snapshot
 
 # Refresh a smaller subset or a specific approved public source.
@@ -92,7 +94,7 @@ To refresh the deployed persistent database, run `python -m webapp.ingest` insid
 
 ## Verification
 
-Nine Python tests and the JavaScript plan-state checks cover atomic reindexing/version history, duplicate prevention, query escaping, real-corpus retrieval, profile-dependent journeys, API limits/errors, persona routes, municipal FAQ isolation and the Claude tool loop. Plan checks cover required choices, explicit confirmation, ordered unlocking, storage round trips and invalidation of dependent confirmations. Real Haiku calls were tested against the indexed rental sources and for a placeholder temporary-domicile draft citing the municipal FAQ. Browser checks cover Giulia’s complete plan, route choice, locked direct URLs and summary, explicit confirmation, download and persistence after reload, invalidation, Reza’s dependencies, English and mobile layouts.
+Eleven Python tests and the JavaScript plan-state checks cover atomic reindexing/version history, duplicate prevention, query escaping, real-corpus retrieval, profile-dependent journeys, API limits/errors, persona routes, municipal FAQ isolation and the Claude tool loop. Plan checks cover required choices, explicit confirmation, ordered unlocking, storage round trips and invalidation of dependent confirmations. Real Haiku calls were tested against the indexed rental sources and for a placeholder temporary-domicile draft citing the municipal FAQ. Browser checks cover Giulia’s complete plan, route choice, locked direct URLs and summary, explicit confirmation, download and persistence after reload, invalidation, Reza’s dependencies, English and mobile layouts. Every one of the 15 catalogue cards was opened and checked for required confirmation before progression. Tests ensure full catalogue coverage, indexed source availability and the matching Claude suggestion-tool enum.
 
 ## Privacy and limits
 

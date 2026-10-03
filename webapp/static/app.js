@@ -56,6 +56,7 @@ const COPY = {
       "Le informazioni vanno verificate alla fonte. Non inserire dati personali.",
     clearChat: "Nuova chat",
     steps: "passi",
+    stepSingular: "passo",
     startPath: "Esplora il percorso",
     resumePath: "Riprendi il percorso",
     back: "Tutti i percorsi",
@@ -105,6 +106,17 @@ const COPY = {
       "La chat ha raggiunto il limite di questa demo. I percorsi e le fonti restano disponibili.",
     retry: "Riprova",
     tryPersona: "PROVA UNA STORIA",
+    catalogIntro: "15 casistiche, dalle guide How to di YesMilano.",
+    catalogLink: "Esplora il catalogo originale ↗",
+    groupBefore: "Prima di arrivare",
+    groupBeforeBody:
+      "Prepara il viaggio, i documenti e il tuo primo punto di appoggio.",
+    groupFirst: "I primi passi a Milano",
+    groupFirstBody: "Documenti, casa e servizi per iniziare la tua vita qui.",
+    groupSettled: "Ora fai spazio alla tua vita qui",
+    groupSettledBody: "Supporto, identità, lavoro e una nuova lingua.",
+    guideLink: "Guida YesMilano",
+    cases: "casistiche",
     giuliaDemo: "· studentessa fuorisede",
     rezaDemo: "· studente non UE",
     plan: "IL TUO PIANO",
@@ -199,6 +211,7 @@ const COPY = {
       "Check information at the source. Do not enter personal information.",
     clearChat: "New chat",
     steps: "steps",
+    stepSingular: "step",
     startPath: "Explore this journey",
     resumePath: "Continue your journey",
     back: "All journeys",
@@ -248,6 +261,16 @@ const COPY = {
       "This demo’s chat limit has been reached. Journeys and sources remain available.",
     retry: "Try again",
     tryPersona: "TRY A STORY",
+    catalogIntro: "15 cases, from YesMilano’s How to guides.",
+    catalogLink: "Explore the original catalogue ↗",
+    groupBefore: "Not yet in Milan",
+    groupBeforeBody: "Prepare your trip, paperwork and first place to stay.",
+    groupFirst: "First steps in Milan",
+    groupFirstBody: "Documents, housing and services to begin your life here.",
+    groupSettled: "Getting settled",
+    groupSettledBody: "Support, identity, work and a new language.",
+    guideLink: "YesMilano guide",
+    cases: "cases",
     giuliaDemo: "· Italian student away from home",
     rezaDemo: "· non-EU student",
     plan: "YOUR PLAN",
@@ -285,6 +308,15 @@ const COPY = {
   },
 };
 const ART = {
+  passport:
+    '<ellipse cx="120" cy="143" rx="65" ry="4" fill="#000" opacity=".06"/><g transform="rotate(-8 120 80)"><rect x="80" y="23" width="83" height="111" rx="8" fill="currentColor"/><path d="M90 24v109" stroke="#fff" opacity=".2" stroke-width="2"/><circle cx="123" cy="68" r="24" fill="none" stroke="#fff7e9" stroke-width="2"/><ellipse cx="123" cy="68" rx="11" ry="24" fill="none" stroke="#fff7e9" stroke-width="1.5"/><path d="M99 68h48M104 56h38M105 80h36M107 109h33M112 116h23" stroke="#fff7e9" stroke-width="2"/></g>',
+  bank: '<ellipse cx="120" cy="143" rx="80" ry="4" fill="#000" opacity=".06"/><path d="m45 61 75-36 75 36z" fill="currentColor"/><rect x="42" y="127" width="156" height="10" rx="3" fill="currentColor"/><path d="M65 69v49M100 69v49M140 69v49M175 69v49" stroke="currentColor" stroke-width="12"/><circle cx="188" cy="111" r="22" fill="#fffaf0" stroke="currentColor" stroke-width="2"/><path d="M194 100c-12-7-20 13-7 20m-12-12h16m-17 6h16" stroke="currentColor" fill="none" stroke-width="2"/>',
+  phone:
+    '<ellipse cx="120" cy="143" rx="59" ry="4" fill="#000" opacity=".06"/><rect x="85" y="20" width="70" height="115" rx="13" fill="currentColor"/><rect x="91" y="32" width="58" height="84" rx="4" fill="#fffaf5"/><path d="M108 26h24" stroke="#fff" stroke-width="2" stroke-linecap="round"/><circle cx="120" cy="125" r="4" fill="#fff"/><path d="M110 52h14l9 9v34h-23z" fill="currentColor" opacity=".55"/><path d="M112 75h17M117 69v13M125 69v13M112 82h17" stroke="#fff" stroke-width="1.5"/>',
+  work: '<ellipse cx="120" cy="143" rx="76" ry="4" fill="#000" opacity=".06"/><rect x="48" y="58" width="144" height="76" rx="12" fill="currentColor"/><path d="M94 58V40h52v18" fill="none" stroke="currentColor" stroke-width="7"/><path d="M49 83c46 18 94 18 142 0" fill="none" stroke="#fff" opacity=".5" stroke-width="2"/><rect x="112" y="86" width="16" height="20" rx="3" fill="#fffaf5"/>',
+  language:
+    '<ellipse cx="120" cy="143" rx="83" ry="4" fill="#000" opacity=".06"/><path d="M43 33h108a12 12 0 0 1 12 12v58a12 12 0 0 1-12 12H78l-28 20v-20h-7a12 12 0 0 1-12-12V45a12 12 0 0 1 12-12z" fill="currentColor"/><path d="M164 65h33a11 11 0 0 1 11 11v40a11 11 0 0 1-11 11h-4v14l-20-14h-25a11 11 0 0 1-11-11" fill="#fffaf4" stroke="currentColor" stroke-width="2"/><text x="66" y="84" fill="#fffaf4" font-family="Georgia,serif" font-size="36">Ciao</text>',
+
   arrival:
     '<ellipse cx="120" cy="143" rx="84" ry="5" fill="#000" opacity=".06"/><path d="M28 116C9 76 47 47 78 42" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 5"/><path d="m69 38 14 3-9 11" fill="none" stroke="currentColor" stroke-width="1.5"/><g transform="rotate(-8 112 83)"><rect x="71" y="33" width="83" height="103" rx="11" fill="currentColor"/><rect x="94" y="23" width="37" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="5"/><path d="M91 37v94M135 37v94" stroke="#fff" opacity=".25" stroke-width="3"/><rect x="95" y="61" width="31" height="23" rx="3" fill="#fff9f0"/><path d="m100 72 6-6 5 4 8-4v12h-19z" fill="currentColor" opacity=".5"/><circle cx="87" cy="139" r="4" fill="currentColor"/><circle cx="139" cy="139" r="4" fill="currentColor"/></g><g transform="rotate(10 174 101)"><rect x="146" y="62" width="46" height="68" rx="5" fill="#fffaf1"/><circle cx="169" cy="84" r="11" fill="none" stroke="currentColor" stroke-width="1.3"/><ellipse cx="169" cy="84" rx="5" ry="11" fill="none" stroke="currentColor"/><path d="M158 84h22M158 112h22M160 117h18" stroke="currentColor" stroke-width="1.5"/></g><circle cx="199" cy="44" r="15" fill="#fff" opacity=".6"/><path d="m192 44 5 5 9-10" fill="none" stroke="currentColor" stroke-width="2"/>',
   housing:
@@ -487,16 +519,26 @@ async function loadJourneys() {
 }
 
 function renderJourneys() {
-  $("#journey-grid").innerHTML = state.journeys
-    .map((j, i) => {
-      const count = doneCount(j);
-      return `<article class="journey-card ${esc(j.tone)} ${i < 2 ? "featured" : ""}"><div class="card-art">${art(j.icon)}<span class="step-badge"><span class="badge-dot"></span>${j.steps.length} ${t("steps")}</span></div><div class="card-body"><p class="card-tag">${esc(j.tag)}</p><h3 class="card-title"><button data-journey="${esc(j.id)}">${esc(j.title)}</button></h3><p class="card-description">${esc(j.subtitle)}</p>${count ? `<p class="resume-mark">${count}/${j.steps.length} ${t("completed")}</p>` : ""}<button class="card-action" data-journey="${esc(j.id)}"><span>${count ? t("resumePath") : t("startPath")}</span><span aria-hidden="true">↗</span></button>${j.questions
-        .slice(0, i < 2 ? 2 : 1)
-        .map(
-          (q) =>
-            `<button class="card-question" data-ask="${esc(q)}"><span>${esc(q)}</span><span aria-hidden="true">↗</span></button>`,
-        )
-        .join("")}</div></article>`;
+  const card = (j) => {
+    const count = doneCount(j);
+    return `<article class="journey-card ${esc(j.tone)}"><div class="card-art">${art(j.icon)}<span class="step-badge"><span class="badge-dot"></span>${j.steps.length} ${t(j.steps.length === 1 ? "stepSingular" : "steps")}</span></div><div class="card-body"><p class="card-tag">${t("guideLink")} · HOW TO</p><h3 class="card-title"><button data-journey="${esc(j.id)}">${esc(j.title)}</button></h3><p class="card-description">${esc(j.subtitle)}</p>${j.scope ? `<p class="card-scope">${esc(j.scope)}</p>` : ""}${count ? `<p class="resume-mark">${count}/${j.steps.length} ${t("completed")}</p>` : ""}<button class="card-action" data-journey="${esc(j.id)}"><span>${count ? t("resumePath") : t("startPath")}</span><span aria-hidden="true">↗</span></button>${j.questions
+      .slice(0, 1)
+      .map(
+        (q) =>
+          `<button class="card-question" data-ask="${esc(q)}"><span>${esc(q)}</span><span aria-hidden="true">↗</span></button>`,
+      )
+      .join(
+        "",
+      )}<a class="card-guide" href="${esc(safeURL(j.guide_url))}" target="_blank" rel="noopener noreferrer">${t("guideLink")} ↗</a></div></article>`;
+  };
+  $("#journey-grid").innerHTML = [
+    ["before", "groupBefore", "groupBeforeBody"],
+    ["first", "groupFirst", "groupFirstBody"],
+    ["settled", "groupSettled", "groupSettledBody"],
+  ]
+    .map(([group, title, body], index) => {
+      const journeys = state.journeys.filter((j) => j.group === group);
+      return `<section class="catalog-group" aria-labelledby="catalog-${group}"><div class="catalog-heading"><span class="catalog-number">0${index + 1}</span><div><h3 id="catalog-${group}">${t(title)}</h3><p>${t(body)}</p></div><span class="catalog-count">${journeys.length} ${t("cases")}</span></div><div class="journey-grid">${journeys.map(card).join("")}</div></section>`;
     })
     .join("");
 }

@@ -1,5 +1,6 @@
 """Reviewed navigation/checklists, not automatic eligibility decisions."""
-from webapp.personas import arrival_for
+from webapp.personas import arrival_for, DOMICILE, ITALIAN_RESIDENCE
+from webapp.howto import additional, CATALOG
 
 BASE = 'https://studyandwork.yesmilano.it/en'
 FIRST = BASE + '/study/how-to/first-steps'
@@ -70,29 +71,6 @@ JOURNEYS = [
               ('Verifica registrazione del contratto, utenze e indicazioni TARI. Consulta le fonti prima di completare gli adempimenti.', 'Check contract registration, utilities and TARI guidance. Consult the sources before completing any formalities.'), RENT,
               [('Ho verificato registrazione e spese', 'I checked registration and costs'), ('Ho letto le indicazioni TARI', 'I read the TARI guidance')]),
      ]},
-    {'id': 'documents', 'icon': 'documents', 'tone': 'lavender',
-     'title': b('Documenti, senza il labirinto.', 'Paperwork, minus the maze.'),
-     'subtitle': b('Codice fiscale, residenza e identità digitale.', 'Tax code, residence and digital identity.'),
-     'tag': b('DOCUMENTI & SERVIZI', 'DOCUMENTS & SERVICES'),
-     'questions': [b('Come richiedo la residenza a Milano?', 'How do I register my residence in Milan?'),
-                   b('Cos’è SPID e come lo attivo?', 'What is SPID and how do I activate it?')],
-     'steps': [
-         step('tax', ('Parti dal codice fiscale', 'Start with the tax code'),
-              ('Consulta la guida se devi richiederlo o se hai dubbi sul documento che hai già.', 'Consult the guide if you need to apply or have questions about a document you already have.'), TAX,
-              [('Ho verificato il mio prossimo passo sul codice fiscale', 'I checked my next step for the tax code')]),
-         step('residence', ('Capisci il percorso residenza', 'Understand residence registration'),
-              ('Leggi le indicazioni del Comune sul cambio di residenza e individua il canale adatto al tuo caso.', 'Read the City guidance on changing residence and identify the channel relevant to your situation.'), 'https://www.comune.milano.it/servizi/anagrafe/cambio-di-residenza',
-              [('Ho individuato il canale di richiesta', 'I identified the application channel')], ['italian']),
-         step('residence-international', ('Prepara la richiesta di residenza', 'Prepare residence registration'),
-              ('La guida per studenti internazionali distingue documenti e procedure. Leggi la parte relativa alla tua situazione prima di procedere.', 'The international-student guide distinguishes documents and processes. Read the section relevant to your circumstances before proceeding.'), RESIDENCE,
-              [('Ho letto la sezione pertinente al mio caso', 'I read the section relevant to my situation'), ('Ho preparato una checklist di documenti', 'I prepared a document checklist')], ['international', 'eu', 'non-eu']),
-         step('spid', ('Esplora l’identità digitale', 'Explore digital identity'),
-              ('Consulta la guida SPID per capire a cosa serve, quali requisiti verificare e come scegliere un gestore.', 'Consult the SPID guide to understand its purpose, which requirements to check and how to choose a provider.'), BASE + '/study/how-to/spid',
-              [('Ho letto requisiti e opzioni disponibili', 'I read the requirements and available options')]),
-         step('support', ('Trova supporto se ti blocchi', 'Get support if you are stuck'),
-              ('Lo Student Desk e la guida CAF e patronati aiutano a individuare chi può assisterti. Verifica servizi e modalità di accesso nella fonte.', 'The Student Desk and CAF/patronato guide help identify who can assist you. Check services and access arrangements in the source.'), BASE + '/study/how-to/patronato',
-              [('Ho individuato il servizio a cui rivolgermi', 'I identified a service to contact')]),
-     ]},
     {'id': 'transport', 'icon': 'transport', 'tone': 'blue',
      'title': b('La città, a portata di metro.', 'Your city, a metro ride away.'),
      'subtitle': b('Orientati tra abbonamenti e spostamenti.', 'Find your way around passes and transport.'),
@@ -127,27 +105,15 @@ JOURNEYS = [
               ('Segui i riferimenti della guida per chiarire i prossimi passi, compresa la scelta del medico quando applicabile.', 'Follow the guide’s contacts to clarify your next steps, including selecting a doctor where applicable.'), HEALTH,
               [('Ho individuato il riferimento corretto', 'I identified the right contact')]),
      ]},
-    {'id': 'citylife', 'icon': 'citylife', 'tone': 'peach',
-     'title': b('Più città. Più vita.', 'More city. More life.'),
-     'subtitle': b('Posti dove studiare, nuove persone e opportunità.', 'Study spots, new people and opportunities.'),
-     'tag': b('STUDENT LIFE', 'STUDENT LIFE'),
-     'questions': [b('Dove posso studiare fuori dall’università?', 'Where can I study outside university?'),
-                   b('Come trovo corsi di italiano?', 'How do I find Italian language courses?')],
-     'steps': [
-         step('studyspots', ('Trova il tuo posto per studiare', 'Find your study spot'),
-              ('Esplora la guida a biblioteche e spazi di studio. Verifica orari e modalità di accesso dei luoghi che ti interessano.', 'Explore the libraries and study-spaces guide. Check opening hours and access arrangements for places you like.'), BASE + '/study/best-places-study-milano',
-              [('Ho scelto uno spazio da provare', 'I chose a space to try')]),
-         step('language', ('Fai spazio a una nuova lingua', 'Make room for a new language'),
-              ('Se vuoi imparare l’italiano, parti dalle risorse della guida. Confronta disponibilità, livelli e modalità di iscrizione.', 'If you want to learn Italian, start with the guide’s resources. Compare availability, levels and registration arrangements.'), BASE + '/work/getting-started-guide/learn-italian',
-              [('Ho individuato una risorsa adatta', 'I identified a suitable resource')]),
-         step('community', ('Conosci lo Student Desk', 'Meet the Student Desk'),
-              ('Scopri i servizi e le opportunità pubblicate dallo Student Desk. Controlla le informazioni aggiornate per partecipare.', 'Discover the Student Desk’s services and published opportunities. Check current information to take part.'), DESK,
-              [('So dove trovare supporto e aggiornamenti', 'I know where to find support and updates')]),
-         step('opportunities', ('Esplora borse e opportunità', 'Explore grants and opportunities'),
-              ('La guida raccoglie risorse per borse di studio. Verifica sempre requisiti e scadenze nei bandi originali.', 'The guide collects scholarship resources. Always check requirements and deadlines in the original calls.'), BASE + '/study/how-to/scolarships-and-study-grants',
-              [('Ho individuato le fonti dei bandi', 'I identified the original calls')]),
-     ]},
+
 ]
+
+
+# Exact coverage and ordering of the public catalogue; unrelated resources remain searchable in chat.
+_by_id = {j['id']: j for j in JOURNEYS + additional(b, step, BASE)}
+JOURNEYS = [{**_by_id[entry['id']], 'group': entry['group'],
+             'guide_url': entry['guide_url'], 'indexed_url': entry['indexed_url'],
+             'source_title': entry['source_title']} for entry in CATALOG]
 
 
 def localized(language='it', citizenship='international'):
@@ -170,6 +136,10 @@ def localized(language='it', citizenship='international'):
                                         if citizenship == 'italian' else
                                         [b('Permesso, codice fiscale e residenza: in che ordine?', 'Permit, tax code and residence: in which order?'),
                                          b('Non ho SPID: come accedo ai servizi?', 'I have no SPID: how do I access services?')])
+        if journey['id'] == 'temporary' and citizenship == 'italian':
+            journey = {**journey, 'steps': [{**s, 'source': DOMICILE} for s in journey['steps']]}
+        if journey['id'] == 'residence' and citizenship == 'italian':
+            journey = {**journey, 'steps': [{**s, 'source': ITALIAN_RESIDENCE} for s in journey['steps']]}
         item = translate(journey)
         item.setdefault('plan_revision', 'guided-1')
         item['steps'] = [translate(s) for s in journey['steps']

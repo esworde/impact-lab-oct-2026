@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from webapp.journeys import localized
+from webapp.journeys import localized, JOURNEYS
 from webapp.knowledge import Knowledge
 
 ROOT = Path(__file__).resolve().parent
@@ -152,7 +152,7 @@ TOOLS = [
     {'name': 'read_guide', 'description': 'Read a saved guide using a page_id returned by search_guides; check full context and exceptions.',
      'input_schema': {'type': 'object', 'properties': {'page_id': {'type': 'integer'}}, 'required': ['page_id']}},
     {'name': 'suggest_journey', 'description': 'Suggest a guided journey appropriate to the student. This does not change progress or decide eligibility.',
-     'input_schema': {'type': 'object', 'properties': {'journey_id': {'type': 'string', 'enum': ['arrival','housing','documents','transport','health','citylife']}}, 'required': ['journey_id']}},
+     'input_schema': {'type': 'object', 'properties': {'journey_id': {'type': 'string', 'enum': [j['id'] for j in JOURNEYS]}}, 'required': ['journey_id']}},
 ]
 
 
