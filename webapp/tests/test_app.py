@@ -168,7 +168,7 @@ class ApiTests(unittest.TestCase):
     def test_plan_selector_one_model_call_and_rejects_invented_blocks(self):
         calls=[]
         selection={'blocks':['arrival','housing','transport'],'citizenship':'italian','stage':'here',
-                   'answers':{'stay_duration':'year-plus','housing':'found','taxcode':'yes','grant':'yes'}}
+                   'answers':{'stay_duration':'year-plus','housing':'found','taxcode':'yes','grant':'yes','citizenship_confirmed':True}}
         class FakeClaude:
             def __init__(self,**kwargs): self.messages=self
             async def create(self,**kwargs):
@@ -184,7 +184,9 @@ class ApiTests(unittest.TestCase):
             self.assertEqual(response.json()['usage']['model_calls'],1)
             self.assertEqual(response.json()['profile']['stay_duration'],'year-plus')
             self.assertEqual(response.json()['profile']['housing'],'found')
+            self.assertFalse(response.json()['profile']['citizenship_confirmed'])
             adaptive=self.client.post('/api/plan/compose',json=response.json()).json()
+            self.assertEqual(adaptive['questions'][0]['key'],'citizenship')
             self.assertNotIn('housing--needs',{s['id'] for s in adaptive['steps']})
             self.assertNotIn('taxcode--request',{s['id'] for s in adaptive['steps']})
             self.assertFalse(adaptive['ready'])

@@ -96,8 +96,28 @@ class PersonalizedPlanTests(unittest.TestCase):
         self.assertNotIn('taxcode--request',{s['id'] for s in pending['steps']})
         self.assertTrue(pending['ready'])
 
+    def test_missing_tax_certificate_keeps_help_without_duplicate_application(self):
+        p=self.profile(language='en',taxcode='yes',taxcode_document='missing')
+        plan=self.plan(p,['taxcode'])
+        self.assertEqual([s['id'] for s in plan['steps']],['taxcode--certificate'])
+        self.assertIn('certificate',plan['steps'][0]['body'])
+        self.assertNotIn('taxcode--request',{s['id'] for s in plan['steps']})
+
+    def test_model_proposed_citizenship_still_requires_confirmation(self):
+        p=self.profile(citizenship='non-eu',citizenship_confirmed=False,permit='none')
+        self.assertEqual(questions_for(p,['permit'])[0]['key'],'citizenship')
+        self.assertFalse(self.plan(p,['permit'])['ready'])
+
+    def test_unknown_citizenship_keeps_urgent_permit_verification(self):
+        p=self.profile(citizenship='international',stay_duration='unknown',taxcode='unknown')
+        plan=self.plan(p,['housing','taxcode','permit'])
+        self.assertIn('permit--route',{s['id'] for s in plan['steps']})
+        self.assertNotIn('permit',{b['id'] for b in plan['excluded']})
+        self.assertNotIn('taxcode--request',{s['id'] for s in plan['steps']})
+        self.assertTrue(plan['ready'])
+
     def test_missing_answers_generate_relevant_followups_and_explicit_unknown_is_allowed(self):
-        p=Profile(citizenship='italian').model_dump()
+        p=Profile(citizenship='italian',citizenship_confirmed=True).model_dump()
         questions=questions_for(p,['phone'])
         self.assertEqual({q['key'] for q in questions},{'stay_duration','taxcode'})
         self.assertFalse(self.plan(p,['phone'])['ready'])

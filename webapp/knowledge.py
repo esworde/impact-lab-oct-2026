@@ -89,7 +89,7 @@ class Knowledge:
                                (chunk_id, page['title'], heading, chunk))
         return {'id': page_id, 'changed': changed}
 
-    def retrieve(self, query, limit=6):
+    def retrieve(self, query, limit=6, page_id=None):
         # Quote all terms: user input cannot become FTS operators or SQL.
         stop = {'the','a','an','in','to','for','of','and','how','i','my','do','get','milano','milan'}
         terms = [t for t in re.findall(r'[^\W_]+', query.lower(), re.UNICODE)
@@ -101,8 +101,8 @@ class Knowledge:
             rows = db.execute('''SELECT p.id AS page_id,p.title,p.url,p.provider,p.fetched_at,
                 p.stated_updated_date,c.heading,c.body,bm25(search,5,4,1) AS score
                 FROM search JOIN chunks c ON c.id=search.rowid
-                JOIN pages p ON p.id=c.page_id WHERE search MATCH ? ORDER BY score LIMIT ?''',
-                              (match, min(limit, 10))).fetchall()
+                JOIN pages p ON p.id=c.page_id WHERE search MATCH ? AND (? IS NULL OR p.id=?) ORDER BY score LIMIT ?''',
+                              (match, page_id, page_id, min(limit, 10))).fetchall()
         return [dict(r) for r in rows]
 
     def read(self, page_id):

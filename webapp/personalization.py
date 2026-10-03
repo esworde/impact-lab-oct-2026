@@ -19,6 +19,7 @@ class Profile(BaseModel):
     country: str | None = Field(default=None, min_length=2, max_length=50)
     housing: Literal['searching','found','unknown'] | None = None
     taxcode: Literal['yes','no','unknown'] | None = None
+    taxcode_document: Literal['available','missing','unknown'] | None = None
     digital_id: Literal['yes','no','unknown'] | None = None
     residence_status: Literal['elsewhere','milan','unknown'] | None = None
     residence_intent: Literal['undecided','keep','temporary','transfer'] | None = None
@@ -85,7 +86,7 @@ def questions_for(profile, blocks):
         questions.append(question('health_coverage',('Hai già verificato la tua copertura sanitaria per il soggiorno?','Have you checked your healthcare coverage for this stay?'),yes_no,lang,
             ('Una copertura già verificata sposta il piano verso l’accesso alle cure. Non chiediamo informazioni mediche.','Checked coverage moves the plan towards accessing care. No medical details are requested.')))
     missing=[q for q in questions if p.get(q['key']) is None]
-    if p['citizenship']=='international' and not p.get('citizenship_confirmed'):
+    if not p.get('citizenship_confirmed'):
         missing.insert(0,question('citizenship',('Quale cittadinanza deve seguire il piano?','Which citizenship route should the plan follow?'), [('italian',('Italiana','Italian')),('eu',('UE','EU')),('non-eu',('Non UE','Non-EU')),('international',('Da verificare','To check'))],lang,('Non deduciamo la cittadinanza dal nome o dalla lingua.','We do not infer citizenship from a name or language.')))
     return missing
 
@@ -178,9 +179,17 @@ def adaptive_cards(profile, blocks, residence_choice=None, suppressed=()):
         add('permit','Prima della pratica anagrafica, verifica i documenti di soggiorno e il loro stato.','Before the Registry application, check stay documents and their status.')
 
     # Nationality and length select the source route, not legal entitlement.
-    if not non_eu:
+    if italian or eu:
         for id in ['visa','permit']:
             remove(id,'Il tuo profilo non è quello della guida per studenti non UE.','Your profile does not match the non-EU student guide.')
+    elif not non_eu:
+        for id in ['visa','permit']:
+            if id in ids:
+                keep_steps(id,{'route'})
+                update(id,'route',body=say('La cittadinanza non è verificata: contatta oggi università o Student Desk per chiarire la procedura applicabile e i termini in base all’ingresso in Italia. Per il kit chiedi quale indirizzo temporaneo reale indicare e come aggiornare i documenti quando cambi alloggio; il domicilio del kit è diverso dalla residenza anagrafica. Non aspettare una casa definitiva per verificare le scadenze.',
+                    'Citizenship is not checked: contact your university or Student Desk today to clarify the applicable procedure and deadlines based on entry into Italy. For a kit, ask which actual temporary address to use and how to update documents after moving; kit domicile is distinct from municipal residence registration. Do not wait for permanent housing to check deadlines.'),
+                    checklist=[say('Ho chiarito cittadinanza, procedura e scadenze con il servizio competente','I clarified citizenship, procedure and deadlines with the competent service'),say('Ho verificato indirizzo temporaneo e aggiornamenti dei documenti','I checked the temporary address and document updates')])
+                note(id,'Cittadinanza incerta: manteniamo un controllo urgente anziché escludere il servizio.','Citizenship uncertain: keep an urgent check rather than exclude the service.')
     if non_eu and 'visa' in ids:
         if p.get('country') and p['country'] not in {'unknown','da verificare','to check'}:
             update('visa','route',body=catalog['visa']['steps'][0]['body']+say(' Sul portale ufficiale usa il Paese di cittadinanza indicato: ',' On the official portal use your stated citizenship country: ')+p['country']+'.')
@@ -227,9 +236,21 @@ def adaptive_cards(profile, blocks, residence_choice=None, suppressed=()):
             update('permit','route',checklist=[say('Ho chiarito stato della richiesta e prossima azione con l’ufficio','I clarified application status and next action with the office')])
 
     if p.get('taxcode')=='yes':
-        remove('taxcode','Hai già il codice fiscale: evitiamo una nuova richiesta.','You already have a tax code: avoid applying again.')
+        if 'taxcode' in ids and p.get('taxcode_document')=='missing':
+            catalog['taxcode']['steps']=[new_step('certificate',('Recupera il certificato del codice già assegnato','Get the certificate for your existing tax code'),
+                ('Hai già un codice fiscale ma ti manca il documento ufficiale. Chiedi all’università o all’Agenzia delle Entrate come recuperare il certificato di attribuzione del codice esistente, senza richiedere un nuovo codice. Verifica con il locatore quale documento accetta.',
+                 'You already have a tax code but lack the official document. Ask your university or the Revenue Agency how to obtain the certificate of assignment for the existing code, without applying for a new code. Check which document the landlord accepts.'),catalog['taxcode']['guide_url'],
+                [('Ho verificato come ottenere il certificato del codice esistente','I checked how to obtain the certificate for my existing code'),('Ho chiarito il documento richiesto dal locatore','I clarified the document requested by the landlord')],('Agenzia delle Entrate / Università','Revenue Agency / University'))]
+            note('taxcode','Il codice esiste: serve il certificato, non una nuova attribuzione.','The code exists: get the certificate, not a new assignment.')
+        else:
+            remove('taxcode','Hai già il codice fiscale: evitiamo una nuova richiesta.','You already have a tax code: avoid applying again.')
     elif {'bank','phone','temporary','residence'} & set(ids) and p.get('taxcode')=='no':
         add('taxcode','Hai indicato che manca il codice fiscale: verifica il documento richiesto dagli altri servizi.','You lack a tax code: check the document requested by other services.')
+    if 'taxcode' in ids and p.get('taxcode')=='unknown':
+        keep_steps('taxcode',{'existing'})
+        update('taxcode','existing',body=say('Non è certo se il codice sia già assegnato. Verifica con università o Agenzia delle Entrate: se esiste, chiedi come ottenere il certificato ufficiale; se non esiste, verifica il canale per la prima richiesta e aggiorna il profilo. Non avviare un’attribuzione duplicata.',
+            'It is unclear whether a code was assigned. Check with your university or the Revenue Agency: if it exists, ask how to obtain the official certificate; otherwise check the first-application channel and update your profile. Do not request a duplicate assignment.'),
+            checklist=[say('Ho chiarito se il codice è già assegnato e quale documento mi serve','I clarified whether a code was assigned and which document I need')])
     if 'housing' in ids and p.get('housing')=='found':
         keep_steps('housing',{'contract','deposit','handover'})
         note('housing','Casa già trovata: saltati ricerca e visita, restano contratto e adempimenti.','Accommodation found: skip search and viewing, keep contract and formalities.')

@@ -101,16 +101,23 @@ def planning_sources(knowledge, base):
         'temporary': 'declaration temporary residence student domicile',
         'transport': 'transport student pass getting around',
         'support': 'student university libraries support',
+        'permit': 'proof address hospitality',
+        'taxcode': 'FROM MILANO application official certificate document',
     }
     for b in base['block_summaries']:
         for hit in knowledge.retrieve(queries.get(b['id'], b['id'] + ' student'), limit=2):
             selected.setdefault(hit['page_id'], by_url[normalize_url(hit['url'])])
     # Deterministic input bound; canonical step instructions remain available in every batch.
     evidence = []
+    evidence_query = ' '.join(queries.get(b['id'], b['id']) for b in base['block_summaries'])
+    page_queries = {normalize_url(s['source']): queries.get(s['block_id'], s['block_id']) for s in base['steps']}
     for page in list(selected.values())[:20]:
         full = knowledge.read(page['id'])
+        sections = knowledge.retrieve(page_queries.get(normalize_url(page['url']), evidence_query), limit=2, page_id=page['id'])
+        # Include relevant sections beyond the introduction, within a fixed input bound.
+        excerpts = '\n\n'.join('# '+s['heading']+'\n'+s['body'][:3500] for s in sections)
         evidence.append({**{k: page.get(k) for k in ['id', 'title', 'url', 'fetched_at', 'stated_updated_date']},
-                         'text': full['markdown'][:1800]})
+                         'text': (full['markdown'][:600]+'\n\n'+excerpts)[:6000] if sections else full['markdown'][:1800]})
     return evidence
 
 
@@ -154,6 +161,7 @@ async def author_plan(client, model, base, profile, knowledge, reserve, story=''
                    'Only emit steps listed in required_steps_this_batch. frozen_step_ids have already been written and must NOT appear in your steps output. Do not add, merge, split or omit any required step ID. '
                    'Use the reviewed steps as mandatory constraints, but generate specific titles, explanations and contextual checks from the student situation and sources. Avoid merely copying templates. '
                    'Interpret stay_duration as the intended total stay, never time already spent in Milan. stage=here only means already in Milan, with no known arrival date. '
+                   'Story time facts are separate: "arrived four days ago" is NOT "four days left in the hostel". An expiring booking has no exact end date unless explicitly stated. Never calculate or invent that date. '
                    'grant=yes means grants/ISEE are relevant to investigate, not that any award, voucher or entitlement has been obtained. housing=found means accommodation found, not that the contract is signed or registered. '
                    'residence_status=elsewhere is registered residence outside Milan, not the current domicile; never infer the latter. '
                    'Tailor actions to known facts such as existing tax code, accommodation found, planned study duration, residence option and grant questions; do not repeat generic reviewed bodies verbatim. '
@@ -163,7 +171,12 @@ async def author_plan(client, model, base, profile, knowledge, reserve, story=''
                    'Keep the rationale to 2–3 short sentences, at most 500 characters. '
                    'Rationale explains priorities and parallel work, not abbreviated document requirements. Never imply a tax code alone replaces an identity document. '
                    'Do not promise fast, immediate or guaranteed activation, acceptance or approval by any service. Do not invent prerequisites between services; use only the supplied dependency constraints. '
+                   'Source claims such as "15 minutes" are not guaranteed processing times: omit these promises. If permit=none there is no application receipt yet; never require it as already available. '
                    'Never assume names, addresses or private identifiers, never include them in the output. A submitted permit means follow-up, not a new kit; a known tax code means no new application. '
+                   'An expiring hostel is an urgent housing issue: explain temporary accommodation and housing assistance alongside urgent permit checks, without requiring a permanent room first. '
+                   'The permit-kit domicile/address is distinct from municipal residence registration. Explain how to check the actual temporary address and later address changes with the competent service; never invent a registered address. '
+                   'Missing a tax-code certificate does not mean no code was assigned: check existing assignment before applying; recover the official document if the code exists. '
+                   'Landlord requests for Italian financial guarantors are not a universal legal requirement: clarify requested guarantees and alternatives with housing support, without promising acceptance. '
                    'Preserve distinctions between Italian, EU, non-EU and short stays. Residence choices are the student’s options to verify, not legal determinations. '
                    'Do not claim an action is already completed or approved. Mandatory checklists remain attached; your checks add useful context. '
                    'Cite relevant evidence IDs for each step. Publication/acquisition dates do not establish current requirements. '

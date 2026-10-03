@@ -164,6 +164,7 @@ const FACT_LABELS = {
     country: "Paese di cittadinanza",
     housing: "Sistemazione",
     taxcode: "Codice fiscale",
+    taxcode_document: "Documento del codice fiscale",
     digital_id: "SPID / CIE online",
     residence_status: "Residenza attuale",
     residence_intent: "Scelta da valutare",
@@ -177,6 +178,7 @@ const FACT_LABELS = {
     country: "Citizenship country",
     housing: "Accommodation",
     taxcode: "Tax code",
+    taxcode_document: "Tax-code document",
     digital_id: "SPID / online ID",
     residence_status: "Current residence",
     residence_intent: "Option to consider",
@@ -187,6 +189,11 @@ const FACT_LABELS = {
   },
 };
 const FACT_OPTIONS = {
+  taxcode_document: [
+    ["available", "Disponibile", "Available"],
+    ["missing", "Documento mancante", "Document missing"],
+    ["unknown", "Da verificare", "To check"],
+  ],
   stay_duration: [
     ["short", "Fino a 90 giorni", "Up to 90 days"],
     [

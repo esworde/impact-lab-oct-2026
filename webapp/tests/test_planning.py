@@ -68,6 +68,17 @@ class AIPlanningTests(unittest.TestCase):
             self.assertEqual(original.get('choices'), authored.get('choices'))
         self.assertEqual(plan['base_revision'], self.base['plan_revision'])
 
+    def test_planning_reads_address_evidence_beyond_the_guide_introduction(self):
+        from webapp.planning import planning_sources
+        profile=Profile(language='en',citizenship='non-eu',citizenship_confirmed=True,
+            stage='here',stay_duration='year-plus',permit='none').model_dump()
+        base=compose(['permit'],'en','non-eu',profile)
+        evidence=planning_sources(main.knowledge,base)
+        guide=next(p for p in evidence if 'residence-permit-students' in p['url'])
+        self.assertIn('Attaching the proof of address is not mandatory',guide['text'])
+        self.assertIn('mandatory proof of address',guide['text'])
+        self.assertLessEqual(len(guide['text']),6000)
+
     def test_reject_missing_steps_unknown_sources_and_changed_dependencies(self):
         memory = self.authored()
         missing = memory.model_copy(deep=True)
